@@ -4,7 +4,7 @@ class AutoPilotInput:
     """ La classe représentant les entrées demandée par l'autopilote
         v : La vitesse absolue demandée, en m/s
         vz : Le taux de montee demandé, en m/s"""
-    def __init__(self, v, vz):
+    def __init__(self, v = 0, vz = 0):
         self._v = v
         self._vz = vz
 
@@ -25,7 +25,7 @@ class PilotInput:
         pitch : La commande de tanguage: positif = cabrer  [Entre -1 et 1]
         flaps : La commande des flaps: positif = sortis [Entre 0 et 1]
         throttle : La commande moteur  [Entre 0 et 1]"""
-    def __init__(self,pitch,flaps,throttle):
+    def __init__(self, pitch = 0, flaps = 0, throttle = 0):
         dm.checkBoundaries(pitch,-1,1)
         self._pitch = pitch
 
@@ -50,7 +50,7 @@ class PilotInput:
         self._flaps = flaps
 
     def getThrottle(self):
-        return self._flaps
+        return self._throttle
     
     def setThrottle(self, throttle):
         dm.checkBoundaries(throttle, 0, 1)
@@ -61,7 +61,7 @@ class PilotInput:
     
 
 class RawInput:
-    def __init__(self, elevG, elevD, flapsG, flapsD, throttle):
+    def __init__(self, elevG = 0, elevD = 0, flapsG = 0, flapsD = 0, throttle = 0):
         """La classe représentatn les entrée brutes des différent actionneurs
         elevG : La commande de la gouverne arriere gauche (VTAIL) [Entre -1 et 1]
         elevD : La commande de la gouverne arriere droite [Entre -1 et 1]
@@ -96,8 +96,6 @@ class RawInput:
     def setElevD(self, elevD):
         dm.checkBoundaries(elevD, -1, 1)
         self._elevD = elevD
-
-
 
     def getFlapsG(self):
         return self._flapsG

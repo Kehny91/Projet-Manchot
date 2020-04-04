@@ -1,6 +1,9 @@
 import UserInput as ui
 import DataManagement as dm
+import Mixer as mx
 
+
+"""
 if __name__ == "__main__":
     rawInput = ui.RawInput(0,0,0,0,0)
     rawInput.setElevD(-1)
@@ -28,3 +31,9 @@ if __name__ == "__main__":
     autoPilotInput.setV(0.1)
     autoPilotInput.setVz(-0.1)
     print(str(autoPilotInput.__dict__))
+"""
+
+if __name__ == "__main__":
+    pilotInput = ui.PilotInput(1,0.5,0.8)
+    rawInput = mx.Mixer.mix(pilotInput)
+    print(rawInput.__dict__)
