@@ -118,6 +118,14 @@ class RawInput:
         dm.checkBoundaries(throttle, 0, 1)
         self._throttle = throttle
 
+    #Renvoie un dictionnaire, pret a etre propagé dans le modele
+    def getInputVector(self):
+        return {"elevG" : self._elevG,
+                "elevD" : self._elevD,
+                "flapsG" : self._flapsG,
+                "flapsD" : self._flapsD,
+                "throttle" : self._throttle}
+
 
 #TESTS
 if __name__ == "__main__":
@@ -132,6 +140,7 @@ if __name__ == "__main__":
         rawInput.setFlapsD(-0.1)
     except dm.OutOfBoundException:
         print("Unauthorized")
+    print(rawInput.getInputVector())
 
     pilotInput = PilotInput(0,0,0)
     pilotInput.setFlaps(0.1)
