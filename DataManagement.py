@@ -1,5 +1,7 @@
 import threading as th
 import time
+from math import pi
+
 
 class OutOfBoundException(Exception):
     pass
@@ -10,6 +12,23 @@ def checkBoundaries(x, xMin, xMax):
 
 def constrain(x, xMin, xMax):
     return min(xMax,max(xMin,x))
+
+def moduloF(x, modulo):
+    if x>=0:
+        return x - (x//modulo)*modulo
+    else:
+        return x - (x//modulo+1)*modulo
+
+def normalize(angle):
+    """ Permet de renvoyer un angle quelconque dans l'intervalle ]-pi , pi]"""
+    angle = moduloF(angle, 2*pi)
+
+    if -pi<angle and angle<=pi:
+        return angle
+    elif angle<=-pi:
+        return normalize(angle + 2*pi)
+    elif angle>pi:
+        return normalize(angle - 2*pi)
 
 
 #Une boite au lettre sans ecrasement

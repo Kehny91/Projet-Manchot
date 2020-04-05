@@ -1,0 +1,11 @@
+### Conventions
+
+Axe xSol = parllèle au sol, dans la direction de l'avion
+Axe zSol = normal au sol
+v = vitesse du CG de l'avion
+vz = vitesse verticale du CG de l'avion
+Alpha = angle entre l'axe de l'avion et l'axe de sa vitesse (alpha positif => portance)
+Theta = angle entre l'axe de l'avion et l'axe xSol
+
+Tous les angles sont mesurés en radians, avec Theta = 0 rad si l'avion vol parfaitement en palier vers les x positifs
+Absolument toutes les valeurs sont stockés en USI
