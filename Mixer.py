@@ -24,6 +24,9 @@ class Mixer:
 
         return out
 
+
+
+#TESTS
 if __name__ == "__main__":
     pilotInput = ui.PilotInput(1,0.5,0.8)
     rawInput = Mixer.mix(pilotInput)

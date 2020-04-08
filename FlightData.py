@@ -1,39 +1,28 @@
-from DataManagement import normalize
+from Espace import Vecteur
 
 class FlightData:
-    def __init__(self, x = 0, z = 0, v = 0, vz = 0, theta = 0):
-        self._x = x
-        self._z = z
-        self._v = v
-        self._vz = vz
-        self._theta = theta
+    def __init__(self, posAvion, vAvion, assiette):
+        self._posAvion = posAvion
+        self._vAvion = vAvion
+        self._assiette = assiette
+
+    def getPosAvion(self):
+        return self._posAvion
+
+    def getVAvion(self):
+        return self._vAvion
+
+    def getAssiette(self):
+        return self._assiette
+
+    def setPosAcion(self, posAvion):
+        self._posAvion = posAvion
+
+    def setVAvion(self,vAvion):
+        self._vAvion = vAvion
+
+    def setAssiette(self, assiette):
+        self._assiette = assiette
+
     
-    def setX(self, x):
-        self._x = x
-    
-    def getX(self):
-        return self._x
-
-    def setZ(self, z):
-        self._z = z
-
-    def getZ(self):
-        return self._z
-
-    def setV(self, v):
-        self._v = v
-
-    def getV(self):
-        return self._v
-
-    def setVz(self, vz):
-        self._vz = vz
-
-    def getVz(self):
-        return self._vz
-
-    def setTheta(self, theta):
-        self._theta = normalize(theta)
-
-    def getTheta(self):
-        return normalize(self._theta)
+   

@@ -98,6 +98,7 @@ class Vecteur:
         self.x=x
         self.z=z
         self.ref = ref
+
     
     def __str__(self):
         return "Dans le ref : " + str(self.ref.nom) + " les coordonnees sont (" + str(self.x) +"," + str(self.z) + ")"
@@ -154,7 +155,7 @@ class Vecteur:
     
     def afficheNorm(self,ref):
         if self.ref==ref:
-            print "Dans le ref : " + str(self.ref.nom) + "la norme est : " + str(self.norm())
+            print("Dans le ref : " + str(self.ref.nom) + "la norme est : " + str(self.norm()))
         else:
             return self.projectionRef(ref).afficheNorm(ref)
         

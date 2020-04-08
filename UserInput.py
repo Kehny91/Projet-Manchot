@@ -2,11 +2,9 @@ import DataManagement as dm
 
 class AutoPilotInput:
     """ La classe représentant les entrées demandée par l'autopilote
-        v : La vitesse absolue demandée, en m/s
-        vz : Le taux de montee demandé, en m/s"""
-    def __init__(self, v = 0, vz = 0):
+        v : Le vecteur vitesse demandé"""
+    def __init__(self, v):
         self._v = v
-        self._vz = vz
 
     def getV(self):
         return self._v
@@ -14,11 +12,6 @@ class AutoPilotInput:
     def setV(self, v):
         self._v = v
 
-    def getVz(self):
-        return self._vz
-
-    def setVz(self, vz):
-        self._vz = vz
 
 class PilotInput:
     """ La classe représentant les entrées demandée par un pilote
@@ -125,6 +118,9 @@ class RawInput:
                 "flapsG" : self._flapsG,
                 "flapsD" : self._flapsD,
                 "throttle" : self._throttle}
+
+
+
 
 
 #TESTS

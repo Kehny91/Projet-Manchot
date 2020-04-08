@@ -74,6 +74,11 @@ class MDD:
             self._empty = True
         return out
 
+
+
+
+
+#TESTS
 if __name__=="__main__":
     mdd = BAL_SE(10)
 
