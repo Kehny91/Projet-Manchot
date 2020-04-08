@@ -15,7 +15,7 @@ class FlightData:
     def getAssiette(self):
         return self._assiette
 
-    def setPosAcion(self, posAvion):
+    def setPosAvion(self, posAvion):
         self._posAvion = posAvion
 
     def setVAvion(self,vAvion):
