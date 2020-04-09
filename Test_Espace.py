@@ -23,28 +23,13 @@ print("normalise -1/2*Pi : (=1/2*Pi?) " + str(E.normalise(float(-1.5*np.pi))))
 print("__Fin_Test_methode_normalise__") 
 print("\n")
 
-#test de la classe Point
-print("__Classe_Point__")
-#Constructeur
-print("__Init__")
-pointA = E.Point(1,1)
-pointB = E.Point(4,5)
-print("Init_Fin")
-print("\n")
-#str
-print("__str__")
-print(pointA)
-print("\n")
-print("Fin_Test_Classe_Point")
-print("\n")
-
 
 # Test de la classe référentiel
 print("__classe_Referentiel___")
 #constructeur
 print("___Init___")   
-refTerrestre = E.Referentiel("refTerrestre",10,E.Point(1,1)) 
-refAero = E.Referentiel("refAero",np.pi/3,E.Point(3,5)) 
+refTerrestre = E.Referentiel("refTerrestre",10,E.Vecteur(1,1,E.ReferentielAbsolu())) 
+refAero = E.Referentiel("refAero",np.pi/2,E.Vecteur(3,5,E.ReferentielAbsolu())) 
 print("Init_Fin")
 print("\n")
 #geter
@@ -57,7 +42,7 @@ print("\n")
 print("__seter__")
 refTerrestre.setNom("refTerrestre")
 refTerrestre.setAngleAxeY(0)
-refTerrestre.setOrigine(E.Point(0,0))
+refTerrestre.setOrigine(E.Vecteur(0,0,E.ReferentielAbsolu()))
 print("Nom du referenctiel apres seter : " + str(refTerrestre.getNom()))
 print("Angle du referenctiel apres seter : " + str(refTerrestre.getAngleAxeY()))
 print("\n")
@@ -74,11 +59,12 @@ print("Fin_Test_Classe_Referentiel")
 print("\n")
 
 
+
 # Test de la classe vecteur
 print("__classe_Vecteur__")
 #Constructeur
 print("__Init__")
-vecteur1 = E.Vecteur(3,5,refTerrestre)
+vecteur1 = E.Vecteur(3,4,refTerrestre)
 vecteur2 = E.Vecteur(1,6,refAero)
 vecteur3 = E.Vecteur(1,6,refTerrestre)
 print("Init_Fin")
@@ -129,10 +115,10 @@ print("la mutiplication de vecteur1 par une scalaire (3.5) : (10.5,14)?")
 print(vecteur1*3.5)
 print("\n")
 print("__prodScal__")
-print("le produit scalaire de vecteur1 et vecteur3 = 14?")
-print(vecteur1.prodScal(vecteur3))
-print("le produit scalaire de vecteur2 et vecteur2 = 27?")
-print(vecteur1.prodScal(vecteur2))
+print("le produit vectoriel de vecteur1 et vecteur3 = 14?")
+print(vecteur1.prodVect(vecteur3))
+print("le produit vectoriel de vecteur2 et vecteur2 = 27?")
+print(vecteur1.prodVect(vecteur2))
 print("\n")
 print("__norm__ + __afficheNorm__")
 print("la norme du vecteur1 est egal a 5 dans refterrestre: ?")
