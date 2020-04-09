@@ -51,7 +51,7 @@ class Vecteur:
         return Vecteur(self.x*scal, self.z*scal)
 
     def norm(self):
-        return sqrt(self.x**2 + self.y**2)
+        return sqrt(self.x**2 + self.z**2)
 
     def unitaire(self):
         return self*(1.0/self.norm)
@@ -68,6 +68,7 @@ Le scale s'exprime en m/pix. Il donne combien de metre est representé par un pi
 Une flightData exprime la position du batiMoteur
 """
 class GraphWidget(QtWidgets.QWidget):
+    #PUBLIC
     def __init__(self, realPositionFenetre, scale, runwayXStart, runwayLength, planeLength, planeHeight):
         super().__init__()
         self.realPositionFenetre = realPositionFenetre
@@ -80,7 +81,6 @@ class GraphWidget(QtWidgets.QWidget):
             self.picture = Qt.QPixmap("./IHM/Sprites/DroneAjuste.png")
 
         self.picture = self.picture.transformed(Qt.QTransform().scale(planeLength/1253.0/scale,planeLength/1253.0/scale))
-        print(self.picture.rect())
         self.planeLength = planeLength
         self.planeHeight = planeHeight
         self.flightData = FlightData(Vecteur(0,0),Vecteur(0,0),0)
@@ -90,55 +90,67 @@ class GraphWidget(QtWidgets.QWidget):
 
         self.B0_C0 = (pC - pB)*(planeLength/1253.0) #C'est le vecteur qui relie B a C lorsque theta vaut 0, dans les coordonnées réelles
 
+    #PUBLIC
     def setFlightData(self,flightData):
         self.flightData = flightData
 
+    #PUBLIC
+    def setRealPositionFenetre(self, realPositionFenetre):
+        self.realPositionFenetre = realPositionFenetre.withZmin(self.zMin)
+    
+    #PUBLIC
+    def setRealPositionFenetreCenter(self, realPositionFenetreCenter):
+        realWidth = self.width()*self.scale
+        realHeight = self.height()*self.scale
+        self.setRealPositionFenetre(realPositionFenetreCenter - Vecteur(realWidth/2,realHeight/2))
+
+    #PUBLIC
+    #update()
+
+    #PRIVATE
     #Se referencer a point.png
-    def getCPosition(self, flightData):
+    def _getCPosition(self, flightData):
         #Un flight data contient la position B
         return flightData.getPosAvion()+(self.B0_C0.rotate(flightData.getAssiette()))
 
-
+    #PRIVATE
     def _realToPix(self,O_M):
         #TODO verifier que le vecteur est dans le referentiel absolu
         rpf_M = O_M-self.realPositionFenetre #vecteur realPositionFenetre -> M
         return (int(rpf_M.getX()/self.scale),self.height() - int(rpf_M.getZ()/self.scale) )
 
-    def drawGround(self, painter):
+    #PRIVATE
+    def _drawGround(self, painter):
         painter.setPen(Qt.QColor(0,255,0))
         painter.setBrush(Qt.QColor(0,255,0))
         pixPos = self._realToPix(Vecteur(0,0))
         painter.drawRect(0,max(pixPos[1],0),self.width(), self.height())
 
-    def drawRunway(self, painter, xStart,longueur):
+    #PRIVATE
+    def _drawRunway(self, painter, xStart,longueur):
         painter.setPen(Qt.QColor(100,100,100))
         painter.setBrush(Qt.QColor(100,100,100))
         pixPosStart = self._realToPix(Vecteur(xStart,0))
         pixPosEnd = self._realToPix(Vecteur(xStart+longueur,-1))
         painter.drawRect(pixPosStart[0],pixPosStart[1],pixPosEnd[0] - pixPosStart[0], max(1,pixPosEnd[1] - pixPosStart[1]))
 
-    def drawPlane(self, painter, flightData):
+    #PRIVATE
+    def _drawPlane(self, painter, flightData):
         pictureToDraw = self.picture.transformed(Qt.QTransform().rotateRadians(-flightData.getAssiette())) # - car le sens positif des widgt est le sens hroarie
         rect = pictureToDraw.rect()
-        posPix = self._realToPix(self.getCPosition(flightData))
+        posPix = self._realToPix(self._getCPosition(flightData))
         rect.moveCenter(Qt.QPoint(posPix[0],posPix[1]))
         painter.drawPixmap(rect, pictureToDraw)
     
+    #PRIVATE
     def paintEvent(self, event):
         qp = Qt.QPainter()
         qp.begin(self)
-        self.drawGround(qp)
-        self.drawRunway(qp, self.runwayXStart, self.runwayLength)
-        self.drawPlane(qp,self.flightData)
+        self._drawGround(qp)
+        self._drawRunway(qp, self.runwayXStart, self.runwayLength)
+        self._drawPlane(qp,self.flightData)
         qp.end()
-    
-    def setRealPositionFenetre(self, realPositionFenetre):
-        self.realPositionFenetre = realPositionFenetre.withZmin(self.zMin)
-    
-    def setRealPositionFenetreCenter(self, realPositionFenetreCenter):
-        realWidth = self.width()*self.scale
-        realHeight = self.height()*self.scale
-        self.setRealPositionFenetre(realPositionFenetreCenter - Vecteur(realWidth/2,realHeight/2))
+
 
 
 class Updater(Qt.QThread):
