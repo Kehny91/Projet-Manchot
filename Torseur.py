@@ -61,7 +61,7 @@ class Torseur:
     """        
     def changePoint(self,vecteur):
         if self.vecteur.ref == vecteur.ref:
-            Mpoint = self.moment + (vecteur-self.vecteur).prodScal(self.resultante)
+            Mpoint = self.moment + (self.vecteur-vecteur).prodVect(self.resultante)
             return Torseur(vecteur,self.resultante,Mpoint)
         else:
             return self.changeRef(vecteur.ref).changePoint(vecteur)
@@ -92,19 +92,3 @@ class Torseur:
     """
     def __mul__(self,scal):
         return Torseur(self.vecteur,self.resultante*scal, self.moment*scal)
-   
-    """comoment
-        calcul le comoment de deux torseurs
-        @param torseur
-    """
-    def comoment(self, torseur):
-        if (self.vecteur == torseur.vecteur):
-            return (self.vecteur*torseur.moment + torseur.vecteur*self.moment) ##en 3D ce sont des prodScal
-        else:
-            return self.comoment(torseur.changePoint(self.vecteur))
-        
-        
-
-    
-        
-        
