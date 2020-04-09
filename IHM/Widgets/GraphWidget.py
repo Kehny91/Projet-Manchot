@@ -5,6 +5,7 @@ import PyQt5.QtWidgets as QtWidgets
 import sys
 import time
 import os
+from math import sqrt,cos,sin
 
 class FlightData:
     def __init__(self, posAvion, vAvion, assiette):
@@ -46,9 +47,25 @@ class Vecteur:
     def __add__(self,other):
         return Vecteur(self.x+other.x, self.z+other.z)
 
+    def __mul__(self, scal):
+        return Vecteur(self.x*scal, self.z*scal)
+
+    def norm(self):
+        return sqrt(self.x**2 + self.y**2)
+
+    def unitaire(self):
+        return self*(1.0/self.norm)
+
+    def rotate(self, angle):
+        return Vecteur(self.x*cos(angle) - self.z*sin(angle) , self.x*sin(angle) + self.z*cos(angle) )
+
+    def withZmin(self, zMin):
+        return Vecteur(self.x, max(zMin,self.z))
+
 """
 La realPositionFenetre, correspond aux coordonnées vraies (pysiques) du coin inferieur gauche de la fenetre.
 Le scale s'exprime en m/pix. Il donne combien de metre est representé par un pixel
+Une flightData exprime la position du batiMoteur
 """
 class GraphWidget(QtWidgets.QWidget):
     def __init__(self, realPositionFenetre, scale, runwayXStart, runwayLength, planeLength, planeHeight):
@@ -61,12 +78,26 @@ class GraphWidget(QtWidgets.QWidget):
             self.picture = Qt.QPixmap("../Sprites/DroneAjuste.png")
         else:
             self.picture = Qt.QPixmap("./IHM/Sprites/DroneAjuste.png")
+
+        self.picture = self.picture.transformed(Qt.QTransform().scale(planeLength/1253.0/scale,planeLength/1253.0/scale))
+        print(self.picture.rect())
         self.planeLength = planeLength
         self.planeHeight = planeHeight
         self.flightData = FlightData(Vecteur(0,0),Vecteur(0,0),0)
+        pB = Vecteur(1220, -176)
+        pC = Vecteur(626, -151) #negatif pour avoir Z vers le haut, contrairement au systeme de pixel
+        self.zMin = -0.5
+
+        self.B0_C0 = (pC - pB)*(planeLength/1253.0) #C'est le vecteur qui relie B a C lorsque theta vaut 0, dans les coordonnées réelles
 
     def setFlightData(self,flightData):
         self.flightData = flightData
+
+    #Se referencer a point.png
+    def getCPosition(self, flightData):
+        #Un flight data contient la position B
+        return flightData.getPosAvion()+(self.B0_C0.rotate(flightData.getAssiette()))
+
 
     def _realToPix(self,O_M):
         #TODO verifier que le vecteur est dans le referentiel absolu
@@ -87,12 +118,11 @@ class GraphWidget(QtWidgets.QWidget):
         painter.drawRect(pixPosStart[0],pixPosStart[1],pixPosEnd[0] - pixPosStart[0], max(1,pixPosEnd[1] - pixPosStart[1]))
 
     def drawPlane(self, painter, flightData):
-        rect = Qt.QRect()
-        rect.setHeight(self.planeHeight/self.scale)
-        rect.setWidth(self.planeLength/self.scale)
-        posPix = self._realToPix(flightData.getPosAvion())
+        pictureToDraw = self.picture.transformed(Qt.QTransform().rotateRadians(-flightData.getAssiette())) # - car le sens positif des widgt est le sens hroarie
+        rect = pictureToDraw.rect()
+        posPix = self._realToPix(self.getCPosition(flightData))
         rect.moveCenter(Qt.QPoint(posPix[0],posPix[1]))
-        painter.drawPixmap(rect, self.picture, self.picture.rect())
+        painter.drawPixmap(rect, pictureToDraw)
     
     def paintEvent(self, event):
         qp = Qt.QPainter()
@@ -103,7 +133,7 @@ class GraphWidget(QtWidgets.QWidget):
         qp.end()
     
     def setRealPositionFenetre(self, realPositionFenetre):
-        self.realPositionFenetre = realPositionFenetre
+        self.realPositionFenetre = realPositionFenetre.withZmin(self.zMin)
     
     def setRealPositionFenetreCenter(self, realPositionFenetreCenter):
         realWidth = self.width()*self.scale
@@ -117,9 +147,11 @@ class Updater(Qt.QThread):
         self.graph = graph
     
     def run(self):
-        flightData = FlightData(Vecteur(0,3),Vecteur(0,0),0.0)
+        flightData = FlightData(Vecteur(0,3),Vecteur(0,0),1)
+        
         while True:
-            flightData.setPosAvion(flightData.getPosAvion()+Vecteur(0.015,-0.002))
+            flightData.setPosAvion(flightData.getPosAvion()+Vecteur(0.015,-0.002)) #pour l'exemple
+            flightData.setAssiette(cos(flightData.getPosAvion().getX())) #pour l'exemple
             self.graph.setFlightData(flightData)
             self.graph.setRealPositionFenetreCenter(flightData.getPosAvion())
             self.graph.update()
@@ -132,7 +164,7 @@ if __name__ == "__main__":
     mainW = Qt.QMainWindow()
     mainW.setFixedWidth(500)
     mainW.setFixedHeight(500)
-    graph = GraphWidget(Vecteur(0,-1),0.03, 5,15,1.80,0.30)
+    graph = GraphWidget(Vecteur(0,-1),0.01, 5,15,1.80,0.30)
     mainW.setCentralWidget(graph)
     mainW.show()
     updater = Updater(graph)
