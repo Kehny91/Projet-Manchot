@@ -5,31 +5,9 @@ import PyQt5.QtWidgets as QtWidgets
 import sys
 import time
 import os
+from FlightData import FlightData
+
 from math import sqrt,cos,sin
-
-class FlightData:
-    def __init__(self, posAvion, vAvion, assiette):
-        self._posAvion = posAvion
-        self._vAvion = vAvion
-        self._assiette = assiette
-
-    def getPosAvion(self):
-        return self._posAvion
-
-    def getVAvion(self):
-        return self._vAvion
-
-    def getAssiette(self):
-        return self._assiette
-
-    def setPosAvion(self, posAvion):
-        self._posAvion = posAvion
-
-    def setVAvion(self,vAvion):
-        self._vAvion = vAvion
-
-    def setAssiette(self, assiette):
-        self._assiette = assiette
 
 class Vecteur:
     def __init__(self,x,z):
@@ -150,35 +128,3 @@ class GraphWidget(QtWidgets.QWidget):
         self._drawRunway(qp, self.runwayXStart, self.runwayLength)
         self._drawPlane(qp,self.flightData)
         qp.end()
-
-
-
-class Updater(Qt.QThread):
-    def __init__(self, graph):
-        super().__init__()
-        self.graph = graph
-    
-    def run(self):
-        flightData = FlightData(Vecteur(0,3),Vecteur(0,0),1)
-        
-        while True:
-            flightData.setPosAvion(flightData.getPosAvion()+Vecteur(0.015,-0.002)) #pour l'exemple
-            flightData.setAssiette(cos(flightData.getPosAvion().getX())) #pour l'exemple
-            self.graph.setFlightData(flightData)
-            self.graph.setRealPositionFenetreCenter(flightData.getPosAvion())
-            self.graph.update()
-            time.sleep(0.01)
-
-
-
-if __name__ == "__main__":
-    app = Qt.QApplication(sys.argv)
-    mainW = Qt.QMainWindow()
-    mainW.setFixedWidth(500)
-    mainW.setFixedHeight(500)
-    graph = GraphWidget(Vecteur(0,-1),0.01, 5,15,1.80,0.30)
-    mainW.setCentralWidget(graph)
-    mainW.show()
-    updater = Updater(graph)
-    updater.start()
-    sys.exit(app.exec_())
