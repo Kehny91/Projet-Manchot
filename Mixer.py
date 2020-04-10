@@ -4,30 +4,21 @@ import DataManagement as dm
 
 class Mixer:
     @staticmethod
-    def mix(pilotInput):
-        out = ui.RawInput()
+    def mix(pilotInputMDD, rawInputMDD):
         # Les gouvernes sont utilisés en priorité pour l'elevator, ce qu'il reste est utilisé pour le yaw
-        pitch = pilotInput.getPitch()
+        pitch = pilotInputMDD.getPitch()
         
         #[3D]
         #placeRestante = 1 - abs(pitch)
         #yaw = dm.constrain(pilotInput.getYaw(),-placeRestante, placeRestante)
         yaw = 0
 
-        out.setElevD(pitch + yaw)
-        out.setElevG(pitch - yaw)
+        rawInputMDD.setElevD(pitch + yaw)
+        rawInputMDD.setElevG(pitch - yaw)
 
-        out.setFlapsD(pilotInput.getFlaps())
-        out.setFlapsG(pilotInput.getFlaps())
+        rawInputMDD.setFlapsD(pilotInputMDD.getFlaps())
+        rawInputMDD.setFlapsG(pilotInputMDD.getFlaps())
 
-        out.setThrottle(pilotInput.getThrottle())
-
-        return out
+        rawInputMDD.setThrottle(pilotInputMDD.getThrottle())
 
 
-
-#TESTS
-if __name__ == "__main__":
-    pilotInput = ui.PilotInput(1,0.5,0.8)
-    rawInput = Mixer.mix(pilotInput)
-    print(rawInput.__dict__)
