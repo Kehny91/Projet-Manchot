@@ -6,39 +6,8 @@ import sys
 import time
 import os
 from FlightData import FlightData
-
+from Espace import Vecteur
 from math import sqrt,cos,sin
-
-class Vecteur:
-    def __init__(self,x,z):
-        self.x = x
-        self.z = z
-    def getX(self):
-        return self.x
-
-    def getZ(self):
-        return self.z
-    
-    def __sub__(self,other):
-        return Vecteur(self.x- other.x, self.z-other.z)
-
-    def __add__(self,other):
-        return Vecteur(self.x+other.x, self.z+other.z)
-
-    def __mul__(self, scal):
-        return Vecteur(self.x*scal, self.z*scal)
-
-    def norm(self):
-        return sqrt(self.x**2 + self.z**2)
-
-    def unitaire(self):
-        return self*(1.0/self.norm)
-
-    def rotate(self, angle):
-        return Vecteur(self.x*cos(angle) - self.z*sin(angle) , self.x*sin(angle) + self.z*cos(angle) )
-
-    def withZmin(self, zMin):
-        return Vecteur(self.x, max(zMin,self.z))
 
 """
 La realPositionFenetre, correspond aux coordonnées vraies (pysiques) du coin inferieur gauche de la fenetre.

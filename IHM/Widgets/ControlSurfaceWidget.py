@@ -35,17 +35,6 @@ class ControlSurfaceWidget(QtWidgets.QWidget):
         self.labelAngle.setText(str(round(self.schema.angle*TODEG))+"°")
 
 
-class updater(Qt.QThread):
-    def __init__(self, surfWidget):
-        super().__init__()
-        self.surfWidget = surfWidget
-
-    def run(self):
-        while True:
-            self.surfWidget.setPercent((round(time.time()*13)%200 -100)/100)
-            time.sleep(0.01)
-
-
 class _ControlSurfaceWidgetGraph(QtWidgets.QWidget):
     def __init__(self, parent, maxAngle):
         super().__init__(parent)
@@ -95,14 +84,3 @@ class _ControlSurfaceWidgetGraph(QtWidgets.QWidget):
         qp.drawPixmap(self.rectFixe, self.fixe0)
         qp.drawPixmap(rectAileron, aileron)
         qp.end()
-
-if __name__ == "__main__":
-    app = Qt.QApplication(sys.argv)
-    mainW = Qt.QMainWindow()
-    graph = ControlSurfaceWidget(mainW, 45*TORAD, "flaps")
-    mainW.setCentralWidget(graph)
-    mainW.show()
-    graph.update()
-    u = updater(graph)
-    u.start()
-    sys.exit(app.exec_())

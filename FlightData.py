@@ -1,4 +1,5 @@
 from Espace import Vecteur
+from DataManagement import MDD
 
 class FlightData:
     def __init__(self, posAvion, vAvion, assiette):
@@ -23,6 +24,18 @@ class FlightData:
 
     def setAssiette(self, assiette):
         self._assiette = assiette
+
+
+class MDDFlightData:
+    def __init__(self, posAvion, vAvion, assiette):
+        self.mddPosAvion = MDD()
+        self.mddPosAvion.pushValue(posAvion)
+
+        self.mddVAvion = MDD()
+        self.mddVAvion.pushValue(vAvion)
+        
+        self.mddAssiette = MDD()
+        self.mddAssiette.pushValue(assiette)
 
     
    

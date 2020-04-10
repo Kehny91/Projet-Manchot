@@ -1,13 +1,6 @@
 from PyQt5 import QtWidgets
 from PyQt5 import Qt
-
-if __name__ == "__main__":
-    class MDD:
-        def pushValue(self, x):
-            pass
-else:
-    from DataManagement import MDD
-
+from DataManagement import MDD
 import PyQt5
 
 class SliderControlWidget(QtWidgets.QWidget):
@@ -48,21 +41,3 @@ class _SliderUnit(QtWidgets.QWidget):
     def _valueChanged(self, x):
         self.labelOutput.setText(str(x))
         self.outputMDD.pushValue(x/100)
-
-import sys
-if __name__ == "__main__":
-    app = Qt.QApplication(sys.argv)
-    mainW = Qt.QMainWindow()
-    graph = SliderControlWidget(mainW,"Pilot Input")
-    mddPitch = MDD()
-    mddFlaps = MDD()
-    mddThrottle = MDD()
-
-    graph.addSlider("Pitch",mddPitch,-100,100)
-    graph.addSlider("Flaps",mddFlaps,0,100)
-    graph.addSlider("Throttle",mddThrottle,0,100)
-
-    mainW.setCentralWidget(graph)
-    mainW.show()
-    graph.update()
-    sys.exit(app.exec_())
