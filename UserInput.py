@@ -1,4 +1,6 @@
 import DataManagement as dm
+from DataManagement import MDD
+
 
 class AutoPilotInput:
     """ La classe représentant les entrées demandée par l'autopilote
@@ -12,7 +14,19 @@ class AutoPilotInput:
     def setV(self, v):
         self._v = v
 
+class MDDAutoPilotInput:
+    """ La classe représentant les entrées demandée par l'autopilote protege par MDD
+        v : Le vecteur vitesse demandé"""
+    def __init__(self, v):
+        self._mdd = MDD(AutoPilotInput(v))
 
+    def getV(self):
+        return self._mdd.doOnData(AutoPilotInput.getV)
+
+    def setV(self, v):
+        self._mdd.doOnData(AutoPilotInput.setV,v)
+
+    
 class PilotInput:
     """ La classe représentant les entrées demandée par un pilote
         pitch : La commande de tanguage: positif = cabrer  [Entre -1 et 1]
@@ -49,7 +63,31 @@ class PilotInput:
         dm.checkBoundaries(throttle, 0, 1)
         self._throttle = throttle
 
+class MDDPilotInput:
+    """ La classe représentant les entrées demandée par un pilote protegee par un MDD
+        pitch : La commande de tanguage: positif = cabrer  [Entre -1 et 1]
+        flaps : La commande des flaps: positif = sortis [Entre 0 et 1]
+        throttle : La commande moteur  [Entre 0 et 1]"""
+    def __init__(self, pitch = 0, flaps = 0, throttle = 0):
+        self._mdd = MDD(PilotInput(pitch,flaps,throttle))
+    
+    def getPitch(self):
+        return self._mdd.doOnData(PilotInput.getPitch)
+    
+    def setPitch(self, pitch):
+        self._mdd.doOnData(PilotInput.setPitch,pitch)
 
+    def getFlaps(self):
+        return self._mdd.doOnData(PilotInput.getFlaps)
+    
+    def setFlaps(self, flaps):
+        self._mdd.doOnData(PilotInput.setFlaps,flaps)
+
+    def getThrottle(self):
+        return self._mdd.doOnData(PilotInput.getThrottle)
+    
+    def setThrottle(self, throttle):
+        self._mdd.doOnData(PilotInput.setThrottle,throttle)
 
     
 
@@ -120,35 +158,46 @@ class RawInput:
                 "throttle" : self._throttle}
 
 
+class MDDRawInput:
+    def __init__(self, elevG = 0, elevD = 0, flapsG = 0, flapsD = 0, throttle = 0):
+        """La classe représentatn les entrée brutes des différent actionneurs protegee par un MDD
+        elevG : La commande de la gouverne arriere gauche (VTAIL) [Entre -1 et 1]
+        elevD : La commande de la gouverne arriere droite [Entre -1 et 1]
+        flapsG : La commande du volet gauche [Entre 0 et 1]
+        flapsD : La commande du volet droit [Entre 0 et 1]
+        throttle : La commande du throttle [Entre 0 et 1]"""
+        self._mdd = MDD(RawInput(elevG, elevD, flapsG, flapsD, throttle))
 
+    def getElevG(self):
+        return self._mdd.doOnData(RawInput.getElevG)
 
+    def setElevG(self, elevG):
+        self._mdd.doOnData(RawInput.setElevG,elevG)
 
-#TESTS
-if __name__ == "__main__":
-    rawInput = RawInput(0,0,0,0,0)
-    rawInput.setElevD(-1)
-    rawInput.setElevG(-0.8)
-    rawInput.setFlapsD(0.1)
-    rawInput.setFlapsG(0.3)
-    rawInput.setThrottle(0.5)
-    print(str(rawInput.__dict__))
-    try:
-        rawInput.setFlapsD(-0.1)
-    except dm.OutOfBoundException:
-        print("Unauthorized")
-    print(rawInput.getInputVector())
+    def getElevD(self):
+        return self._mdd.doOnData(RawInput.getElevD)
 
-    pilotInput = PilotInput(0,0,0)
-    pilotInput.setFlaps(0.1)
-    pilotInput.setPitch(0.2)
-    pilotInput.setThrottle(0.3)
-    print(str(pilotInput.__dict__))
-    try:
-        pilotInput.setThrottle(1.1)
-    except:
-        print("Unauthorized")
+    def setElevD(self, elevD):
+        self._mdd.doOnData(RawInput.setElevD, elevD)
 
-    autoPilotInput = AutoPilotInput(0,0)
-    autoPilotInput.setV(0.1)
-    autoPilotInput.setVz(-0.1)
-    print(str(autoPilotInput.__dict__))
+    def getFlapsG(self):
+        return self._mdd.doOnData(RawInput.getFlapsG)
+
+    def setFlapsG(self, flapsG):
+        self._mdd.doOnData(RawInput.setFlapsG,flapsG)
+
+    def getFlapsD(self):
+        return self._mdd.doOnData(RawInput.getFlapsD)
+
+    def setFlapsD(self, flapsD):
+        self._mdd.doOnData(RawInput.setFlapsD,flapsD)
+
+    def getThrottle(self):
+        return self._mdd.doOnData(RawInput.getThrottle)
+
+    def setThrottle(self, throttle):
+        self._mdd.doOnData(RawInput.setThrottle,throttle)
+
+    #Renvoie un dictionnaire, pret a etre propagé dans le modele
+    def getInputVector(self):
+        return self._mdd.doOnData(RawInput.getInputVector)

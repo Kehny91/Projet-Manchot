@@ -19,9 +19,9 @@ class SliderControlWidget(QtWidgets.QWidget):
 
 
 class _SliderUnit(QtWidgets.QWidget):
-    def __init__(self, parent, name, outputMDD, mini, maxi):
+    def __init__(self, parent, name, MDDsetter, mini, maxi):
         super().__init__(parent)
-        self.outputMDD = outputMDD
+        self.MDDsetter = MDDsetter
         self.myLayout = QtWidgets.QVBoxLayout(self)
         self.labelName = QtWidgets.QLabel(name,self)
         self.labelOutput = QtWidgets.QLabel("0",self)
@@ -40,4 +40,4 @@ class _SliderUnit(QtWidgets.QWidget):
 
     def _valueChanged(self, x):
         self.labelOutput.setText(str(x))
-        self.outputMDD.pushValue(x/100)
+        self.MDDsetter(x/100)

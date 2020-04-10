@@ -1,6 +1,9 @@
 from Espace import Vecteur
 from DataManagement import MDD
 
+"""
+L'ensemble des informations de vol
+"""
 class FlightData:
     def __init__(self, posAvion, vAvion, assiette):
         self._posAvion = posAvion
@@ -26,16 +29,33 @@ class FlightData:
         self._assiette = assiette
 
 
+"""
+L'ensemble des informations de vol protégés par MDD
+"""
 class MDDFlightData:
     def __init__(self, posAvion, vAvion, assiette):
-        self.mddPosAvion = MDD()
-        self.mddPosAvion.pushValue(posAvion)
+        self._mdd = MDD(FlightData(posAvion,vAvion,assiette))
 
-        self.mddVAvion = MDD()
-        self.mddVAvion.pushValue(vAvion)
-        
-        self.mddAssiette = MDD()
-        self.mddAssiette.pushValue(assiette)
+    def getPosAvion(self):
+        return self._mdd.doOnData(FlightData.getPosAvion)
+
+    def getVAvion(self):
+        return self._mdd.doOnData(FlightData.getVAvion)
+
+    def getAssiette(self):
+        return self._mdd.doOnData(FlightData.getAssiette)
+
+    def setPosAvion(self, posAvion):
+        self._mdd.doOnData(FlightData.setPosAvion,posAvion)
+
+    def setVAvion(self,vAvion):
+        self._mdd.doOnData(FlightData.setVAvion,vAvion)
+
+    def setAssiette(self, assiette):
+        self._mdd.doOnData(FlightData.setAssiette,assiette)
+
+    def get(self):
+        return self._mdd.read()
 
     
    

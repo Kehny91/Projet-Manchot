@@ -52,48 +52,84 @@ class BAL_SE:
             self._placesLibres.release()
         return out
 
-#Une boite au lettre taille 1 avec ecrasement
-class MDD:
-    def __init__(self):
+#Une boite au lettre avec ecrasement
+class BAL_AE:
+    def __init__(self, taille):
+        self._taille = taille
+        self._currentSize = 0
         self._placePrises = th.Semaphore(0)
         self._protection = th.Semaphore(1)
-        self._data = 0
-        self._empty = True 
+        self._data = []
     
     def pushValue(self,x):
         with self._protection:
-            self._data = x
-            if self._empty:
+            if self._taille == self._currentSize :
+                self._data[-1] = x
+            else:
+                self._data.append(x)
+                self._currentSize += 1
                 self._placePrises.release()
-            self._empty = False
 
     def pullValue(self):
         self._placePrises.acquire()
         with self._protection:
-            out = self._data
-            self._empty = True
+            out = self._data.pop(0)
+            self._currentSize -= 1
         return out
 
+#Un tableau noir (acces protégé)
+class MDD:
+    def __init__(self,value0):
+        self._data = value0
+        self._protection = th.Semaphore(1)
+    
+    def write(self,x):
+        with self._protection:
+            self._data = x
 
+    def read(self):
+        out = None
+        with self._protection:
+            out = self._data
+        return out
+
+    def doOnData(self,func,*args):
+        out = None
+        with self._protection:
+            out = func(self._data,*args)
+        return out
 
 
 
 #TESTS
 if __name__=="__main__":
-    mdd = BAL_SE(10)
+
+    class testouille:
+        def __init__(self):
+            self.u = 0
+        
+        def add(self,x):
+            self.u += x
+            print("on m'a rajouté ",x)
+
+    mdd = MDD(testouille())
+
+    
 
     def parleurFct():
+        print("parleur Start")
         for i in range (20):
-            toPush = input()
-            mdd.pushValue(toPush)
+            toPush = i
+            mdd.doOnData(testouille.add,2)
             print("je poste "+ str(toPush))
-            time.sleep(0.01)
+            time.sleep(0.1)
 
     def ecouteurFct():
+        print("ecouteur Start")
         for i in range(20):
-            res = mdd.pullValue()
+            res = mdd.read()
             print("J'ai lu " + str(res))
-            time.sleep(3)
+            time.sleep(0.8)
 
     parleur = th.Thread(target= parleurFct) #Parle lentement
     ecouteur = th.Thread(target = ecouteurFct) #Lit vite
