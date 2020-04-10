@@ -5,6 +5,7 @@ import threading as th
 import Mixer
 import PyQt5
 from PyQt5 import Qt
+from PyQt5.QtCore import pyqtSignal,QObject
 
 class Vecteur:
     def __init__(self,x,z):
@@ -34,17 +35,22 @@ class MixerThread(th.Thread):
     def run(self):
         while True:
             Mixer.Mixer.mix(self.mddPilotInput,self.mddRawInput)
-            time.sleep(0.300)
+            time.sleep(0.1)
+            #print("mixer tick "+str(time.time()))
 
-class UpdateThread(Qt.QThread):
-    def __init__(self,ihm):
-        super().__init__()
-        self.ihm = ihm
+class UpdateThread(Qt.QThread,QObject):
+    refreshPlease = pyqtSignal()
+
+    def __init__(self,mddFlightData):
+        super(UpdateThread,self).__init__()
+        self.mddFlightData = mddFlightData
     
     def run(self):
         while True:
-            self.ihm.refresh()
+            mddFlightData.setPosAvion(mddFlightData.getPosAvion()+Vecteur(0.05,0))
+            self.refreshPlease.emit()
             time.sleep(0.1)
+            #print("refresher "+str(time.time()))
 
 
 
@@ -67,7 +73,8 @@ if __name__ == "__main__":
     app = Qt.QApplication(sys.argv)
     mainW = Qt.QMainWindow()
     graph = IHM(mddFlightData,mddRawInput,0,mddAutoPilotInput,mddPilotInput)
-    uT = UpdateThread(graph)
+    uT = UpdateThread(mddFlightData)
+    uT.refreshPlease.connect(graph.refresh)
     uT.start()
     mainW.setCentralWidget(graph)
     mainW.show()

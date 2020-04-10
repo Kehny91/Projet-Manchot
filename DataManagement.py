@@ -1,7 +1,7 @@
 import threading as th
 import time
 from math import pi
-
+from copy import copy
 
 class OutOfBoundException(Exception):
     pass
@@ -90,13 +90,13 @@ class MDD:
     def read(self):
         out = None
         with self._protection:
-            out = self._data
+            out = copy(self._data)
         return out
 
     def doOnData(self,func,*args):
         out = None
         with self._protection:
-            out = func(self._data,*args)
+            out = copy(func(self._data,*args))
         return out
 
 

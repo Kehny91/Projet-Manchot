@@ -54,8 +54,5 @@ class MDDFlightData:
     def setAssiette(self, assiette):
         self._mdd.doOnData(FlightData.setAssiette,assiette)
 
-    def get(self):
-        return self._mdd.read()
-
     
    

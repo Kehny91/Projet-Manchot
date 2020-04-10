@@ -2,6 +2,7 @@ from IHM.Widgets.ControlSurfaceWidget import ControlSurfaceWidget
 from IHM.Widgets.GraphWidget import GraphWidget
 from IHM.Widgets.SliderControlWidget import SliderControlWidget
 import PyQt5.QtWidgets as QtWidgets
+import PyQt5
 from Test_IHM import Vecteur
 
 from math import pi

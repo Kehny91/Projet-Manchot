@@ -35,6 +35,7 @@ class ControlSurfaceWidget(QtWidgets.QWidget):
         self.schema.setPercent(percent)
         self.labelAngle.setText(str(round(self.schema.angle*TODEG))+"°")
 
+    #Fait aussi l'update via la methode setPercent
     def refresh(self):
         self.setPercent(self.getterMDD())
 
