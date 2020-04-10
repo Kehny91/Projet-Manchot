@@ -79,7 +79,7 @@ class Referentiel:
 """       
 class ReferentielAbsolu(Referentiel):
     def __init__(self):
-        super().__init__(nom="refAbs",angleAxeY=0, origine= self)
+        super().__init__(nom="refAbs",angleAxeY=0, origine= Vecteur(x=0,z=0,ref=self))
         
 """ classe Vecteur et ses methodes
     attribute float : x, composante x
