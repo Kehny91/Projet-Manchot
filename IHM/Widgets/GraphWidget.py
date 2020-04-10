@@ -37,17 +37,12 @@ class GraphWidget(QtWidgets.QWidget):
         self.B0_C0 = Vecteur((626-1220)/1253.0*planeLength,(176-115)/229.0*planeLength*229/1253) #C'est le vecteur qui relie B a C lorsque theta vaut 0, dans les coordonnées réelles
 
     #PUBLIC
-    def setFlightData(self,flightData,centerFenetre = False):
+    def setFlightData(self,flightData):
         self.flightData = flightData
-        if centerFenetre:
-            self.setRealPositionFenetreCenter(flightData.getPosAvion())
-        else:
-            self.update()
 
     #PUBLIC
     def setRealPositionFenetre(self, realPositionFenetre):
         self.realPositionFenetre = realPositionFenetre.withZmin(self.zMin)
-        self.update()
     
     #PUBLIC
     def setRealPositionFenetreCenter(self, realPositionFenetreCenter):
@@ -71,9 +66,13 @@ class GraphWidget(QtWidgets.QWidget):
         return (int(rpf_M.getX()/self.scale),self.height() - int(rpf_M.getZ()/self.scale) )
 
     #PRIVATE
+    #Ground and sky
     def _drawGround(self, painter):
-        painter.setPen(Qt.QColor(0,255,0))
-        painter.setBrush(Qt.QColor(0,255,0))
+        painter.setPen(Qt.QColor(28, 98, 230))
+        painter.setBrush(Qt.QColor(28, 98, 230))
+        painter.drawRect(0,0,self.width(), self.height())
+        painter.setPen(Qt.QColor(21, 173, 21))
+        painter.setBrush(Qt.QColor(21, 173, 21))
         pixPos = self._realToPix(Vecteur(0,0))
         painter.drawRect(0,max(pixPos[1],0),self.width(), self.height())
 
@@ -99,6 +98,7 @@ class GraphWidget(QtWidgets.QWidget):
     def paintEvent(self, event):
         qp = Qt.QPainter()
         qp.begin(self)
+        self.setRealPositionFenetreCenter(self.flightData.getPosAvion())
         self._drawGround(qp)
         self._drawRunway(qp, self.runwayXStart, self.runwayLength)
         self._drawPlane(qp,self.flightData)
