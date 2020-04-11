@@ -65,6 +65,8 @@ class Referentiel:
         self.origine = newOrigine
         
     def __eq__(self, ref):
+        if (type(ref)!=type(self)):
+            return False
         if (self.nom == ref.nom and self.angleAxeY == ref.angleAxeY):
             return True
         else:
@@ -88,39 +90,42 @@ class ReferentielAbsolu(Referentiel):
 """     
 class Vecteur:
     
-    def __init__(self,x=0,z=0,ref=0):
+    def __init__(self,x=0,z=0,ref=None):
         self.x=x
         self.z=z
-        self.ref = ref
+        if (ref==None):
+            self.ref = ReferentielAbsolu()
+        else:
+            self.ref = ref
     
     def __str__(self):
         return "Dans le ref : " + str(self.ref.nom) + " les coordonnees sont (" + str(self.x) +"," + str(self.z) + ")"
     
     def __eq__(self,vecteur):
-         return(self.ref==vecteur.ref and self.x == vecteur.x and self.z == vecteur.z)
+        if (type(vecteur)!=type(self)):
+            return False
+        return(self.ref==vecteur.ref and self.x == vecteur.x and self.z == vecteur.z)
 
     def rotate(self,angle):
         angle = normalise(angle)
-        matriceRot = np.array([[np.cos(angle),-np.sin(angle)],
-                               [np.sin(angle), np.cos(angle)]])
-        compoOldRef = np.array([[self.x],
-                                [self.z]])
-        compoNewRef = np.dot(matriceRot,compoOldRef)
-        return Vecteur(compoNewRef[0][0],compoNewRef[1][0],self.ref)
+        #Pour le 3D, utiliser une matrice de rotation
+        #matriceRot = np.array([[np.cos(angle),-np.sin(angle)],
+        #                       [np.sin(angle), np.cos(angle)]])
+        #compoOldRef = np.array([[self.x],
+        #                        [self.z]])
+        #compoNewRef = np.dot(matriceRot,compoOldRef)
+        #return Vecteur(compoNewRef[0][0],compoNewRef[1][0],self.ref)
+        return Vecteur(self.x*np.cos(angle)+self.z*np.sin(angle) , self.z*np.cos(angle) - self.x*np.sin(angle),self.ref)
     
     def projectionRef(self,ref): 
         angleRefY = normalise(ref.angleAxeY-self.ref.angleAxeY)
-        matriceRot = np.array([[np.cos(angleRefY), np.sin(angleRefY)],
-                               [-np.sin(angleRefY), np.cos(angleRefY)]])
-        compoOldRef = np.array([[self.x],
-                               [self.z]])
-        compoNewRef = np.dot(matriceRot,compoOldRef)
-        return Vecteur(compoNewRef[0][0],compoNewRef[1][0],ref)
+        rotated = self.rotate(angleRefY)
+        return Vecteur(rotated.x,rotated.z,ref)
 
     """Renvoie le vecteur entre les deux origine Oerf-Oself
     """
     def translationRef(self,ref):
-        return Vecteur(self.ref.origine.x-ref.origine.x,self.ref.origine.z-ref.origine.z,ReferentielAbsolu()).projectionRef(ref)                       
+        return Vecteur(self.ref.origine.x-ref.origine.x,self.ref.origine.z-ref.origine.z).projectionRef(ref)                       
                       
     def changeRef(self,ref):
         return self.translationRef(ref)+self.projectionRef(ref)
@@ -172,4 +177,4 @@ class Vecteur:
             return Vecteur(1,0,self.ref)
         else :
             n= self.norm()
-            return Vecteur(self.x/n,self.z/n,self.ref)
+            return self*(1/n)
