@@ -1,13 +1,42 @@
 from IHM.Widgets.ControlSurfaceWidget import ControlSurfaceWidget
+from IHM.Widgets.EngineWidget import EngineWidget
 from IHM.Widgets.GraphWidget import GraphWidget
 from IHM.Widgets.SliderControlWidget import SliderControlWidget
 import PyQt5.QtWidgets as QtWidgets
 import PyQt5
 from Test_IHM import Vecteur
-
+from Parametres import ParametresModele
 from math import pi
 TORAD = pi/180.0
 TODEG = 180.0/pi
+
+class _GraphicalRawInput(QtWidgets.QWidget):
+    def __init__(self,mddRawInput):
+        super(_GraphicalRawInput,self).__init__()
+        self.myLayout = QtWidgets.QVBoxLayout(self)
+
+        self.affFlapsG = ControlSurfaceWidget(self,ParametresModele.flapsGMaxAngle,"flapsG",mddRawInput.getFlapsG)
+        self.myLayout.addWidget(self.affFlapsG)
+
+        self.affFlapsD = ControlSurfaceWidget(self,ParametresModele.flapsDMaxAngle,"flapsD",mddRawInput.getFlapsD)
+        self.myLayout.addWidget(self.affFlapsD)
+
+        self.affElevG = ControlSurfaceWidget(self,ParametresModele.elevGMaxAngle,"elevG",mddRawInput.getElevG)
+        self.myLayout.addWidget(self.affElevG)
+
+        self.affElevD = ControlSurfaceWidget(self,ParametresModele.elevDMaxAngle,"elevD",mddRawInput.getElevD)
+        self.myLayout.addWidget(self.affElevD)
+
+        self.affEngine = EngineWidget(self,ParametresModele.engineMaxThrust,"engine", mddRawInput.getThrottle)
+        self.myLayout.addWidget(self.affEngine)
+
+    def refresh(self):
+        self.affElevD.refresh()
+        self.affElevG.refresh()
+        self.affEngine.refresh()
+        self.affFlapsD.refresh()
+        self.affFlapsG.refresh()
+
 
 class IHM(QtWidgets.QWidget):
     def __init__(self, mddFlightData, mddRawInput, mddMode, mddAutoPilotInput, mddPilotInput):
@@ -34,17 +63,8 @@ class IHM(QtWidgets.QWidget):
         self.affichageAvion = GraphWidget(Vecteur(-0.5,-0.5),0.009,0,10,2,mddFlightData) #On commence en (--0.5,-0.5), a l'echelle 5mm par pix, la piste commence en 0 et fait 10m, l'avion fait 2m de long
         self.myLayout.addWidget(self.affichageAvion,0,0,5,4)
 
-        self.affichageGouvernes = QtWidgets.QWidget(self)
-        self.myLayout.addWidget(self.affichageGouvernes,0,4,3,1)
-        self.affichageGouvernesLayout = QtWidgets.QVBoxLayout(self.affichageGouvernes)
-        self.flapsGAff = ControlSurfaceWidget(self.affichageGouvernes,45*TORAD,"flapsG",self.mddRawInput.getFlapsG)
-        self.flapsDAff = ControlSurfaceWidget(self.affichageGouvernes,45*TORAD,"flapsD",self.mddRawInput.getFlapsD)
-        self.elevGAff = ControlSurfaceWidget(self.affichageGouvernes,45*TORAD,"elevG",self.mddRawInput.getElevG)
-        self.elevDAff = ControlSurfaceWidget(self.affichageGouvernes,45*TORAD,"elevD",self.mddRawInput.getElevD)
-        self.affichageGouvernesLayout.addWidget(self.flapsDAff)
-        self.affichageGouvernesLayout.addWidget(self.flapsGAff)
-        self.affichageGouvernesLayout.addWidget(self.elevDAff)
-        self.affichageGouvernesLayout.addWidget(self.elevGAff)
+        self.affichageRawInput = _GraphicalRawInput(mddRawInput)
+        self.myLayout.addWidget(self.affichageRawInput,0,4,3,1)
         
         self.userInput = QtWidgets.QWidget(self)
         self.myLayout.addWidget(self.userInput,3,4,2,1)
@@ -53,7 +73,7 @@ class IHM(QtWidgets.QWidget):
         self.userInputLayout.addWidget(self.userInputComboBox)
         self.userInputComboBox.addItems(["ScriptControl","PilotControl","AutoPilotControl"])
 
-        self.userInputSliders = SliderControlWidget(self.affichageGouvernes,"PilotControl")
+        self.userInputSliders = SliderControlWidget(self,"PilotControl")
         self.userInputLayout.addWidget(self.userInputSliders)
         self.userInputSliders.addSlider("Pitch",mddPilotInput.setPitch,-100,100)
         self.userInputSliders.addSlider("Flaps",mddPilotInput.setFlaps,0,100)
@@ -61,7 +81,4 @@ class IHM(QtWidgets.QWidget):
 
     def refresh(self):
         self.affichageAvion.refresh()
-        self.flapsGAff.refresh()
-        self.flapsDAff.refresh()
-        self.elevDAff.refresh()
-        self.elevGAff.refresh()
+        self.affichageRawInput.refresh()

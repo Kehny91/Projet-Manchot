@@ -28,7 +28,7 @@ class ControlSurfaceWidget(QtWidgets.QWidget):
         self.myLayout.addWidget(self.schema,0,1,2,1)
 
         self.myLayout.setColumnStretch(0,1)
-        self.myLayout.setColumnStretch(1,3)
+        self.myLayout.setColumnStretch(1,2)
 
 
     def setPercent(self, percent):
@@ -45,31 +45,35 @@ class _ControlSurfaceWidgetGraph(QtWidgets.QWidget):
         super().__init__(parent)
         self.maxAngle = maxAngle
         self.angle = 0
-        if (__name__=="__main__"):
-            self.fixe = Qt.QPixmap("../Sprites/fixe.png")
-            self.aileron = Qt.QPixmap("../Sprites/aileron.png")
-        else:
-            self.fixe = Qt.QPixmap("./IHM/Sprites/fixe.png")
-            self.aileron = Qt.QPixmap("./IHM/Sprites/aileron.png")
+        self.pictureStabRaw = Qt.QPixmap("./IHM/Sprites/stab.png")
+        self.pictureGouverneRaw = Qt.QPixmap("./IHM/Sprites/gouverne.png")
 
-        rapport = min(self.width(),self.height()/sin(self.maxAngle))/self.fixe.width()
+        rapport = min(self.height()/self.pictureStabRaw.height(),
+                        min(self.width()/self.pictureStabRaw.width(),self.height()/(sin(self.maxAngle)*self.pictureStabRaw.width()))
+        )
 
-        self.fixe0 = self.fixe.transformed(Qt.QTransform().scale(rapport,rapport))
-        self.rectFixe =  self.fixe0.rect()
-        self.rectFixe.moveRight(self.width())
-        self.rectFixe.moveTop(round((self.height() - self.rectFixe.height())/2))
+        self.pictureStab0 = self.pictureStabRaw.transformed(Qt.QTransform().scale(rapport,rapport))
+        self.pictureGouverne0 = self.pictureGouverneRaw.transformed(Qt.QTransform().scale(rapport,rapport))
 
-        self.aileron0 = self.aileron.transformed(Qt.QTransform().scale(rapport,rapport))
+        self.rectStab =  self.pictureStab0.rect()
+        self.rectStab.moveRight(self.width())
+        self.rectStab.moveTop(round((self.height() - self.rectStab.height())/2))
+
+        #Le rect de la gouverne doit lui etre recalcule a chaque fois
+
+        
 
 
     def resizeEvent(self, event):
-        rapport = min(self.width(),self.height()/sin(self.maxAngle))/self.fixe.width()
-        self.fixe0 = self.fixe.transformed(Qt.QTransform().scale(rapport,rapport))
-        self.rectFixe =  self.fixe0.rect()
-        self.rectFixe.moveRight(self.width())
-        self.rectFixe.moveTop(round((self.height() - self.rectFixe.height())/2))
+        rapport = min(self.height()/self.pictureStabRaw.height(),
+                        min(self.width()/self.pictureStabRaw.width(),self.height()/(sin(self.maxAngle)*self.pictureStabRaw.width()))
+        )
+        self.pictureStab0 = self.pictureStabRaw.transformed(Qt.QTransform().scale(rapport,rapport))
+        self.pictureGouverne0 = self.pictureGouverneRaw.transformed(Qt.QTransform().scale(rapport,rapport))
 
-        self.aileron0 = self.aileron.transformed(Qt.QTransform().scale(rapport,rapport))
+        self.rectStab =  self.pictureStab0.rect()
+        self.rectStab.moveRight(self.width())
+        self.rectStab.moveTop(round((self.height() - self.rectStab.height())/2))
 
 
     """
@@ -83,9 +87,9 @@ class _ControlSurfaceWidgetGraph(QtWidgets.QWidget):
         qp = Qt.QPainter()
         qp.begin(self)
 
-        aileron = self.aileron0.transformed(Qt.QTransform().rotateRadians(-self.angle))
-        rectAileron = aileron.rect()
-        rectAileron.moveCenter(self.rectFixe.center())
-        qp.drawPixmap(self.rectFixe, self.fixe0)
-        qp.drawPixmap(rectAileron, aileron)
+        pictureGouverne = self.pictureGouverne0.transformed(Qt.QTransform().rotateRadians(-self.angle))
+        rectGouverne = pictureGouverne.rect()
+        rectGouverne.moveCenter(self.rectStab.center())
+        qp.drawPixmap(self.rectStab, self.pictureStab0)
+        qp.drawPixmap(rectGouverne, pictureGouverne)
         qp.end()
