@@ -110,16 +110,17 @@ class Vecteur:
     
     def projectionRef(self,ref): 
         angleRefY = normalise(ref.angleAxeY-self.ref.angleAxeY)
-        matriceRot = np.array([[np.cos(angleRefY),-np.sin(angleRefY)],
-                               [np.sin(angleRefY), np.cos(angleRefY)]])
+        matriceRot = np.array([[np.cos(angleRefY), np.sin(angleRefY)],
+                               [-np.sin(angleRefY), np.cos(angleRefY)]])
         compoOldRef = np.array([[self.x],
                                [self.z]])
         compoNewRef = np.dot(matriceRot,compoOldRef)
         return Vecteur(compoNewRef[0][0],compoNewRef[1][0],ref)
 
-    
+    """Renvoie le vecteur entre les deux origine Oerf-Oself
+    """
     def translationRef(self,ref):
-        return Vecteur(ref.origine.x-self.ref.origine.x,ref.origine.z-self.ref.origine.z,ReferentielAbsolu()).projectionRef(ref)                       
+        return Vecteur(self.ref.origine.x-ref.origine.x,self.ref.origine.z-ref.origine.z,ReferentielAbsolu()).projectionRef(ref)                       
                       
     def changeRef(self,ref):
         return self.translationRef(ref)+self.projectionRef(ref)

@@ -17,7 +17,7 @@ import Espace as E
 class Torseur:
     #Init
     
-    def __init__(self,vecteur=0,resultante=0,moment=0):
+    def __init__(self,vecteur=E.Vecteur(0,0,E.ReferentielAbsolu()),resultante=E.Vecteur(0,0,E.ReferentielAbsolu()),moment=0):
         self.vecteur = vecteur
         self.resultante = resultante
         self.moment = moment
