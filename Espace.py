@@ -153,7 +153,13 @@ class Vecteur:
             return Vecteur(self.x-vecteur.x, self.z-vecteur.z, self.ref)
         else : 
             return self.__sub__(vecteur.projectionRef(self.ref))
-
+    
+    def pointToVect(self,vecteur):
+        if self.ref == vecteur.ref:
+            return Vecteur(vecteur.x-self.x,vecteur.z-self.z, self.ref)
+        else : 
+            return self.pointToVect(vecteur.changeRef(self.ref))
+    
     def __mul__(self,scal):
         return Vecteur(self.x * scal, self.z * scal, self.ref)
         
