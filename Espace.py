@@ -130,13 +130,19 @@ class Vecteur:
             return Vecteur(self.x+vecteur.x, self.z+vecteur.z, self.ref)
         else : 
             return self.__add__(vecteur.projectionRef(self.ref))
+    
+    def addPoint(self,vecteur):
+        if self.ref == vecteur.ref:
+            return Vecteur(self.x+vecteur.x, self.z+vecteur.z, self.ref)
+        else : 
+            return self.addPoint(vecteur.changeRef(self.ref))
             
     def __sub__(self,vecteur):
         if self.ref == vecteur.ref:
             return Vecteur(self.x-vecteur.x, self.z-vecteur.z, self.ref)
         else : 
             return self.__sub__(vecteur.projectionRef(self.ref))
-            
+
     def __mul__(self,scal):
         return Vecteur(self.x * scal, self.z * scal, self.ref)
         
