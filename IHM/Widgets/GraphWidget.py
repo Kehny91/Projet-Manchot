@@ -82,7 +82,7 @@ class GraphWidget(QtWidgets.QWidget):
 
     #PRIVATE
     def _drawPlane(self, painter):
-        pictureToDraw = self.picture.transformed(Qt.QTransform().rotateRadians(-self.flightDataMDD.getAssiette())) # - car le sens positif des widgt est le sens hroarie
+        pictureToDraw = self.picture.transformed(Qt.QTransform().rotateRadians(self.flightDataMDD.getAssiette()))
         rect = pictureToDraw.rect()
         posPix = self._realToPix(self._getCPosition())
         rect.moveCenter(Qt.QPoint(posPix[0],posPix[1]))

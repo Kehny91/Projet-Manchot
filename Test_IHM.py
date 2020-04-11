@@ -4,27 +4,9 @@ import time
 import threading as th
 import Mixer
 import PyQt5
+from Espace import Vecteur,Referentiel,ReferentielAbsolu
 from PyQt5 import Qt
 from PyQt5.QtCore import pyqtSignal,QObject
-
-class Vecteur:
-    def __init__(self,x,z):
-        self.x = x
-        self.z = z
-    def getX(self):
-        return self.x
-    def getZ(self):
-        return self.z
-    def __add__(self,other):
-        return Vecteur(self.x+other.x, self.z + other.z)
-    def __sub__(self,other):
-        return Vecteur(self.x-other.x, self.z - other.z)
-    def __mul__(self,scal):
-        return Vecteur(self.x*scal, self.z *scal)
-    def rotate(self,angle):
-        return Vecteur(self.x*cos(angle)-self.z*sin(angle),self.z*cos(angle)+self.x*sin(angle))
-    def withZmin(self,zMin):
-        return Vecteur(self.x,max(zMin,self.z))
 
 class MixerThread(th.Thread):
     def __init__(self,mddRawInput,mddPilotInput):
@@ -40,13 +22,14 @@ class MixerThread(th.Thread):
 class UpdateThread(Qt.QThread,QObject):
     refreshPlease = pyqtSignal()
 
-    def __init__(self,mddFlightData):
+    def __init__(self,mddFlightData,referentielSol):
         super(UpdateThread,self).__init__()
         self.mddFlightData = mddFlightData
+        self.referentielSol = referentielSol
     
     def run(self):
         while True:
-            mddFlightData.setPosAvion(mddFlightData.getPosAvion()+Vecteur(0.001,0))
+            mddFlightData.setPosAvion(mddFlightData.getPosAvion()+Vecteur(0.001,0,self.referentielSol))
             self.refreshPlease.emit()
             time.sleep(0.005)
 
@@ -60,10 +43,13 @@ if __name__ == "__main__":
     import sys
     import PyQt5.Qt as Qt
 
-    mddFlightData = MDDFlightData(Vecteur(0,1),Vecteur(1,-0.1),-0.3)
+    referentielSol = Referentiel("referentielSol",0,Vecteur(0,0))
+
+
+    mddFlightData = MDDFlightData(Vecteur(0,0,referentielSol),Vecteur(0,-0.1,referentielSol),0.3)
     mddRawInput = MDDRawInput(0.30,0.30,0.50,0.50,0.100) 
     mddPilotInput = MDDPilotInput(0,0,0)
-    mddAutoPilotInput = MDDAutoPilotInput(Vecteur(0,0))
+    mddAutoPilotInput = MDDAutoPilotInput(Vecteur(0,0,referentielSol))
     
     mT = MixerThread(mddRawInput,mddPilotInput)
     mT.start()
@@ -71,7 +57,7 @@ if __name__ == "__main__":
     app = Qt.QApplication(sys.argv)
     mainW = Qt.QMainWindow()
     graph = IHM(mddFlightData,mddRawInput,0,mddAutoPilotInput,mddPilotInput)
-    uT = UpdateThread(mddFlightData)
+    uT = UpdateThread(mddFlightData,referentielSol)
     uT.refreshPlease.connect(graph.refresh)
     uT.start()
     mainW.setCentralWidget(graph)
