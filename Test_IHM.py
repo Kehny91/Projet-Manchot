@@ -35,8 +35,7 @@ class MixerThread(th.Thread):
     def run(self):
         while True:
             Mixer.Mixer.mix(self.mddPilotInput,self.mddRawInput)
-            time.sleep(0.1)
-            #print("mixer tick "+str(time.time()))
+            time.sleep(0.01)
 
 class UpdateThread(Qt.QThread,QObject):
     refreshPlease = pyqtSignal()
@@ -47,10 +46,9 @@ class UpdateThread(Qt.QThread,QObject):
     
     def run(self):
         while True:
-            mddFlightData.setPosAvion(mddFlightData.getPosAvion()+Vecteur(0.05,0))
+            mddFlightData.setPosAvion(mddFlightData.getPosAvion()+Vecteur(0.001,0))
             self.refreshPlease.emit()
-            time.sleep(0.1)
-            #print("refresher "+str(time.time()))
+            time.sleep(0.005)
 
 
 
