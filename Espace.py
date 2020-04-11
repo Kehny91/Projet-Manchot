@@ -97,6 +97,12 @@ class Vecteur:
             self.ref = ReferentielAbsolu()
         else:
             self.ref = ref
+
+    def getX(self):
+        return self.x
+
+    def getZ(self):
+        return self.z
     
     def __str__(self):
         return "Dans le ref : " + str(self.ref.nom) + " les coordonnees sont (" + str(self.x) +"," + str(self.z) + ")"
