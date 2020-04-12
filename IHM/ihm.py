@@ -33,22 +33,22 @@ class _UpdateThread(Qt.QThread,QObject):
 class _GraphicalRawInput(QtWidgets.QWidget):
     def __init__(self,mddRawInput):
         super(_GraphicalRawInput,self).__init__()
-        self._myLayout = QtWidgets.QVBoxLayout(self)
+        myLayout = QtWidgets.QVBoxLayout(self)
 
         self._affFlapsG = ControlSurfaceWidget(self,ParametresModele.flapsGMaxAngle,"flapsG",mddRawInput.getFlapsG)
-        self._myLayout.addWidget(self._affFlapsG)
+        myLayout.addWidget(self._affFlapsG)
 
         self._affFlapsD = ControlSurfaceWidget(self,ParametresModele.flapsDMaxAngle,"flapsD",mddRawInput.getFlapsD)
-        self._myLayout.addWidget(self._affFlapsD)
+        myLayout.addWidget(self._affFlapsD)
 
         self._affElevG = ControlSurfaceWidget(self,ParametresModele.elevGMaxAngle,"elevG",mddRawInput.getElevG)
-        self._myLayout.addWidget(self._affElevG)
+        myLayout.addWidget(self._affElevG)
 
         self._affElevD = ControlSurfaceWidget(self,ParametresModele.elevDMaxAngle,"elevD",mddRawInput.getElevD)
-        self._myLayout.addWidget(self._affElevD)
+        myLayout.addWidget(self._affElevD)
 
         self._affEngine = EngineWidget(self,ParametresModele.engineMaxThrust,"engine", mddRawInput.getThrottle)
-        self._myLayout.addWidget(self._affEngine)
+        myLayout.addWidget(self._affEngine)
 
     def refresh(self):
         self._affElevD.refresh()
@@ -58,8 +58,66 @@ class _GraphicalRawInput(QtWidgets.QWidget):
         self._affFlapsG.refresh()
 
 
+class _InputWidget(QtWidgets.QWidget):
+    def __init__(self,mddMode, mddRawInput, mddPilotInput, mddAutoPilotInput):
+        super(_InputWidget,self).__init__()
+        self._mddMode = mddMode
+        self._mddRawInput = mddRawInput
+        self._mddPilotInput = mddPilotInput
+        self._mddAutoPilotInput = mddAutoPilotInput
+
+        myLayout = QtWidgets.QVBoxLayout(self)
+        groupOfButtons = QtWidgets.QGroupBox(self)
+        myLayout.addWidget(groupOfButtons)
+
+        groupOfButtonsLayout = QtWidgets.QHBoxLayout()
+        groupOfButtons.setLayout(groupOfButtonsLayout)
+
+        self._buttonPilot = QtWidgets.QRadioButton("Pilot Input",self)
+        self._buttonAutoPilot = QtWidgets.QRadioButton("Auto Pilot Input", self)
+        self._buttonScript = QtWidgets.QRadioButton("Script Input",self)
+
+        groupOfButtonsLayout.addWidget(self._buttonPilot)
+        groupOfButtonsLayout.addWidget(self._buttonAutoPilot)
+        groupOfButtonsLayout.addWidget(self._buttonScript)
+
+        stack = QtWidgets.QStackedLayout()
+        myLayout.addLayout(stack)
+
+        #Pilot
+
+        widget = SliderControlWidget(self)
+        widget.addSlider("Pitch[%]",mddPilotInput.setPitch,-100,100)
+        widget.addSlider("Flaps[%]",mddPilotInput.setFlaps,0,100)
+        widget.addSlider("Throttle[%]",mddPilotInput.setThrottle,0,100)
+
+        stack.addWidget(widget)
+
+        #AutoPilot
+
+        widget = SliderControlWidget(self)
+        widget.addSlider("Vx[km/h]",mddAutoPilotInput.setVx,0,int(ParametresModele.maxAutoPilotSpeed*3.6))
+        widget.addSlider("Vz[km/h]",mddAutoPilotInput.setVz,-int(ParametresModele.maxAutoPilotZSpeed*3.6),int(ParametresModele.maxAutoPilotZSpeed*3.6))
+
+        stack.addWidget(widget)
+
+        #Script
+
+        widget = QtWidgets.QWidget(self)
+
+        stack.addWidget(widget)
+
+        self._buttonPilot.toggled.connect(lambda : stack.setCurrentIndex(0))
+        self._buttonAutoPilot.toggled.connect(lambda : stack.setCurrentIndex(1))
+        self._buttonScript.toggled.connect(lambda : stack.setCurrentIndex(2))
+
+        stack.setCurrentIndex(0)
+        self._buttonPilot.toggle()
+
+
+
 class IHM(QtWidgets.QWidget):
-    def __init__(self, mddFlightData, mddRawInput, mddMode, mddAutoPilotInput, mddPilotInput, frequenceAffichage):
+    def __init__(self, mddFlightData, mddMode, mddRawInput, mddPilotInput, mddAutoPilotInput, frequenceAffichage):
         super().__init__()
         self.mddFlightData = mddFlightData
         self.mddRawInput = mddRawInput
@@ -86,18 +144,8 @@ class IHM(QtWidgets.QWidget):
         self.affichageRawInput = _GraphicalRawInput(mddRawInput)
         self.myLayout.addWidget(self.affichageRawInput,0,4,3,1)
         
-        self.userInput = QtWidgets.QWidget(self)
+        self.userInput = _InputWidget(mddMode,mddRawInput,mddPilotInput,mddAutoPilotInput)
         self.myLayout.addWidget(self.userInput,3,4,2,1)
-        self.userInputLayout = QtWidgets.QVBoxLayout(self.userInput)
-        self.userInputComboBox = QtWidgets.QComboBox(self.userInput)
-        self.userInputLayout.addWidget(self.userInputComboBox)
-        self.userInputComboBox.addItems(["ScriptControl","PilotControl","AutoPilotControl"])
-
-        self.userInputSliders = SliderControlWidget(self,"PilotControl")
-        self.userInputLayout.addWidget(self.userInputSliders)
-        self.userInputSliders.addSlider("Pitch",mddPilotInput.setPitch,-100,100)
-        self.userInputSliders.addSlider("Flaps",mddPilotInput.setFlaps,0,100)
-        self.userInputSliders.addSlider("Throttle",mddPilotInput.setThrottle,0,100)
 
         self.updateThread = _UpdateThread(self.mddFlightData,frequenceAffichage)
         self.updateThread.refreshPlease.connect(self.refresh)

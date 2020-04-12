@@ -6,46 +6,44 @@ import PyQt5
 class EngineWidget(QtWidgets.QWidget):
     def __init__(self, parent, maxThrust,name,getterMDD):
         super(EngineWidget,self).__init__(parent)
-        self.getterMDD = getterMDD
-        self.maxThrust = maxThrust
-        self.myLayout = QtWidgets.QGridLayout(self)
-        self.labelName = QtWidgets.QLabel(name,self)
-        self.labelForce = QtWidgets.QLabel("0 N",self)
-        self.schema = _EngineWidget()
+        self._getterMDD = getterMDD
+        self._maxThrust = maxThrust
+        myLayout = QtWidgets.QGridLayout(self)
+        self._labelName = QtWidgets.QLabel(name,self)
+        self._labelForce = QtWidgets.QLabel("0 N",self)
+        self._schema = _EngineWidget()
 
-        self.myLayout.addWidget(self.labelName,0,0,1,1)
-        self.myLayout.addWidget(self.labelForce,1,0,1,1)
-        self.myLayout.addWidget(self.schema,0,1,2,1)
+        myLayout.addWidget(self._labelName,0,0,1,1)
+        myLayout.addWidget(self._labelForce,1,0,1,1)
+        myLayout.addWidget(self._schema,0,1,2,1)
 
-        self.myLayout.setColumnStretch(0,1)
-        self.myLayout.setColumnStretch(1,2)
-        self.myLayout.setAlignment
-
+        myLayout.setColumnStretch(0,1)
+        myLayout.setColumnStretch(1,2)
 
     def setPercent(self, percent):
-        self.labelForce.setText(str(round(self.maxThrust*percent*100)/100)+" N")
+        self._labelForce.setText(str(round(self._maxThrust*percent*100)/100)+" N")
 
     def refresh(self):
-        self.setPercent(self.getterMDD())
+        self.setPercent(self._getterMDD())
 
 class _EngineWidget(QtWidgets.QWidget):
     def __init__(self):
         super(_EngineWidget,self).__init__()
-        self.pictureRaw = Qt.QPixmap("./IHM/Sprites/moteur.png")
-        rapport = min(self.width()/self.pictureRaw.width(),self.height()/self.pictureRaw.height())
-        self.picture = self.pictureRaw.transformed(Qt.QTransform().scale(rapport,rapport))
-        self.rectPicture =  self.picture.rect()
-        self.rectPicture.moveCenter(Qt.QPoint(int(self.width()/2),int(self.height()/2)))
+        self._pictureRaw = Qt.QPixmap("./IHM/Sprites/moteur.png")
+        rapport = min(self.width()/self._pictureRaw.width(),self.height()/self._pictureRaw.height())
+        self._picture = self._pictureRaw.transformed(Qt.QTransform().scale(rapport,rapport))
+        self._rectPicture =  self._picture.rect()
+        self._rectPicture.moveCenter(Qt.QPoint(int(self.width()/2),int(self.height()/2)))
 
     def resizeEvent(self, event):
-        rapport = min(self.width()/self.pictureRaw.width(),self.height()/self.pictureRaw.height())
-        self.picture = self.pictureRaw.transformed(Qt.QTransform().scale(rapport,rapport))
-        self.rectPicture =  self.picture.rect()
-        self.rectPicture.moveCenter(Qt.QPoint(int(self.width()/2),int(self.height()/2)))
+        rapport = min(self.width()/self._pictureRaw.width(),self.height()/self._pictureRaw.height())
+        self._picture = self._pictureRaw.transformed(Qt.QTransform().scale(rapport,rapport))
+        self._rectPicture =  self._picture.rect()
+        self._rectPicture.moveCenter(Qt.QPoint(int(self.width()/2),int(self.height()/2)))
 
     def paintEvent(self,event):
         qp = Qt.QPainter()
         qp.begin(self)
-        qp.drawPixmap(self.rectPicture, self.picture)
+        qp.drawPixmap(self._rectPicture, self._picture)
         qp.end()
 

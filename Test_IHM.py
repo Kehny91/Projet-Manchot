@@ -24,6 +24,23 @@ class MixerThread(th.Thread):
     def stop(self):
         self._continue = False
 
+class CinematiqueThread(th.Thread):
+    def __init__(self,mddFlightData,frequence):
+        super(CinematiqueThread,self).__init__()
+        self._mddFlightData = mddFlightData
+        self._period = 1/frequence
+        self._continue = True
+
+    def run(self):
+        while self._continue:
+            v = self._mddFlightData.getVAvion()
+            pos = self._mddFlightData.getPosAvion()
+            pos = pos + v*self._period
+            self._mddFlightData.setPosAvion(pos)
+            time.sleep(self._period)
+    
+    def stop(self):
+        self._continue = False
 
 if __name__ == "__main__":
     from IHM.ihm import IHM
@@ -35,7 +52,7 @@ if __name__ == "__main__":
 
     referentielSol = Referentiel("referentielSol",0,Vecteur(0,0))
 
-    mddFlightData = MDDFlightData(Vecteur(0,1,referentielSol),Vecteur(0,-0.1,referentielSol),0.3)
+    mddFlightData = MDDFlightData(Vecteur(0,1,referentielSol),Vecteur(1,-0.1,referentielSol),0.3)
     mddRawInput = MDDRawInput(0.30,0.30,0.50,0.50,0.100) 
     mddPilotInput = MDDPilotInput(0,0,0)
     mddAutoPilotInput = MDDAutoPilotInput(Vecteur(0,0,referentielSol))
@@ -46,11 +63,15 @@ if __name__ == "__main__":
 
     app = Qt.QApplication(sys.argv)
     mainW = Qt.QMainWindow()
-    graph = IHM(mddFlightData,mddRawInput,0,mddAutoPilotInput,mddPilotInput,60)
+    graph = IHM(mddFlightData, 0, mddRawInput, mddPilotInput, mddAutoPilotInput, 60)
     graph.startUpdateThread()
     mainW.setCentralWidget(graph)
     mainW.show()
 
+    cT = CinematiqueThread(mddFlightData,50)
+    cT.start()
+
     app.exec_()
     graph.stopUpdateThread()
     mT.stop()
+    cT.stop()

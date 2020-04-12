@@ -4,18 +4,15 @@ from DataManagement import MDD
 import PyQt5
 
 class SliderControlWidget(QtWidgets.QWidget):
-    def __init__(self,parent,name):
+    def __init__(self,parent):
         super().__init__(parent)
-        self.sliderUnits = []
-        self.myLayout = QtWidgets.QVBoxLayout(self)
-        self.myLayout.addWidget(QtWidgets.QLabel("Pilot Input",self))
-        self.insiderLayout = QtWidgets.QHBoxLayout()
-        self.myLayout.addLayout(self.insiderLayout)
+        self._sliderUnits = []
+        self._myLayout = QtWidgets.QHBoxLayout(self)
 
     def addSlider(self, name, MDDsetter, mini, maxi):
         newOne = _SliderUnit(self,name,MDDsetter,mini,maxi)
-        self.sliderUnits.append(newOne)
-        self.insiderLayout.addWidget(newOne)
+        self._sliderUnits.append(newOne)
+        self._myLayout.addWidget(newOne)
 
 
 class _SliderUnit(QtWidgets.QWidget):

@@ -19,47 +19,49 @@ class GraphWidget(QtWidgets.QWidget):
     #PUBLIC
     def __init__(self, realPositionFenetre, scale, runwayXStart, runwayLength, planeLength, flightDataMDD):
         super().__init__()
-        self.zMin = -0.5
-        self.realPositionFenetre = realPositionFenetre
+        self._zMin = -0.5
+        self._realPositionFenetre = realPositionFenetre
         self.setRealPositionFenetre(realPositionFenetre)
-        self.scale = scale
-        self.runwayXStart = runwayXStart
-        self.runwayLength = runwayLength
+        self._scale = scale
+        self._runwayXStart = runwayXStart
+        self._runwayLength = runwayLength
         if (__name__=="__main__"):
-            self.picture = Qt.QPixmap("../Sprites/DroneAjuste.png")
+            self._picture = Qt.QPixmap("../Sprites/DroneAjuste.png")
         else:
-            self.picture = Qt.QPixmap("./IHM/Sprites/DroneAjuste.png")
+            self._picture = Qt.QPixmap("./IHM/Sprites/DroneAjuste.png")
 
-        self.picture = self.picture.transformed(Qt.QTransform().scale(planeLength/1253.0/scale,planeLength/1253.0/scale))
+        self._picture = self._picture.transformed(Qt.QTransform().scale(planeLength/1253.0/scale,planeLength/1253.0/scale))
 
-        self.flightDataMDD = flightDataMDD
+        self._flightDataMDD = flightDataMDD
 
-        self.B0_C0 = Vecteur((626-1220)/1253.0*planeLength,(176-115)/229.0*planeLength*229/1253) #C'est le vecteur qui relie B a C lorsque theta vaut 0, dans les coordonnées réelles
+        #TODO utilisation des referentiels ?
+        self._B0_C0 = Vecteur((626-1220)/1253.0*planeLength,(176-115)/229.0*planeLength*229/1253) #C'est le vecteur qui relie B a C lorsque theta vaut 0, dans les coordonnées réelles
 
     def refresh(self):
         self.update()
 
     #PUBLIC
     def setRealPositionFenetre(self, realPositionFenetre):
-        self.realPositionFenetre = realPositionFenetre.withZmin(self.zMin)
+        self._realPositionFenetre = realPositionFenetre.withZmin(self._zMin)
     
     #PUBLIC
     def setRealPositionFenetreCenter(self, realPositionFenetreCenter):
-        realWidth = self.width()*self.scale
-        realHeight = self.height()*self.scale
+        realWidth = self.width()*self._scale
+        realHeight = self.height()*self._scale
         self.setRealPositionFenetre(realPositionFenetreCenter - Vecteur(realWidth/2,realHeight/2))
 
     #PRIVATE
     #Se referencer a point.png
     def _getCPosition(self):
         #Un flight data contient la position B
-        return self.flightDataMDD.getPosAvion()+(self.B0_C0.rotate(self.flightDataMDD.getAssiette()))
+        #TODO Utilisation de ref ?
+        return self._flightDataMDD.getPosAvion()+(self._B0_C0.rotate(self._flightDataMDD.getAssiette()))
 
     #PRIVATE
     def _realToPix(self,O_M):
         #TODO verifier que le vecteur est dans le referentiel absolu
-        rpf_M = O_M-self.realPositionFenetre #vecteur realPositionFenetre -> M
-        return (int(rpf_M.getX()/self.scale),self.height() - int(rpf_M.getZ()/self.scale) )
+        rpf_M = O_M-self._realPositionFenetre #vecteur realPositionFenetre -> M
+        return (int(rpf_M.getX()/self._scale),self.height() - int(rpf_M.getZ()/self._scale) )
 
     #PRIVATE
     #Ground and sky
@@ -82,7 +84,7 @@ class GraphWidget(QtWidgets.QWidget):
 
     #PRIVATE
     def _drawPlane(self, painter):
-        pictureToDraw = self.picture.transformed(Qt.QTransform().rotateRadians(self.flightDataMDD.getAssiette()))
+        pictureToDraw = self._picture.transformed(Qt.QTransform().rotateRadians(self._flightDataMDD.getAssiette()))
         rect = pictureToDraw.rect()
         posPix = self._realToPix(self._getCPosition())
         rect.moveCenter(Qt.QPoint(posPix[0],posPix[1]))
@@ -92,8 +94,8 @@ class GraphWidget(QtWidgets.QWidget):
     def paintEvent(self, event):
         qp = Qt.QPainter()
         qp.begin(self)
-        self.setRealPositionFenetreCenter(self.flightDataMDD.getPosAvion())
+        self.setRealPositionFenetreCenter(self._flightDataMDD.getPosAvion())
         self._drawGround(qp)
-        self._drawRunway(qp, self.runwayXStart, self.runwayLength)
+        self._drawRunway(qp, self._runwayXStart, self._runwayLength)
         self._drawPlane(qp)
         qp.end()
