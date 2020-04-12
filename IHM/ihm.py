@@ -6,40 +6,60 @@ import PyQt5.QtWidgets as QtWidgets
 import PyQt5
 from Test_IHM import Vecteur
 from Parametres import ParametresModele
+from PyQt5.QtCore import pyqtSignal,QObject
+from PyQt5 import Qt
 from math import pi
+import time
 TORAD = pi/180.0
 TODEG = 180.0/pi
+
+class _UpdateThread(Qt.QThread,QObject):
+    refreshPlease = pyqtSignal()
+
+    def __init__(self,mddFlightData,frequenceAffichage):
+        super(_UpdateThread,self).__init__()
+        self._mddFlightData = mddFlightData
+        self._period = 1.0/frequenceAffichage
+        self._continue = True
+    
+    def run(self):
+        while self._continue:
+            self.refreshPlease.emit()
+            time.sleep(self._period)
+
+    def stop(self):
+        self._continue = False
 
 class _GraphicalRawInput(QtWidgets.QWidget):
     def __init__(self,mddRawInput):
         super(_GraphicalRawInput,self).__init__()
-        self.myLayout = QtWidgets.QVBoxLayout(self)
+        self._myLayout = QtWidgets.QVBoxLayout(self)
 
-        self.affFlapsG = ControlSurfaceWidget(self,ParametresModele.flapsGMaxAngle,"flapsG",mddRawInput.getFlapsG)
-        self.myLayout.addWidget(self.affFlapsG)
+        self._affFlapsG = ControlSurfaceWidget(self,ParametresModele.flapsGMaxAngle,"flapsG",mddRawInput.getFlapsG)
+        self._myLayout.addWidget(self._affFlapsG)
 
-        self.affFlapsD = ControlSurfaceWidget(self,ParametresModele.flapsDMaxAngle,"flapsD",mddRawInput.getFlapsD)
-        self.myLayout.addWidget(self.affFlapsD)
+        self._affFlapsD = ControlSurfaceWidget(self,ParametresModele.flapsDMaxAngle,"flapsD",mddRawInput.getFlapsD)
+        self._myLayout.addWidget(self._affFlapsD)
 
-        self.affElevG = ControlSurfaceWidget(self,ParametresModele.elevGMaxAngle,"elevG",mddRawInput.getElevG)
-        self.myLayout.addWidget(self.affElevG)
+        self._affElevG = ControlSurfaceWidget(self,ParametresModele.elevGMaxAngle,"elevG",mddRawInput.getElevG)
+        self._myLayout.addWidget(self._affElevG)
 
-        self.affElevD = ControlSurfaceWidget(self,ParametresModele.elevDMaxAngle,"elevD",mddRawInput.getElevD)
-        self.myLayout.addWidget(self.affElevD)
+        self._affElevD = ControlSurfaceWidget(self,ParametresModele.elevDMaxAngle,"elevD",mddRawInput.getElevD)
+        self._myLayout.addWidget(self._affElevD)
 
-        self.affEngine = EngineWidget(self,ParametresModele.engineMaxThrust,"engine", mddRawInput.getThrottle)
-        self.myLayout.addWidget(self.affEngine)
+        self._affEngine = EngineWidget(self,ParametresModele.engineMaxThrust,"engine", mddRawInput.getThrottle)
+        self._myLayout.addWidget(self._affEngine)
 
     def refresh(self):
-        self.affElevD.refresh()
-        self.affElevG.refresh()
-        self.affEngine.refresh()
-        self.affFlapsD.refresh()
-        self.affFlapsG.refresh()
+        self._affElevD.refresh()
+        self._affElevG.refresh()
+        self._affEngine.refresh()
+        self._affFlapsD.refresh()
+        self._affFlapsG.refresh()
 
 
 class IHM(QtWidgets.QWidget):
-    def __init__(self, mddFlightData, mddRawInput, mddMode, mddAutoPilotInput, mddPilotInput):
+    def __init__(self, mddFlightData, mddRawInput, mddMode, mddAutoPilotInput, mddPilotInput, frequenceAffichage):
         super().__init__()
         self.mddFlightData = mddFlightData
         self.mddRawInput = mddRawInput
@@ -78,6 +98,15 @@ class IHM(QtWidgets.QWidget):
         self.userInputSliders.addSlider("Pitch",mddPilotInput.setPitch,-100,100)
         self.userInputSliders.addSlider("Flaps",mddPilotInput.setFlaps,0,100)
         self.userInputSliders.addSlider("Throttle",mddPilotInput.setThrottle,0,100)
+
+        self.updateThread = _UpdateThread(self.mddFlightData,frequenceAffichage)
+        self.updateThread.refreshPlease.connect(self.refresh)
+
+    def startUpdateThread(self):
+        self.updateThread.start()
+
+    def stopUpdateThread(self):
+        self.updateThread.stop()
 
     def refresh(self):
         self.affichageAvion.refresh()

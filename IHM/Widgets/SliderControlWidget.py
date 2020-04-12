@@ -12,8 +12,8 @@ class SliderControlWidget(QtWidgets.QWidget):
         self.insiderLayout = QtWidgets.QHBoxLayout()
         self.myLayout.addLayout(self.insiderLayout)
 
-    def addSlider(self, name, mdd, mini, maxi):
-        newOne = _SliderUnit(self,name,mdd,mini,maxi)
+    def addSlider(self, name, MDDsetter, mini, maxi):
+        newOne = _SliderUnit(self,name,MDDsetter,mini,maxi)
         self.sliderUnits.append(newOne)
         self.insiderLayout.addWidget(newOne)
 
