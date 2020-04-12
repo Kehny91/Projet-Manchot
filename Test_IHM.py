@@ -7,6 +7,7 @@ import PyQt5
 from Espace import Vecteur,Referentiel,ReferentielAbsolu
 from PyQt5 import Qt
 from PyQt5.QtCore import pyqtSignal,QObject
+from Asservissement import Asservissement
 
 class MixerThread(th.Thread):
     def __init__(self,mddRawInput,mddPilotInput,frequence):
@@ -42,6 +43,26 @@ class CinematiqueThread(th.Thread):
     def stop(self):
         self._continue = False
 
+class AsserThread(th.Thread):
+    def __init__(self, mddFlightData, mddAutoPilotInput, mddPilotInput, frequence):
+        super(AsserThread,self).__init__()
+        self._mddFlightData = mddFlightData
+        self._mddAutoPilotInput = mddAutoPilotInput
+        self._mddPilotInput = mddPilotInput
+        self._period = 1/frequence
+        self._continue = True
+        self._asser = Asservissement(mddPilotInput,mddFlightData,mddAutoPilotInput)
+
+    def run(self):
+        while self._continue:
+            self._asser.compute()
+            time.sleep(self._period)
+
+    def stop(self):
+        self._continue = False
+
+
+
 if __name__ == "__main__":
     from IHM.ihm import IHM
     from FlightData import MDDFlightData
@@ -71,7 +92,11 @@ if __name__ == "__main__":
     cT = CinematiqueThread(mddFlightData,50)
     cT.start()
 
+    aT = AsserThread(mddFlightData,mddAutoPilotInput,mddPilotInput,200)
+    aT.start()
+
     app.exec_()
     graph.stopUpdateThread()
     mT.stop()
     cT.stop()
+    aT.stop()
