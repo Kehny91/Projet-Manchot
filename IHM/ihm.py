@@ -119,43 +119,43 @@ class _InputWidget(QtWidgets.QWidget):
 class IHM(QtWidgets.QWidget):
     def __init__(self, mddFlightData, mddMode, mddRawInput, mddPilotInput, mddAutoPilotInput, frequenceAffichage):
         super().__init__()
-        self.mddFlightData = mddFlightData
-        self.mddRawInput = mddRawInput
-        self.mddMode = mddMode
-        self.mddAutoPilotInput  = mddAutoPilotInput
-        self.mddPilotInput = mddPilotInput
+        #self._mddFlightData = mddFlightData
+        #self._mddRawInput = mddRawInput
+        #self._mddMode = mddMode
+        #self._mddAutoPilotInput  = mddAutoPilotInput
+        #self._mddPilotInput = mddPilotInput
 
 
-        self.myLayout = QtWidgets.QGridLayout(self)
-        self.myLayout.setColumnMinimumWidth(0,50)
-        self.myLayout.setColumnStretch(0,2)
-        self.myLayout.setColumnMinimumWidth(1,50)
-        self.myLayout.setColumnStretch(1,2)
-        self.myLayout.setColumnMinimumWidth(2,50)
-        self.myLayout.setColumnStretch(2,2)
-        self.myLayout.setColumnMinimumWidth(3,50)
-        self.myLayout.setColumnStretch(3,2)
-        self.myLayout.setColumnMinimumWidth(4,50)
-        self.myLayout.setColumnStretch(4,1)
+        myLayout = QtWidgets.QGridLayout(self)
+        myLayout.setColumnMinimumWidth(0,50)
+        myLayout.setColumnStretch(0,2)
+        myLayout.setColumnMinimumWidth(1,50)
+        myLayout.setColumnStretch(1,2)
+        myLayout.setColumnMinimumWidth(2,50)
+        myLayout.setColumnStretch(2,2)
+        myLayout.setColumnMinimumWidth(3,50)
+        myLayout.setColumnStretch(3,2)
+        myLayout.setColumnMinimumWidth(4,50)
+        myLayout.setColumnStretch(4,1)
 
-        self.affichageAvion = GraphWidget(Vecteur(-0.5,-0.5),0.009,0,10,2,mddFlightData) #On commence en (--0.5,-0.5), a l'echelle 5mm par pix, la piste commence en 0 et fait 10m, l'avion fait 2m de long
-        self.myLayout.addWidget(self.affichageAvion,0,0,5,4)
+        self._affichageAvion = GraphWidget(Vecteur(-0.5,-0.5),0.009,0,10,2,mddFlightData) #On commence en (--0.5,-0.5), a l'echelle 5mm par pix, la piste commence en 0 et fait 10m, l'avion fait 2m de long
+        myLayout.addWidget(self._affichageAvion,0,0,5,4)
 
-        self.affichageRawInput = _GraphicalRawInput(mddRawInput)
-        self.myLayout.addWidget(self.affichageRawInput,0,4,3,1)
+        self._affichageRawInput = _GraphicalRawInput(mddRawInput)
+        myLayout.addWidget(self._affichageRawInput,0,4,3,1)
         
-        self.userInput = _InputWidget(mddMode,mddRawInput,mddPilotInput,mddAutoPilotInput)
-        self.myLayout.addWidget(self.userInput,3,4,2,1)
+        self._userInput = _InputWidget(mddMode,mddRawInput,mddPilotInput,mddAutoPilotInput)
+        myLayout.addWidget(self._userInput,3,4,2,1)
 
-        self.updateThread = _UpdateThread(self.mddFlightData,frequenceAffichage)
-        self.updateThread.refreshPlease.connect(self.refresh)
+        self._updateThread = _UpdateThread(mddFlightData,frequenceAffichage)
+        self._updateThread.refreshPlease.connect(self.refresh)
 
     def startUpdateThread(self):
-        self.updateThread.start()
+        self._updateThread.start()
 
     def stopUpdateThread(self):
-        self.updateThread.stop()
+        self._updateThread.stop()
 
     def refresh(self):
-        self.affichageAvion.refresh()
-        self.affichageRawInput.refresh()
+        self._affichageAvion.refresh()
+        self._affichageRawInput.refresh()
