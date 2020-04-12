@@ -8,6 +8,8 @@ from Espace import Vecteur,Referentiel,ReferentielAbsolu
 from PyQt5 import Qt
 from PyQt5.QtCore import pyqtSignal,QObject
 from Asservissement import Asservissement
+from DataManagement import MDD,Pauser
+import Modes as M
 
 class MixerThread(th.Thread):
     def __init__(self,mddRawInput,mddPilotInput,frequence):
@@ -16,14 +18,22 @@ class MixerThread(th.Thread):
         self._mddPilotInput = mddPilotInput
         self._period = 1.0/frequence
         self._continue = True
+        self._pauser = Pauser()
 
     def run(self):
         while self._continue:
+            self._pauser.check()
             Mixer.Mixer.mix(self._mddPilotInput,self._mddRawInput)
             time.sleep(self._period)
 
     def stop(self):
         self._continue = False
+
+    def unpause(self):
+        self._pauser.unpause()
+
+    def requestPause(self):
+        self._pauser.requestPause()
 
 class CinematiqueThread(th.Thread):
     def __init__(self,mddFlightData,frequence):
@@ -43,6 +53,7 @@ class CinematiqueThread(th.Thread):
     def stop(self):
         self._continue = False
 
+
 class AsserThread(th.Thread):
     def __init__(self, mddFlightData, mddAutoPilotInput, mddPilotInput, frequence):
         super(AsserThread,self).__init__()
@@ -52,14 +63,51 @@ class AsserThread(th.Thread):
         self._period = 1/frequence
         self._continue = True
         self._asser = Asservissement(mddPilotInput,mddFlightData,mddAutoPilotInput)
+        self._pauser = Pauser()
 
     def run(self):
         while self._continue:
+            self._pauser.check()
             self._asser.compute()
             time.sleep(self._period)
 
     def stop(self):
         self._continue = False
+
+    def unpause(self):
+        self._pauser.unpause()
+
+    def requestPause(self):
+        self._pauser.requestPause()
+
+class ModeManagerThread(th.Thread):
+    def __init__(self,mddMode, mixerT, asserT): #TODO SCRIPT
+        super(ModeManagerThread,self).__init__()
+        self._mddMode = mddMode
+        self._mixerT = mixerT
+        self._asserT = asserT
+        self._lastMode = mddMode.read()
+        self._continue = True
+
+    def run(self):
+        while self._continue:
+            mode = self._mddMode.read()
+            if (mode != self._lastMode):
+                self._lastMode = mode
+                if mode == M.MODE_PILOT:
+                    self._mixerT.unpause()
+                    self._asserT.requestPause()
+                elif mode == M.MODE_AUTO_PILOT:
+                    self._mixerT.unpause()
+                    self._asserT.unpause()
+                elif mode == M.MODE_SCRIPT_RAW:
+                    self._mixerT.requestPause()
+                    self._asserT.requestPause()
+
+    def stop(self):
+        self._continue = False
+        self._mixerT.unpause()
+        self._asserT.unpause()
 
 
 
@@ -77,6 +125,7 @@ if __name__ == "__main__":
     mddRawInput = MDDRawInput(0.30,0.30,0.50,0.50,0.100) 
     mddPilotInput = MDDPilotInput(0,0,0)
     mddAutoPilotInput = MDDAutoPilotInput(Vecteur(0,0,referentielSol))
+    mddMode = MDD(M.MODE_PILOT)
     
     mT = MixerThread(mddRawInput,mddPilotInput,100)
     mT.start()
@@ -84,7 +133,7 @@ if __name__ == "__main__":
 
     app = Qt.QApplication(sys.argv)
     mainW = Qt.QMainWindow()
-    graph = IHM(mddFlightData, 0, mddRawInput, mddPilotInput, mddAutoPilotInput, 60)
+    graph = IHM(mddFlightData, mddMode, mddRawInput, mddPilotInput, mddAutoPilotInput, 60)
     graph.startUpdateThread()
     mainW.setCentralWidget(graph)
     mainW.show()
@@ -94,9 +143,14 @@ if __name__ == "__main__":
 
     aT = AsserThread(mddFlightData,mddAutoPilotInput,mddPilotInput,200)
     aT.start()
+    aT.requestPause()
+
+    mmT = ModeManagerThread(mddMode,mT,aT)
+    mmT.start()
 
     app.exec_()
     graph.stopUpdateThread()
+    mmT.stop()
     mT.stop()
     cT.stop()
     aT.stop()

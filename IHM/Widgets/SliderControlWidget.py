@@ -14,6 +14,10 @@ class SliderControlWidget(QtWidgets.QWidget):
         self._sliderUnits.append(newOne)
         self._myLayout.addWidget(newOne)
 
+    def refreshAllSliders(self):
+        for s in self._sliderUnits:
+            s._slider.valueChanged.emit(s._slider.value())
+
 
 class _SliderUnit(QtWidgets.QWidget):
     def __init__(self, parent, name, MDDsetter, mini, maxi):

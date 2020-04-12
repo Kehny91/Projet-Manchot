@@ -10,7 +10,6 @@ class Asservissement:
         self._Passiette = 0.5
 
     def compute(self):
-        print("compute")
         consigneVx = self._mddAutoPilotInput.getVx()
         consigneVz = self._mddAutoPilotInput.getVz()
         consigneV  = sqrt(consigneVx**2 + consigneVz**2)

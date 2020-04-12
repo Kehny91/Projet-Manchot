@@ -10,6 +10,7 @@ from PyQt5.QtCore import pyqtSignal,QObject
 from PyQt5 import Qt
 from math import pi
 import time
+import Modes as M
 TORAD = pi/180.0
 TODEG = 180.0/pi
 
@@ -107,12 +108,18 @@ class _InputWidget(QtWidgets.QWidget):
 
         stack.addWidget(widget)
 
-        self._buttonPilot.toggled.connect(lambda : stack.setCurrentIndex(0))
-        self._buttonAutoPilot.toggled.connect(lambda : stack.setCurrentIndex(1))
-        self._buttonScript.toggled.connect(lambda : stack.setCurrentIndex(2))
+        self._buttonPilot.toggled.connect(lambda : self._handleRadioButton(stack,0,mddMode,M.MODE_PILOT))
+        self._buttonAutoPilot.toggled.connect(lambda : self._handleRadioButton(stack,1,mddMode,M.MODE_AUTO_PILOT))
+        self._buttonScript.toggled.connect(lambda : self._handleRadioButton(stack,2,mddMode,M.MODE_SCRIPT_RAW))
 
         stack.setCurrentIndex(0)
         self._buttonPilot.toggle()
+
+    def _handleRadioButton(self,stack,index,mddMode,mode):
+        stack.setCurrentIndex(index)
+        mddMode.write(mode)
+        if (index<2):
+            stack.widget(index).refreshAllSliders()
 
 
 
