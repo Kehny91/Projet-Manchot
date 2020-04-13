@@ -5,7 +5,6 @@ import PyQt5.QtWidgets as QtWidgets
 import sys
 import time
 import os
-from FlightData import FlightData
 #from Espace import Vecteur
 from Test_IHM import Vecteur
 from math import sqrt,cos,sin
@@ -52,10 +51,10 @@ class GraphWidget(QtWidgets.QWidget):
 
     #PRIVATE
     #Se referencer a point.png
-    def _getCPosition(self):
+    def _getCPosition(self,flightData):
         #Un flight data contient la position B
         #TODO Utilisation de ref ?
-        return self._flightDataMDD.getPosAvion()+(self._B0_C0.rotate(self._flightDataMDD.getAssiette()))
+        return flightData.getPosAvion()+(self._B0_C0.rotate(flightData.getAssiette()))
 
     #PRIVATE
     def _realToPix(self,O_M):
@@ -83,19 +82,20 @@ class GraphWidget(QtWidgets.QWidget):
         painter.drawRect(pixPosStart[0],pixPosStart[1],pixPosEnd[0] - pixPosStart[0], max(1,pixPosEnd[1] - pixPosStart[1]))
 
     #PRIVATE
-    def _drawPlane(self, painter):
-        pictureToDraw = self._picture.transformed(Qt.QTransform().rotateRadians(self._flightDataMDD.getAssiette()))
+    def _drawPlane(self, painter, flightData):
+        pictureToDraw = self._picture.transformed(Qt.QTransform().rotateRadians(flightData.getAssiette()))
         rect = pictureToDraw.rect()
-        posPix = self._realToPix(self._getCPosition())
+        posPix = self._realToPix(self._getCPosition(flightData))
         rect.moveCenter(Qt.QPoint(posPix[0],posPix[1]))
         painter.drawPixmap(rect, pictureToDraw)
     
     #PRIVATE
     def paintEvent(self, event):
+        flightData = self._flightDataMDD.read()
         qp = Qt.QPainter()
         qp.begin(self)
-        self.setRealPositionFenetreCenter(self._flightDataMDD.getPosAvion())
+        self.setRealPositionFenetreCenter(flightData.getPosAvion())
         self._drawGround(qp)
         self._drawRunway(qp, self._runwayXStart, self._runwayLength)
-        self._drawPlane(qp)
+        self._drawPlane(qp,flightData)
         qp.end()

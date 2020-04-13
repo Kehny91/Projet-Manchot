@@ -4,9 +4,8 @@ import PyQt5
 
 
 class EngineWidget(QtWidgets.QWidget):
-    def __init__(self, parent, maxThrust,name,getterMDD):
+    def __init__(self, parent, maxThrust,name):
         super(EngineWidget,self).__init__(parent)
-        self._getterMDD = getterMDD
         self._maxThrust = maxThrust
         myLayout = QtWidgets.QGridLayout(self)
         self._labelName = QtWidgets.QLabel(name,self)
@@ -22,9 +21,6 @@ class EngineWidget(QtWidgets.QWidget):
 
     def setPercent(self, percent):
         self._labelForce.setText(str(round(self._maxThrust*percent*100)/100)+" N")
-
-    def refresh(self):
-        self.setPercent(self._getterMDD())
 
 class _EngineWidget(QtWidgets.QWidget):
     def __init__(self):

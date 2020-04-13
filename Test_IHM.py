@@ -44,10 +44,10 @@ class CinematiqueThread(th.Thread):
 
     def run(self):
         while self._continue:
-            v = self._mddFlightData.getVAvion()
-            pos = self._mddFlightData.getPosAvion()
-            pos = pos + v*self._period
-            self._mddFlightData.setPosAvion(pos)
+            current = self._mddFlightData.read()
+            pos = current.getPosAvion() + current.getVAvion()*self._period
+            current.setPosAvion(pos)
+            self._mddFlightData.write(current)
             time.sleep(self._period)
     
     def stop(self):
@@ -113,18 +113,17 @@ class ModeManagerThread(th.Thread):
 
 if __name__ == "__main__":
     from IHM.ihm import IHM
-    from FlightData import MDDFlightData
-    from UserInput import MDDRawInput, MDDPilotInput, MDDAutoPilotInput
-    #from Espace import Vecteur
+    from DataTypes import RawInput,PilotInput,AutoPilotInput,FlightData
+    from DataManagement import MDD
     import sys
     import PyQt5.Qt as Qt
 
     referentielSol = Referentiel("referentielSol",0,Vecteur(0,0))
 
-    mddFlightData = MDDFlightData(Vecteur(0,1,referentielSol),Vecteur(1,-0.1,referentielSol),0.3)
-    mddRawInput = MDDRawInput(0.30,0.30,0.50,0.50,0.100) 
-    mddPilotInput = MDDPilotInput(0,0,0)
-    mddAutoPilotInput = MDDAutoPilotInput(Vecteur(0,0,referentielSol))
+    mddFlightData = MDD(FlightData(Vecteur(0,1,referentielSol),Vecteur(1,-0.1,referentielSol),0.3), True)
+    mddRawInput = MDD(RawInput(0.30,0.30,0.50,0.50,0.100), False)
+    mddPilotInput = MDD(PilotInput(0,0,0), False)
+    mddAutoPilotInput = MDD(AutoPilotInput(Vecteur(0,0,referentielSol)), True)
     mddMode = MDD(M.MODE_PILOT)
     
     mT = MixerThread(mddRawInput,mddPilotInput,100)

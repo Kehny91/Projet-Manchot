@@ -2,6 +2,7 @@ from IHM.Widgets.ControlSurfaceWidget import ControlSurfaceWidget
 from IHM.Widgets.EngineWidget import EngineWidget
 from IHM.Widgets.GraphWidget import GraphWidget
 from IHM.Widgets.SliderControlWidget import SliderControlWidget
+from DataTypes import PilotInput,AutoPilotInput,RawInput
 import PyQt5.QtWidgets as QtWidgets
 import PyQt5
 from Test_IHM import Vecteur
@@ -34,29 +35,32 @@ class _UpdateThread(Qt.QThread,QObject):
 class _GraphicalRawInput(QtWidgets.QWidget):
     def __init__(self,mddRawInput):
         super(_GraphicalRawInput,self).__init__()
+        self._mddRawInput = mddRawInput
+
         myLayout = QtWidgets.QVBoxLayout(self)
 
-        self._affFlapsG = ControlSurfaceWidget(self,ParametresModele.flapsGMaxAngle,"flapsG",mddRawInput.getFlapsG)
+        self._affFlapsG = ControlSurfaceWidget(self,ParametresModele.flapsGMaxAngle,"flapsG")
         myLayout.addWidget(self._affFlapsG)
 
-        self._affFlapsD = ControlSurfaceWidget(self,ParametresModele.flapsDMaxAngle,"flapsD",mddRawInput.getFlapsD)
+        self._affFlapsD = ControlSurfaceWidget(self,ParametresModele.flapsDMaxAngle,"flapsD")
         myLayout.addWidget(self._affFlapsD)
 
-        self._affElevG = ControlSurfaceWidget(self,ParametresModele.elevGMaxAngle,"elevG",mddRawInput.getElevG)
+        self._affElevG = ControlSurfaceWidget(self,ParametresModele.elevGMaxAngle,"elevG")
         myLayout.addWidget(self._affElevG)
 
-        self._affElevD = ControlSurfaceWidget(self,ParametresModele.elevDMaxAngle,"elevD",mddRawInput.getElevD)
+        self._affElevD = ControlSurfaceWidget(self,ParametresModele.elevDMaxAngle,"elevD")
         myLayout.addWidget(self._affElevD)
 
-        self._affEngine = EngineWidget(self,ParametresModele.engineMaxThrust,"engine", mddRawInput.getThrottle)
+        self._affEngine = EngineWidget(self,ParametresModele.engineMaxThrust,"engine")
         myLayout.addWidget(self._affEngine)
 
     def refresh(self):
-        self._affElevD.refresh()
-        self._affElevG.refresh()
-        self._affEngine.refresh()
-        self._affFlapsD.refresh()
-        self._affFlapsG.refresh()
+        rawInput = self._mddRawInput.read()
+        self._affElevD.setPercent(rawInput.getElevD())
+        self._affElevG.setPercent(rawInput.getElevG())
+        self._affEngine.setPercent(rawInput.getThrottle())
+        self._affFlapsD.setPercent(rawInput.getFlapsD())
+        self._affFlapsG.setPercent(rawInput.getFlapsG())
 
 
 class _InputWidget(QtWidgets.QWidget):
@@ -88,17 +92,26 @@ class _InputWidget(QtWidgets.QWidget):
         #Pilot
 
         widget = SliderControlWidget(self)
-        widget.addSlider("Pitch[%]",mddPilotInput.setPitch,-100,100)
-        widget.addSlider("Flaps[%]",mddPilotInput.setFlaps,0,100)
-        widget.addSlider("Throttle[%]",mddPilotInput.setThrottle,0,100)
+
+        slider = widget.addSlider("Pitch[%]",-100,100)
+        slider.valueChanged[int].connect(lambda x : mddPilotInput.doOnData(PilotInput.setPitch,x/100))
+
+        slider = widget.addSlider("Flaps[%]",0,100)
+        slider.valueChanged[int].connect(lambda x : mddPilotInput.doOnData(PilotInput.setFlaps,x/100))
+
+        slider = widget.addSlider("Throttle[%]",0,100)
+        slider.valueChanged[int].connect(lambda x : mddPilotInput.doOnData(PilotInput.setThrottle,x/100))
 
         stack.addWidget(widget)
 
         #AutoPilot
 
         widget = SliderControlWidget(self)
-        widget.addSlider("Vx[km/h]",mddAutoPilotInput.setVx,0,int(ParametresModele.maxAutoPilotSpeed*3.6))
-        widget.addSlider("Vz[km/h]",mddAutoPilotInput.setVz,-int(ParametresModele.maxAutoPilotZSpeed*3.6),int(ParametresModele.maxAutoPilotZSpeed*3.6))
+        slider = widget.addSlider("Vx[km/h]",0,int(ParametresModele.maxAutoPilotSpeed*3.6))
+        slider.valueChanged[int].connect(lambda x : mddAutoPilotInput.doOnData(AutoPilotInput.setVx,x/3.6))
+
+        slider = widget.addSlider("Vz[km/h]",-int(ParametresModele.maxAutoPilotZSpeed*3.6),int(ParametresModele.maxAutoPilotZSpeed*3.6))
+        slider.valueChanged[int].connect(lambda x : mddAutoPilotInput.doOnData(AutoPilotInput.setVz,x/3.6))
 
         stack.addWidget(widget)
 

@@ -1,7 +1,7 @@
 import os.path as path
 import os
-import FlightData
-import UserInput
+import DataTypes
+
 
 """
 Le client veut connaitre a chaque etape:
