@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Apr 04 18:41:05 2020
-
-@author: tomju
-"""
 import numpy as np
 
 """Operateur modulo
@@ -115,8 +109,8 @@ class Vecteur:
     def rotate(self,angle):
         angle = normalise(angle)
         #Pour le 3D, utiliser une matrice de rotation
-        #matriceRot = np.array([[np.cos(angle),-np.sin(angle)],
-        #                       [np.sin(angle), np.cos(angle)]])
+        #matriceRot = np.array([[np.cos(angle),np.sin(angle)],
+        #                       [-np.sin(angle), np.cos(angle)]])
         #compoOldRef = np.array([[self.x],
         #                        [self.z]])
         #compoNewRef = np.dot(matriceRot,compoOldRef)

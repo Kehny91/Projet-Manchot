@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Apr 06 20:33:45 2020
-
-@author: tomju
-"""
-
 import Espace as E
 
 """ Classe Torseur
@@ -17,7 +10,7 @@ import Espace as E
 class Torseur:
     #Init
     
-    def __init__(self,vecteur=E.Vecteur(0,0,E.ReferentielAbsolu()),resultante=E.Vecteur(0,0,E.ReferentielAbsolu()),moment=0):
+    def __init__(self,vecteur=E.Vecteur(0,0),resultante=E.Vecteur(0,0,),moment=0):
         self.vecteur = vecteur
         self.resultante = resultante
         self.moment = moment
@@ -61,7 +54,7 @@ class Torseur:
     """        
     def changePoint(self,vecteur):
         if self.vecteur.ref == vecteur.ref:
-            Mpoint = self.moment + (self.vecteur-vecteur).prodVect(self.resultante)
+            Mpoint = self.moment + vecteur.pointToVect(self.resultante).prodVect(self.resultante)
             return Torseur(vecteur,self.resultante,Mpoint)
         else:
             return self.changeRef(vecteur.ref).changePoint(vecteur)
