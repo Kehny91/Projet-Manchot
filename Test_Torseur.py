@@ -14,8 +14,8 @@ print("__Classe_Torseur__")
 #Constructeur
 print("__Init__")
 
-refAero = E.Referentiel("refAero",np.pi/3,E.Vecteur(4,6,E.ReferentielAbsolu()))
-refTerrestre = E.Referentiel("refTerrestre",0,E.Vecteur(0,0,E.ReferentielAbsolu()))
+refAero = E.Referentiel("refAero",np.pi/2,E.Vecteur(3,5))
+refTerrestre = E.Referentiel("refTerrestre",0,E.Vecteur(0,0))
 
 torseur1 = T.Torseur(E.Vecteur(1,1,refTerrestre), E.Vecteur(3,1,refTerrestre), 8.5)
 torseur1bis = T.Torseur()
