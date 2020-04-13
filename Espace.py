@@ -97,6 +97,9 @@ class Vecteur:
 
     def getZ(self):
         return self.z
+
+    def withZmin(self,zMin):
+        return Vecteur(self.x,max(zMin,self.z),self.ref)
     
     def __str__(self):
         return "Dans le ref : " + str(self.ref.nom) + " les coordonnees sont (" + str(self.x) +"," + str(self.z) + ")"

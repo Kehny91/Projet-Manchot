@@ -99,6 +99,26 @@ class MDD:
             out = copy(func(self._data,*args))
         return out
 
+class Pauser:
+    def __init__(self):
+        self._semaphore = th.Semaphore(0)
+        self._pauseRequested = False
+        self._someoneIsSleeping = False
+
+    def requestPause(self):
+        self._pauseRequested = True
+
+    def unpause(self):
+        self._pauseRequested = False
+        if (self._someoneIsSleeping):
+            self._semaphore.release()
+
+    def check(self):
+        if (self._pauseRequested):
+            self._someoneIsSleeping = True
+            self._semaphore.acquire()
+            #Ok, on m'a libéré
+            self._someoneIsSleeping = False
 
 
 #TESTS

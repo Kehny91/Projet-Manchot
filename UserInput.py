@@ -1,6 +1,6 @@
 import DataManagement as dm
 from DataManagement import MDD
-
+from math import sqrt
 
 class AutoPilotInput:
     """ La classe représentant les entrées demandée par l'autopilote
@@ -14,6 +14,18 @@ class AutoPilotInput:
     def setV(self, v):
         self._v = v
 
+    def setVx(self, vx):
+        self._v.x = vx
+
+    def getVx(self):
+        return self._v.getX()
+
+    def setVz(self,vz):
+        self._v.z = vz
+
+    def getVz(self):
+        return self._v.getZ()
+
 class MDDAutoPilotInput:
     """ La classe représentant les entrées demandée par l'autopilote protege par MDD
         v : Le vecteur vitesse demandé"""
@@ -25,6 +37,20 @@ class MDDAutoPilotInput:
 
     def setV(self, v):
         self._mdd.doOnData(AutoPilotInput.setV,v)
+
+    def setVx(self, vx):
+        self._mdd.doOnData(AutoPilotInput.setVx,vx)
+
+    def getVx(self):
+        return self._mdd.doOnData(AutoPilotInput.getVx)
+
+    def setVz(self,vz):
+        self._mdd.doOnData(AutoPilotInput.setVz,vz)
+
+    def getVz(self):
+        return self._mdd.doOnData(AutoPilotInput.getVz)
+
+    
 
     
 class PilotInput:
