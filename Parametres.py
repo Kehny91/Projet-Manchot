@@ -1,4 +1,5 @@
 from math import pi
+import Scripts.scriptTest
 TORAD = pi/180
 TODEG = 180/pi
 TOMpS = 1/3.6
@@ -11,3 +12,6 @@ class ParametresModele:
     engineMaxThrust     = 200           #Newton
     maxAutoPilotSpeed   = 200*TOMpS     #m/s
     maxAutoPilotZSpeed  = 20*TOMpS      #m/s
+
+class ParametresSimulation:
+    scriptToLoad = Scripts.scriptTest.ScriptExemple

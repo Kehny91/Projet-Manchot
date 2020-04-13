@@ -9,6 +9,7 @@ from PyQt5 import Qt
 from PyQt5.QtCore import pyqtSignal,QObject
 from Asservissement import Asservissement
 from DataManagement import MDD,Pauser
+import Parametres
 import Modes as M
 
 class MixerThread(th.Thread):
@@ -54,6 +55,34 @@ class CinematiqueThread(th.Thread):
         self._continue = False
 
 
+class ScriptThread(th.Thread):
+    def __init__(self,mddFlightData, mddRawInput, mddPilotInput, mddAutoPilotInput):
+        super(ScriptThread,self).__init__()
+        self._script = Parametres.ParametresSimulation.scriptToLoad(mddFlightData, mddRawInput, mddPilotInput, mddAutoPilotInput)
+        self._continue = True
+        self._pauser = Pauser()
+    
+    def run(self):
+        if (self._script != None):
+            while self._continue:
+                self._script.runScript()
+                self._pauser.check()
+
+    def stop(self):
+        if (self._script != None):
+            self._script.stop()
+        self._continue = False
+
+    def unpause(self):
+        self._script.reset()
+        self._pauser.unpause()
+
+    def requestPause(self):
+        self._pauser.requestPause()
+        if (self._script != None):
+            self._script.stop()
+
+
 class AsserThread(th.Thread):
     def __init__(self, mddFlightData, mddAutoPilotInput, mddPilotInput, frequence):
         super(AsserThread,self).__init__()
@@ -81,11 +110,12 @@ class AsserThread(th.Thread):
         self._pauser.requestPause()
 
 class ModeManagerThread(th.Thread):
-    def __init__(self,mddMode, mixerT, asserT): #TODO SCRIPT
+    def __init__(self,mddMode, mixerT, asserT, scriptT):
         super(ModeManagerThread,self).__init__()
         self._mddMode = mddMode
         self._mixerT = mixerT
         self._asserT = asserT
+        self._scriptT = scriptT
         self._lastMode = mddMode.read()
         self._continue = True
 
@@ -97,12 +127,24 @@ class ModeManagerThread(th.Thread):
                 if mode == M.MODE_PILOT:
                     self._mixerT.unpause()
                     self._asserT.requestPause()
+                    self._scriptT.requestPause()
                 elif mode == M.MODE_AUTO_PILOT:
                     self._mixerT.unpause()
                     self._asserT.unpause()
+                    self._scriptT.requestPause()
                 elif mode == M.MODE_SCRIPT_RAW:
                     self._mixerT.requestPause()
                     self._asserT.requestPause()
+                    self._scriptT.unpause()
+                elif mode == M.MODE_SCRIPT_PILOT:
+                    self._mixerT.unpause()
+                    self._asserT.requestPause()
+                    self._scriptT.unpause()
+                elif mode == M.MODE_SCRIPT_AUTOPILOT:
+                    self._mixerT.unpause()
+                    self._asserT.unpause()
+                    self._scriptT.unpause()
+            time.sleep(0.2)
 
     def stop(self):
         self._continue = False
@@ -144,7 +186,11 @@ if __name__ == "__main__":
     aT.start()
     aT.requestPause()
 
-    mmT = ModeManagerThread(mddMode,mT,aT)
+    sT = ScriptThread(mddFlightData, mddRawInput, mddPilotInput, mddAutoPilotInput)
+    sT.start()
+    sT.requestPause()
+
+    mmT = ModeManagerThread(mddMode,mT,aT,sT)
     mmT.start()
 
     app.exec_()
@@ -153,3 +199,4 @@ if __name__ == "__main__":
     mT.stop()
     cT.stop()
     aT.stop()
+    sT.stop()

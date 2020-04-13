@@ -6,7 +6,7 @@ from DataTypes import PilotInput,AutoPilotInput,RawInput
 import PyQt5.QtWidgets as QtWidgets
 import PyQt5
 from Test_IHM import Vecteur
-from Parametres import ParametresModele
+from Parametres import ParametresModele,ParametresSimulation
 from PyQt5.QtCore import pyqtSignal,QObject
 from PyQt5 import Qt
 from math import pi
@@ -123,7 +123,7 @@ class _InputWidget(QtWidgets.QWidget):
 
         self._buttonPilot.toggled.connect(lambda : self._handleRadioButton(stack,0,mddMode,M.MODE_PILOT))
         self._buttonAutoPilot.toggled.connect(lambda : self._handleRadioButton(stack,1,mddMode,M.MODE_AUTO_PILOT))
-        self._buttonScript.toggled.connect(lambda : self._handleRadioButton(stack,2,mddMode,M.MODE_SCRIPT_RAW))
+        self._buttonScript.toggled.connect(lambda : self._handleRadioButton(stack,2,mddMode,ParametresSimulation.scriptToLoad.mode))
 
         stack.setCurrentIndex(0)
         self._buttonPilot.toggle()
