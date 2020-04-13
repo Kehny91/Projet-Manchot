@@ -18,25 +18,25 @@ class ScriptExemple(ScriptRaw):
 
             out = RawInput() #On cree notre objet de sortie. (un rawInput ici)
 
-            out.setElevG(cos(0.1*(t-tStart) + dephasageElevatorGauche))
-            out.setElevD(cos(0.1*(t-tStart)))
+            out.setElevG(cos(0.1*(t-tStart) + dephasageElevatorGauche)) #On donne le pourcentage de braquage de l'elevator gauche
+            out.setElevD(cos(0.1*(t-tStart)))                           #On donne le pourcentage de braquage de l'elevator droit
 
-            if (out.getElevD()>0):
-                flapsSorti = True
+            if (out.getElevD()>0): #Si on a un braquage positif de l'elevator droit
+                flapsSorti = True  #La variable flapsSorti est vraie
             else:
                 flapsSorti = False
 
-            if flapsSorti:
-                out.setFlapsD(1)
-                out.setFlapsG(1)
-            else:
-                out.setFlapsD(0)
-                out.setFlapsG(0)
+            if flapsSorti:        #Si la variable flapsSorti est vraie
+                out.setFlapsD(1)  #On braque le flap droit a 100%
+                out.setFlapsG(1)  #On braque le flap droit a 100%
+            else:                 #Sinon
+                out.setFlapsD(0)  #On rentre le flap droit a 0%
+                out.setFlapsG(0)  #On rentre le flap gauche a 0%
 
-            out.setThrottle(0.5+0.5*cos((t-tStart)))
+            out.setThrottle(0.5+0.5*cos((t-tStart))) #On donne le pourcentage de gaz
 
-            self.publishData(out)
-            time.sleep(1/frequence)
+            self.publishData(out) #On envoie cela au modèle
+            time.sleep(1/frequence) #On lière un peu le CPU
 
 
 
