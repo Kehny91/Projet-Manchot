@@ -31,7 +31,7 @@ def normalise(angle):
 """classe Referentiel et ses methodes
     attribute String : nom, nom du referentiel
     attribute float : angleAxeY, angle par rapport a l'horizontale
-    attribute vecteur : origine, point par rapport au refAbsolue
+    attribute Vecteur : origine, point par rapport au refAbsolue
 """
 class Referentiel:
     
@@ -168,7 +168,7 @@ class Vecteur:
             
     def prodVect(self, vecteur):
         if self.ref == vecteur.ref:
-            return self.z*vecteur.x - self.x*vecteur.z
+            return self.x*vecteur.z - self.z*vecteur.x
         else:
             return self.prodVect(vecteur.projectionRef(self.ref))
     
