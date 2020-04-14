@@ -6,15 +6,18 @@ class AutoPilotInput:
     """ La classe représentant les entrées demandée par l'autopilote
         v : Le vecteur vitesse demandé"""
     def __init__(self, v):
+        dm.checkBoundaries(v.getX(),0,None)
         self._v = v
 
     def getV(self):
         return self._v
 
     def setV(self, v):
+        dm.checkBoundaries(v.getX(),0,None)
         self._v = v
 
     def setVx(self, vx):
+        dm.checkBoundaries(vx,0,None)
         self._v.x = vx
 
     def getVx(self):
@@ -25,33 +28,6 @@ class AutoPilotInput:
 
     def getVz(self):
         return self._v.getZ()
-
-class MDDAutoPilotInput:
-    """ La classe représentant les entrées demandée par l'autopilote protege par MDD
-        v : Le vecteur vitesse demandé"""
-    def __init__(self, v):
-        self._mdd = MDD(AutoPilotInput(v))
-
-    def getV(self):
-        return self._mdd.doOnData(AutoPilotInput.getV)
-
-    def setV(self, v):
-        self._mdd.doOnData(AutoPilotInput.setV,v)
-
-    def setVx(self, vx):
-        self._mdd.doOnData(AutoPilotInput.setVx,vx)
-
-    def getVx(self):
-        return self._mdd.doOnData(AutoPilotInput.getVx)
-
-    def setVz(self,vz):
-        self._mdd.doOnData(AutoPilotInput.setVz,vz)
-
-    def getVz(self):
-        return self._mdd.doOnData(AutoPilotInput.getVz)
-
-    
-
     
 class PilotInput:
     """ La classe représentant les entrées demandée par un pilote
@@ -88,33 +64,6 @@ class PilotInput:
     def setThrottle(self, throttle):
         dm.checkBoundaries(throttle, 0, 1)
         self._throttle = throttle
-
-class MDDPilotInput:
-    """ La classe représentant les entrées demandée par un pilote protegee par un MDD
-        pitch : La commande de tanguage: positif = cabrer  [Entre -1 et 1]
-        flaps : La commande des flaps: positif = sortis [Entre 0 et 1]
-        throttle : La commande moteur  [Entre 0 et 1]"""
-    def __init__(self, pitch = 0, flaps = 0, throttle = 0):
-        self._mdd = MDD(PilotInput(pitch,flaps,throttle))
-    
-    def getPitch(self):
-        return self._mdd.doOnData(PilotInput.getPitch)
-    
-    def setPitch(self, pitch):
-        self._mdd.doOnData(PilotInput.setPitch,pitch)
-
-    def getFlaps(self):
-        return self._mdd.doOnData(PilotInput.getFlaps)
-    
-    def setFlaps(self, flaps):
-        self._mdd.doOnData(PilotInput.setFlaps,flaps)
-
-    def getThrottle(self):
-        return self._mdd.doOnData(PilotInput.getThrottle)
-    
-    def setThrottle(self, throttle):
-        self._mdd.doOnData(PilotInput.setThrottle,throttle)
-
     
 
 class RawInput:
@@ -184,46 +133,58 @@ class RawInput:
                 "throttle" : self._throttle}
 
 
-class MDDRawInput:
-    def __init__(self, elevG = 0, elevD = 0, flapsG = 0, flapsD = 0, throttle = 0):
-        """La classe représentatn les entrée brutes des différent actionneurs protegee par un MDD
-        elevG : La commande de la gouverne arriere gauche (VTAIL) [Entre -1 et 1]
-        elevD : La commande de la gouverne arriere droite [Entre -1 et 1]
-        flapsG : La commande du volet gauche [Entre 0 et 1]
-        flapsD : La commande du volet droit [Entre 0 et 1]
-        throttle : La commande du throttle [Entre 0 et 1]"""
-        self._mdd = MDD(RawInput(elevG, elevD, flapsG, flapsD, throttle))
+class RapportDeCollision:
+    def __init__(self, pos1 = None, force1 = None, pos2 = None, force2 = None):
+        self.pos1 = pos1
+        self.force1 = force1
+        self.pos2 = pos2
+        self.force2 = force2
+    
+    def addImpact(self, pos, force):
+        if (self.pos1 == None and self.force1==None):
+            self.pos1 = pos
+            self.force1 = force
+        elif (self.pos2 == None and self.force2 == None):
+            self.pos2 = pos
+            self.force2 = force
+        else:
+            assert False, "Trop d'impactes"
 
-    def getElevG(self):
-        return self._mdd.doOnData(RawInput.getElevG)
+    def getPos1(self):
+        return self.pos1
 
-    def setElevG(self, elevG):
-        self._mdd.doOnData(RawInput.setElevG,elevG)
+    def getPos2(self):
+        return self.pos2
 
-    def getElevD(self):
-        return self._mdd.doOnData(RawInput.getElevD)
+    def getForce1(self):
+        return self.force1
 
-    def setElevD(self, elevD):
-        self._mdd.doOnData(RawInput.setElevD, elevD)
+    def getForce2(self):
+        return self.force2
 
-    def getFlapsG(self):
-        return self._mdd.doOnData(RawInput.getFlapsG)
+"""
+L'ensemble des informations de vol
+"""
+class FlightData:
+    def __init__(self, posAvion, vAvion, assiette):
+        self._posAvion = posAvion
+        self._vAvion = vAvion
+        self._assiette = assiette
 
-    def setFlapsG(self, flapsG):
-        self._mdd.doOnData(RawInput.setFlapsG,flapsG)
+    def getPosAvion(self):
+        return self._posAvion
 
-    def getFlapsD(self):
-        return self._mdd.doOnData(RawInput.getFlapsD)
+    def getVAvion(self):
+        return self._vAvion
 
-    def setFlapsD(self, flapsD):
-        self._mdd.doOnData(RawInput.setFlapsD,flapsD)
+    def getAssiette(self):
+        return self._assiette
 
-    def getThrottle(self):
-        return self._mdd.doOnData(RawInput.getThrottle)
+    def setPosAvion(self, posAvion):
+        self._posAvion = posAvion
 
-    def setThrottle(self, throttle):
-        self._mdd.doOnData(RawInput.setThrottle,throttle)
+    def setVAvion(self,vAvion):
+        self._vAvion = vAvion
 
-    #Renvoie un dictionnaire, pret a etre propagé dans le modele
-    def getInputVector(self):
-        return self._mdd.doOnData(RawInput.getInputVector)
+    def setAssiette(self, assiette):
+        self._assiette = assiette

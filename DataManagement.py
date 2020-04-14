@@ -1,13 +1,15 @@
 import threading as th
 import time
 from math import pi
-from copy import copy
+from copy import copy,deepcopy
 
 class OutOfBoundException(Exception):
     pass
 
 def checkBoundaries(x, xMin, xMax):
-    if (x<xMin or x>xMax):
+    if (xMin != None and x<xMin):
+        raise OutOfBoundException()
+    if (xMax != None and x>xMax):
         raise OutOfBoundException()
 
 def constrain(x, xMin, xMax):
@@ -79,24 +81,35 @@ class BAL_AE:
 
 #Un tableau noir (acces protégé)
 class MDD:
-    def __init__(self,value0):
+    def __init__(self,value0,useDeepCopy = False):
+        """Si la classe contenue a des objets complexes (Vecteur par exemple), il faut utiliser la deepcopy"""
         self._data = value0
         self._protection = th.Semaphore(1)
+        self._useDeepCopy = useDeepCopy
     
     def write(self,x):
         with self._protection:
-            self._data = x
+            if (self._useDeepCopy):
+                self._data = deepcopy(x)
+            else:
+                self._data = copy(x)
 
     def read(self):
         out = None
         with self._protection:
-            out = copy(self._data)
+            if (self._useDeepCopy):
+                out = deepcopy(self._data)
+            else:
+                out = copy(self._data)
         return out
 
     def doOnData(self,func,*args):
         out = None
         with self._protection:
-            out = copy(func(self._data,*args))
+            if (self._useDeepCopy):
+                out = deepcopy(func(self._data,*args))
+            else:
+                out = copy(func(self._data,*args))
         return out
 
 class Pauser:

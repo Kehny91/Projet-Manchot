@@ -9,36 +9,40 @@ class SliderControlWidget(QtWidgets.QWidget):
         self._sliderUnits = []
         self._myLayout = QtWidgets.QHBoxLayout(self)
 
-    def addSlider(self, name, MDDsetter, mini, maxi):
-        newOne = _SliderUnit(self,name,MDDsetter,mini,maxi)
+    """Ajoute un slider et le renvoie"""
+    def addSlider(self, name, mini, maxi):
+        newOne = SliderUnit(self,name,mini,maxi)
         self._sliderUnits.append(newOne)
         self._myLayout.addWidget(newOne)
+        return newOne
 
     def refreshAllSliders(self):
         for s in self._sliderUnits:
-            s._slider.valueChanged.emit(s._slider.value())
+            s.refresh()
 
 
-class _SliderUnit(QtWidgets.QWidget):
-    def __init__(self, parent, name, MDDsetter, mini, maxi):
+class SliderUnit(QtWidgets.QWidget):
+    def __init__(self, parent, name, mini, maxi):
         super().__init__(parent)
-        self._MDDsetter = MDDsetter
         myLayout = QtWidgets.QVBoxLayout(self)
         self._labelName = QtWidgets.QLabel(name,self)
         self._labelOutput = QtWidgets.QLabel("0",self)
         self._slider = QtWidgets.QSlider(PyQt5.QtCore.Qt.Vertical,self)
+        self.valueChanged = self._slider.valueChanged
+
         myLayout.addWidget(self._labelName)
         myLayout.addWidget(self._labelOutput)
         myLayout.addWidget(self._slider)
 
         self._slider.setMinimum(mini)
         self._slider.setMaximum(maxi)
-
-
-        self._slider.valueChanged[int].connect(self._valueChanged)
         self._slider.setTickPosition(1)
         self._slider.setTickInterval(100)
 
-    def _valueChanged(self, x):
+        self._slider.valueChanged[int].connect(self.setLabelOutputTo)
+
+    def refresh(self):
+        self.valueChanged.emit(self._slider.value())
+
+    def setLabelOutputTo(self, x):
         self._labelOutput.setText(str(x))
-        self._MDDsetter(x/100)

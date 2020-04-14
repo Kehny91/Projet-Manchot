@@ -15,9 +15,8 @@ def round(x):
         return xi
 
 class ControlSurfaceWidget(QtWidgets.QWidget):
-    def __init__(self, parent, maxAngle,name,getterMDD):
+    def __init__(self, parent, maxAngle,name):
         super().__init__(parent)
-        self._getterMDD = getterMDD
         myLayout = QtWidgets.QGridLayout(self)
         self._labelName = QtWidgets.QLabel(name,self)
         self._labelAngle = QtWidgets.QLabel("0°",self)
@@ -34,10 +33,6 @@ class ControlSurfaceWidget(QtWidgets.QWidget):
     def setPercent(self, percent):
         self._schema.setPercent(percent)
         self._labelAngle.setText(str(round(self._schema.getAngle()*TODEG))+"°")
-
-    #Fait aussi l'update via la methode setPercent
-    def refresh(self):
-        self.setPercent(self._getterMDD())
 
 
 class _ControlSurfaceWidgetGraph(QtWidgets.QWidget):

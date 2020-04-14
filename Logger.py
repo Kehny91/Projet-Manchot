@@ -1,7 +1,7 @@
 import os.path as path
 import os
-import FlightData
-import UserInput
+import DataTypes
+import time
 
 """
 Le client veut connaitre a chaque etape:
@@ -27,12 +27,13 @@ class Logger:
         pathToFile = path.join(pathToFile,fileName)
         Logger.file = open(pathToFile, mode="w")
 
-        Logger.file.write("posAvionX, posAvionZ, assietteAvion, vAvionX, vAvionZ, elevG, elevD, flapsG, flapsD, throttle, col1PosX, col1PosZ, col1ForceX, col1ForceZ, col2PosX, col2PosZ, col2ForceX, col2ForceZ\n")
+        Logger.file.write("time, posAvionX, posAvionZ, assietteAvion, vAvionX, vAvionZ, elevG, elevD, flapsG, flapsD, throttle, col1PosX, col1PosZ, col1ForceX, col1ForceZ, col2PosX, col2PosZ, col2ForceX, col2ForceZ\n")
 
     @staticmethod
     def pushNewLine(flightData, rawInput, rapportDeCollision):
         assert (Logger.file != None), "Il faut d'abord setup le logger"
-        line = ""
+        line = str(int(time.time()*1000)/1000)
+        line += ","
 
         line += str(flightData.getPosAvion().getX())
         line += ","
