@@ -5,7 +5,7 @@ from IHM.Widgets.SliderControlWidget import SliderControlWidget
 from DataTypes import PilotInput,AutoPilotInput,RawInput
 import PyQt5.QtWidgets as QtWidgets
 import PyQt5
-from Test_IHM import Vecteur
+from Espace import Vecteur
 from Parametres import ParametresModele,ParametresSimulation
 from PyQt5.QtCore import pyqtSignal,QObject
 from PyQt5 import Qt

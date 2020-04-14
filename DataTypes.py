@@ -125,7 +125,7 @@ class RawInput:
         self._throttle = throttle
 
     #Renvoie un dictionnaire, pret a etre propagé dans le modele
-    def getInputVector(self):
+    def getInputDict(self):
         return {"elevG" : self._elevG,
                 "elevD" : self._elevD,
                 "flapsG" : self._flapsG,

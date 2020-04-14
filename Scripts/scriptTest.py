@@ -18,8 +18,8 @@ class ScriptExemple(ScriptRaw):
 
             out = RawInput() #On cree notre objet de sortie. (un rawInput ici)
 
-            out.setElevG(cos(0.1*(t-tStart) + dephasageElevatorGauche)) #On donne le pourcentage de braquage de l'elevator gauche
-            out.setElevD(cos(0.1*(t-tStart)))                           #On donne le pourcentage de braquage de l'elevator droit
+            out.setElevG(cos(0.3*(t-tStart) + dephasageElevatorGauche)) #On donne le pourcentage de braquage de l'elevator gauche
+            out.setElevD(cos(0.3*(t-tStart)))                           #On donne le pourcentage de braquage de l'elevator droit
 
             if (out.getElevD()>0): #Si on a un braquage positif de l'elevator droit
                 flapsSorti = True  #La variable flapsSorti est vraie

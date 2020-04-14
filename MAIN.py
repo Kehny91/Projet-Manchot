@@ -36,19 +36,51 @@ class MixerThread(th.Thread):
     def requestPause(self):
         self._pauser.requestPause()
 
-class CinematiqueThread(th.Thread):
-    def __init__(self,mddFlightData,frequence):
-        super(CinematiqueThread,self).__init__()
+class LaPhysiqueDeTom:
+    def __init__(self):
+        # definition du modele
+        pass
+
+    def mettreAJourModeleAvecRawInput(self, rawInputDict):
+        # Propagation du dictionnaire d'input dans le modele.
+        # Mise a jour des Cz, alpha etc...
+        # Ne retourne rien
+        pass
+
+    def compute(self, flightData, dt):
+        # Grace au modele fraichement mis a jour, cette methode renvoie le nouveau flight data
+        # Compute sera appelé en boucle par le PhysicThread
+        # Retourne un nouveau flight data
+        pass
+
+class PhysiqueDunObjetUniquementSoumisASonInertie(LaPhysiqueDeTom):
+    def __init__(self):
+        super(PhysiqueDunObjetUniquementSoumisASonInertie,self).__init__()
+
+    def compute(self, flightData, dt):
+        pos = flightData.getPosAvion()
+        v = flightData.getVAvion()
+        flightData.setPosAvion(pos+v*dt)
+        return flightData
+
+
+        
+
+class PhysicThread(th.Thread):
+    def __init__(self,mddFlightData, mddRawInput, frequence):
+        super(PhysicThread,self).__init__()
         self._mddFlightData = mddFlightData
+        self._mddRawInput = mddRawInput
         self._period = 1/frequence
         self._continue = True
+        self._physique = PhysiqueDunObjetUniquementSoumisASonInertie()
 
     def run(self):
         while self._continue:
             current = self._mddFlightData.read()
-            pos = current.getPosAvion() + current.getVAvion()*self._period
-            current.setPosAvion(pos)
-            self._mddFlightData.write(current)
+            self._physique.mettreAJourModeleAvecRawInput(self._mddRawInput.read().getInputDict())
+            newFlightData = self._physique.compute(current, self._period)
+            self._mddFlightData.write(newFlightData)
             time.sleep(self._period)
     
     def stop(self):
@@ -179,10 +211,10 @@ if __name__ == "__main__":
     mainW.setCentralWidget(graph)
     mainW.show()
 
-    cT = CinematiqueThread(mddFlightData,50)
-    cT.start()
+    pT = PhysicThread(mddFlightData,mddRawInput, 100)
+    pT.start()
 
-    aT = AsserThread(mddFlightData,mddAutoPilotInput,mddPilotInput,200)
+    aT = AsserThread(mddFlightData,mddAutoPilotInput,mddPilotInput,150)
     aT.start()
     aT.requestPause()
 
@@ -197,6 +229,6 @@ if __name__ == "__main__":
     graph.stopUpdateThread()
     mmT.stop()
     mT.stop()
-    cT.stop()
+    pT.stop()
     aT.stop()
     sT.stop()

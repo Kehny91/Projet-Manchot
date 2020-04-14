@@ -5,8 +5,7 @@ import PyQt5.QtWidgets as QtWidgets
 import sys
 import time
 import os
-#from Espace import Vecteur
-from Test_IHM import Vecteur
+from Espace import Vecteur
 from math import sqrt,cos,sin
 
 """
