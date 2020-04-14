@@ -92,22 +92,25 @@ class Solide:
         return T.Torseur(self.torseurCinematique.vecteur,E.Vecteur(0,-self.masse * g_0,refTerrestre),0)
 
 class Propulseur(Solide):
-    def __init__(self,torseurPosition= T.Torseur(),torseurCinetique = T.Torseur(), masse = 0,throttle =0 , throttlemax = 4):
-        super().__init__(self,torseurPosition= T.Torseur(),torseurCinetique = T.Torseur(), masse = 0)
-        self.throttle = throttle
+    def __init__(self,torseurPosition= T.Torseur(),torseurCinetique = T.Torseur(), masse = 0 , throttlemax = 4):
+        super().__init__(self, torseurPosition, torseurCinetique, masse)
+        self.throttle = 0
         self.throttleMax = throttlemax
+
+    def setThrottlePercent(self, throttlePercent):
+        self.throttle = self.throttleMax*throttlePercent
 
     def getTorseurEffortsAttachement(self):
         #Poids
         torseurPoids=self.getTorseurPoids()
         #Poussee, ne prend pas en compte la montee ne puisance (puissance instantannee) = moteur tres reactif
-        torseurPoussee = T.Torseur(self.torseurCinematique.vecteur,E.Vecteur(self.throttleMax*self.throttle,0,refAvion),0)
+        torseurPoussee = T.Torseur(self.torseurCinematique.vecteur,E.Vecteur(self.throttle,0,refAvion),0)
         #Somme
         return torseurPoussee + torseurPoids
 
 class Aile(Solide):
     def __init__(self,torseurPosition= T.Torseur(),torseurCinetique = T.Torseur(), masse = 0, S=0, CzA=0, Alhpa_0 = 0, Cx0 = 0, k=0):
-        super().__init__(self,torseurPosition= T.Torseur(),torseurCinetique = T.Torseur(), masse = 0)
+        super().__init__(self,torseurPosition, torseurCinetique , masse)
         self.S = S
         self.CzA = CzA
         self.Alhpa_0 = Alhpa_0
@@ -137,14 +140,14 @@ class Aile(Solide):
 
 class Aileron(Aile):
     def __init__(self,torseurPosition= T.Torseur(),torseurCinetique = T.Torseur(), masse = 0, S=0, CzA=0, Alhpa_0 = 0, Cx0 = 0, k=0, angleAilerons =0):
-        super.__init__(self,torseurPosition= T.Torseur(),torseurCinetique = T.Torseur(), masse = 0, S=0, CzA=0, Alhpa_0 = 0, Cx0 = 0, k=0)
+        super.__init__(self, torseurPosition, torseurCinetique, masse, S, CzA, Alhpa_0, Cx0, k)
         self.angleaAileron = angleAilerons
 
 class Empenage(Aile):
     def __init__(self,torseurPosition= T.Torseur(),torseurCinetique = T.Torseur(), masse = 0, S=0, CzA=0, Alhpa_0 = 0, Cx0 = 0, k=0):
-        super.__init__(self,torseurPosition= T.Torseur(),torseurCinetique = T.Torseur(), masse = 0, S=0, CzA=0, Alhpa_0 = 0, Cx0 = 0, k=0)
+        super.__init__(self, torseurPosition, torseurCinetique, masse, S, CzA, Alhpa_0, Cx0, k)
 
 class Gouverne(Aile):
     def __init__(self,torseurPosition= T.Torseur(),torseurCinetique = T.Torseur(), masse = 0, S=0, CzA=0, Alhpa_0 = 0, Cx0 = 0, k=0, angleGouverne =0):
-        super.__init__(self,torseurPosition= T.Torseur(),torseurCinetique = T.Torseur(), masse = 0, S=0, CzA=0, Alhpa_0 = 0, Cx0 = 0, k=0)
+        super.__init__(self, torseurPosition, torseurCinetique, masse, S, CzA, Alhpa_0, Cx0, k)
         self.angleaGouverne = angleGouverne
