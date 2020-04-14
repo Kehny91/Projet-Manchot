@@ -64,8 +64,6 @@ class PhysiqueDunObjetUniquementSoumisASonInertie(LaPhysiqueDeTom):
         return flightData
 
 
-        
-
 class PhysicThread(th.Thread):
     def __init__(self,mddFlightData, mddRawInput, frequence):
         super(PhysicThread,self).__init__()
@@ -78,9 +76,11 @@ class PhysicThread(th.Thread):
     def run(self):
         while self._continue:
             current = self._mddFlightData.read()
-            self._physique.mettreAJourModeleAvecRawInput(self._mddRawInput.read().getInputDict())
+            rawInput = self._mddRawInput.read()
+            self._physique.mettreAJourModeleAvecRawInput(rawInput.getInputDict())
             newFlightData = self._physique.compute(current, self._period)
             self._mddFlightData.write(newFlightData)
+            Logger.pushNewLine(newFlightData, rawInput, RapportDeCollision())
             time.sleep(self._period)
     
     def stop(self):
@@ -101,6 +101,7 @@ class ScriptThread(th.Thread):
                 self._pauser.check()
 
     def stop(self):
+        self.unpause()
         if (self._script != None):
             self._script.stop()
         self._continue = False
@@ -133,6 +134,7 @@ class AsserThread(th.Thread):
             time.sleep(self._period)
 
     def stop(self):
+        self.unpause()
         self._continue = False
 
     def unpause(self):
@@ -187,10 +189,13 @@ class ModeManagerThread(th.Thread):
 
 if __name__ == "__main__":
     from IHM.ihm import IHM
-    from DataTypes import RawInput,PilotInput,AutoPilotInput,FlightData
+    from DataTypes import RawInput,PilotInput,AutoPilotInput,FlightData,RapportDeCollision
     from DataManagement import MDD
     import sys
     import PyQt5.Qt as Qt
+    from Logger import Logger
+
+    Logger.setup(str(int(time.time())))
 
     referentielSol = Referentiel("referentielSol",0,Vecteur(0,0))
 
@@ -232,3 +237,19 @@ if __name__ == "__main__":
     pT.stop()
     aT.stop()
     sT.stop()
+    Logger.stop()
+
+    mmT.join()
+    #print("Mode Manager Off")
+
+    mT.join()
+    #print("Mixer Off")
+
+    pT.join()
+    #print("Physic Off")
+
+    aT.join()
+    #print("Asser Off")
+
+    sT.join()
+    #print("Script Off")

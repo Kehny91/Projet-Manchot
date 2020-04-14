@@ -3,6 +3,9 @@ import os
 import DataTypes
 import time
 
+def formatFloat(x):
+    return '{:06.2f}'.format(x)
+
 """
 Le client veut connaitre a chaque etape:
 - position du drone x,z,theta
@@ -14,6 +17,7 @@ Le client veut connaitre a chaque etape:
 class Logger:
     #Ceci est une variable statique
     file = None
+    tStart = 0
 
     @staticmethod
     def setup(fileName):
@@ -27,68 +31,98 @@ class Logger:
         pathToFile = path.join(pathToFile,fileName)
         Logger.file = open(pathToFile, mode="w")
 
-        Logger.file.write("time, posAvionX, posAvionZ, assietteAvion, vAvionX, vAvionZ, elevG, elevD, flapsG, flapsD, throttle, col1PosX, col1PosZ, col1ForceX, col1ForceZ, col2PosX, col2PosZ, col2ForceX, col2ForceZ\n")
+        Logger.file.write("  time ,  posX  , posZ   ,assiette,   vX   ,   vZ   ,  elevG ,  elevD , flapsG , flapsD ,throttle,col1PosX,col1PosZ, col1FX , col1FZ ,col2PosX,col2PosZ, col2FX , col2FZ\n")
+        Logger.tStart = time.time()
 
     @staticmethod
     def pushNewLine(flightData, rawInput, rapportDeCollision):
         assert (Logger.file != None), "Il faut d'abord setup le logger"
-        line = str(int(time.time()*1000)/1000)
-        line += ","
+        line = formatFloat(time.time() - Logger.tStart)
+        line += " , "
 
-        line += str(flightData.getPosAvion().getX())
-        line += ","
+        line += formatFloat(flightData.getPosAvion().getX())
+        line += " , "
 
-        line += str(flightData.getPosAvion().getZ())
-        line += ","
+        line += formatFloat(flightData.getPosAvion().getZ())
+        line += " , "
 
-        line += str(flightData.getAssiette())
-        line += ","
+        line += formatFloat(flightData.getAssiette())
+        line += " , "
 
-        line += str(flightData.getVAvion().getX())
-        line += ","
+        line += formatFloat(flightData.getVAvion().getX())
+        line += " , "
 
-        line += str(flightData.getVAvion().getZ())
-        line += ","
+        line += formatFloat(flightData.getVAvion().getZ())
+        line += " , "
 
-        line += str(rawInput.getElevG())
-        line += ","
+        line += formatFloat(rawInput.getElevG())
+        line += " , "
 
-        line += str(rawInput.getElevD())
-        line += ","
+        line += formatFloat(rawInput.getElevD())
+        line += " , "
 
-        line += str(rawInput.getFlapsG())
-        line += ","
+        line += formatFloat(rawInput.getFlapsG())
+        line += " , "
 
-        line += str(rawInput.getFlapsD())
-        line += ","
+        line += formatFloat(rawInput.getFlapsD())
+        line += " , "
 
-        line += str(rawInput.getThrottle())
-        line += ","
+        line += formatFloat(rawInput.getThrottle())
+        line += " , "
 
-        line += str(rapportDeCollision.getPos1().getX())
-        line += ","
+        toAdd = " NONE "
+        if (rapportDeCollision.getPos1()!=None):
+            toAdd = formatFloat(rapportDeCollision.getPos1().getX())
+        line += toAdd
+        line += " , "
 
-        line += str(rapportDeCollision.getPos1().getZ())
-        line += ","
+        toAdd = " NONE "
+        if (rapportDeCollision.getPos1()!=None):
+            toAdd = formatFloat(rapportDeCollision.getPos1().getZ())
+        line += toAdd
+        line += " , "
 
-        line += str(rapportDeCollision.getForce1().getX())
-        line += ","
+        toAdd = " NONE "
+        if (rapportDeCollision.getForce1()!=None):
+            toAdd = formatFloat(rapportDeCollision.getForce1().getX())
+        line += toAdd
+        line += " , "
 
-        line += str(rapportDeCollision.getForce1().getZ())
-        line += ","
+        toAdd = " NONE "
+        if (rapportDeCollision.getForce1()!=None):
+            toAdd = formatFloat(rapportDeCollision.getForce1().getZ())
+        line += toAdd
+        line += " , "
 
-        line += str(rapportDeCollision.getPos2().getX())
-        line += ","
+        toAdd = " NONE "
+        if (rapportDeCollision.getPos2()!=None):
+            toAdd = formatFloat(rapportDeCollision.getPos2().getX())
+        line += toAdd
+        line += " , "
 
-        line += str(rapportDeCollision.getPos2().getZ())
-        line += ","
+        toAdd = " NONE "
+        if (rapportDeCollision.getPos2()!=None):
+            toAdd = formatFloat(rapportDeCollision.getPos2().getZ())
+        line += toAdd
+        line += " , "
 
-        line += str(rapportDeCollision.getForce2().getX())
-        line += ","
+        toAdd = " NONE "
+        if (rapportDeCollision.getForce2()!=None):
+            toAdd = formatFloat(rapportDeCollision.getForce2().getX())
+        line += toAdd
+        line += " , "
 
-        line += str(rapportDeCollision.getForce2().getZ())
+        toAdd = " NONE "
+        if (rapportDeCollision.getForce2()!=None):
+            toAdd = formatFloat(rapportDeCollision.getForce2().getZ())
+        line += toAdd
 
         Logger.file.write(line+"\n")
+
+    @staticmethod
+    def stop():
+        if (Logger.file != None):
+            Logger.file.close()
 
 
 
