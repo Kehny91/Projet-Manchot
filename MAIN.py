@@ -11,6 +11,7 @@ from Asservissement import Asservissement
 from DataManagement import MDD,Pauser
 import Parametres
 import Modes as M
+import Solide as S
 
 class MixerThread(th.Thread):
     def __init__(self,mddRawInput,mddPilotInput,frequence):
