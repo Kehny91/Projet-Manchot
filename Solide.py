@@ -220,6 +220,15 @@ class Empennage(Attachements):
 class CorpsRigide(Attachements):
     def __init__(self,position = E.Vecteur(), father = None):
         super().__init__(self, position, 0, 0, father)
+
+    def getTorseurEffortsAttachement(self):
+
+        #Poids
+        torseurPoids=self.getTorseurPoids()
+        #Poussee, ne prend pas en compte la montee ne puisance (puissance instantannee) = moteur tres reactif
+        torseurPoussee = T.Torseur(self.position,E.Vecteur(self.throttle,0,refAvion),0)
+        #Somme
+        return torseurPoussee + torseurPoids
     
 class Planeur():
     def __init__(self):
