@@ -3,6 +3,7 @@ from Torseur import Torseur
 from Espace import Vecteur,Referentiel,ReferentielAbsolu
 print("Creation d'un corps")
 corps = S.Corps()
+refTerrestre = Referentiel("refterrestre", 0,Vecteur(0,0))
 
 #Correction
 #print("Deplacement en 10 10 avec une vitesse 1 -1 et un W de 1rad/s")
@@ -52,6 +53,7 @@ print("")
 print("Deplacement du corps en 15,12")
 corps.getTorseurCinematique().vecteur.ref.setOrigine(Vecteur(15,12))
 print("Torseur Cinematique = ", corps.getTorseurCinematique())
+print("Torseur Cinematique refTerrestre = ", corps.getTorseurCinematique().changeRef(refTerrestre))
 print("")
 print("Lecture de la pos de l'attachement")
 print("Lecture de sa position dans le ref avion normalement (1,0)")
