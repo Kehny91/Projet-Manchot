@@ -10,14 +10,15 @@ refTerrestre = E.Referentiel("refTerrestre",0,E.Vecteur(0,0,E.ReferentielAbsolu(
 refAero = E.Referentiel("refAero",np.pi/4,E.Vecteur(3,5,refTerrestre)) 
 refAvion = E.Referentiel("refAvion",np.pi/4,E.Vecteur(13,15,refTerrestre)) 
 
-"""classe Corps
-    permet de definir un le corps du planeur, le torseur cinematique est donnee au centre de gravite
-    attribute T.Torseur : torseurCinematique, determine la vitesse de translation ainsi que la vitesse de rotation au centre de gravite
-    attribute float :  masse, masse de la structure 
-    attribute float :  inertie, inertie du solide sur l'axe Y au centre de gravite
-    attribute list : attachement, liste de solides relies a ce corps
-"""
+
 class Corps:
+    """classe Corps
+    permet de definir un le corps du planeur, le torseur cinematique est donnee au centre de gravite
+    \n attribute T.Torseur : torseurCinematique, determine la vitesse de translation ainsi que la vitesse de rotation au centre de gravite
+    \n attribute float :  masse, masse de la structure 
+    \n attribute float :  inertie, inertie du solide sur l'axe Y au centre de gravite
+    \n attribute list : attachement, liste de solides relies a ce corps
+    """
     #Init
     def __init__(self, torseurCinetique = T.Torseur(), masse = 0, inertie = 0):
         self.torseurCinematique = torseurCinetique
@@ -28,6 +29,7 @@ class Corps:
     #Geter/Seter
 
     def getTorseurCinematique(self):
+        """return le torseurCinematique au centre de gravite dans le refAvion"""
         return self.torseurCinematique
 
     def setTorseurCinematique(self,newTorseurCinematique):
@@ -90,12 +92,13 @@ class Corps:
         #Poids
         return T.Torseur(self.torseurCinematique.vecteur.changeRef(refTerrestre),E.Vecteur(0,-self.masse * CE.g_0,refTerrestre),0)
 
-"""classe Attachements
-    attribute E.Vecteur : position, position du solide
-    attribute float :  masse, masse du solide 
-    attribute float :  inertie, inertie du solide
-"""
+
 class Attachements:
+    """classe Attachements
+    \n attribute E.Vecteur : position, position du solide
+    \n attribute float :  masse, masse du solide 
+    \n attribute float :  inertie, inertie du solide
+    """
     #Init
     def __init__(self,position = E.Vecteur(), masse = 0, inertie = 0,father = None):
         self.position = position
@@ -105,14 +108,16 @@ class Attachements:
 
     #Geter/Seter
     def getPosition(self):
+        """return la position du point dans le refAvion"""
         return self.position
     
     def setPosition(self,newPosition):
         self.position = newPosition
 
     def getVitesse(self):
-        vitessex =  self.father.getTorseurCinematique().resultante.x + self.father.getTorseurCinematique().moment * self.position.projectionRef(refTerrestre).z
-        vitessez =  self.father.getTorseurCinematique().resultante.x- self.father.getTorseurCinematique().moment * self.position.projectionRef(refTerrestre).x
+        """return la vitesse du point dans le refTerrestre"""
+        vitessex =  self.father.getTorseurCinematique().resultante.projectionRef(refTerrestre).x + self.father.getTorseurCinematique().moment * self.position.projectionRef(refTerrestre).z
+        vitessez =  self.father.getTorseurCinematique().resultante.projectionRef(refTerrestre).z- self.father.getTorseurCinematique().moment * self.position.projectionRef(refTerrestre).x
         return E.Vecteur(vitessex,vitessez,refTerrestre)
 
     def getMasse(self):
@@ -158,6 +163,9 @@ class Aile(Attachements):
         self.k = k
         self.angleAileron = angleAileron
         self.pourcentageAileron = pourcentageAileron
+    
+    def setangleAileron(self, angleAileron):
+        self.angleAileron = angleAileron
 
     def Cz(self,Alpha):
         return self.CzA*(Alpha + self.angleAileron*self.pourcentageAileron - self.Alhpa_0)
@@ -235,7 +243,15 @@ class Planeur():
         self.structure = Corps(T.Torseur(E.Vecteur(0,0,refAvion),E.Vecteur(0,0,refAvion),0),PM.masseTotal,PM.inertieTotal)         
         self.propulseur = Propulseur(E.Vecteur(PM.engine_x,PM.engine_z, refAvion),0,0,self.structure,0,PM.engineMaxThrust)
         self.structure.addAttachement(self.propulseur)
-  
+        self.aileD = Aile(E.Vecteur(PM.ailesD_x_Foyer,PM.ailesD_z_Foyer,refAvion), 0, 0, self.structure, PM.aileD_S, PM.aileD_CzA, PM.aileD_Alpha_0, PM.aileD_Cx0, PM.aileD_k, 0, PM.flapsDPourcentage)
+        self.structure.addAttachement(self.aileD)
+        self.aileG = Aile(E.Vecteur(PM.ailesG_x_Foyer,PM.ailesG_z_Foyer,refAvion), 0, 0, self.structure, PM.aileG_S, PM.aileG_CzA, PM.aileG_Alpha_0, PM.aileG_Cx0, PM.aileG_k, 0, PM.flapsGPourcentage)
+        self.structure.addAttachement(self.aileG)
+        self.empennageD = Empennage(E.Vecteur(PM.empennageD_x_Foyer,PM.empennageD_z_Foyer,refAvion), 0, 0, self.structure, PM.empennageD_S, PM.empennageD_Alpha_0, PM.empennageD_Cx0, PM.empennageD_k,0 ,PM.elevDMaxAnglePourcentage)
+        self.structure.addAttachement(self.empennageD)
+        self.empennageG = Empennage(E.Vecteur(PM.empennageG_x_Foyer,PM.empennageG_z_Foyer,refAvion), 0, 0, self.structure, PM.empennageG_S, PM.empennageG_Alpha_0, PM.empennageG_Cx0, PM.empennageG_k,0 ,PM.elevGMaxAnglePourcentage)
+        self.structure.addAttachement(self.empennageG)
+
     def getPosition(self):
         return self.structure.getTorseurCinematique().vecteur.changeRef(refTerrestre)
     
@@ -256,6 +272,10 @@ class Planeur():
 
     def diffuseDictRawInput(self,rawInputDict):
         self.propulseur.setThrottlePercent(rawInputDict["throttle"])
+        self.aileD.setangleAileron(rawInputDict["flapsD"])
+        self.aileG.setangleAileron(rawInputDict["flapsG"])
+        self.empennageD.setangleEmpennage(rawInputDict["elevD"])
+        self.empennageG.setangleEmpennage(rawInputDict["elevG"])
         return
 """         self.aileD = Aile(E.Vecteur(PM.ailesD_x_Foyer,PM.ailesD_z_Foyer,refAvion), 0, 0, self.structure, PM.aileD_S, PM.aileD_CzA, PM.aileD_Alpha_0, PM.aileD_Cx0, PM.aileD_k, 0, PM.flapsDPourcentage)
         self.aileG = Aile(E.Vecteur(PM.ailesG_x_Foyer,PM.ailesG_z_Foyer,refAvion), 0, 0, self.structure, PM.aileG_S, PM.aileG_CzA, PM.aileG_Alpha_0, PM.aileG_Cx0, PM.aileG_k, 0, PM.flapsGPourcentage)
