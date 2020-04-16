@@ -193,3 +193,6 @@ class Vecteur:
         else :
             n= self.norm()
             return self*(1/n)
+
+    def arg(self):
+        return np.arctan(self.z/self.x)
