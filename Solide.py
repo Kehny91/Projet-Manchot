@@ -153,81 +153,76 @@ class Propulseur(Attachements):
         #Somme
         return torseurPoussee + torseurPoids
 
-class Aile(Attachements):
-    def __init__(self,position = E.Vecteur(), masse = 0, inertie = 0, father = None, S=0, CzA=0, Alhpa_0 = 0, Cx0 = 0, k=0, angleAileron = 0, pourcentageAileron = 0):
+class SurfacePortante(Attachements):
+    def __init__(self,position = E.Vecteur(), masse = 0, inertie = 0, father = None, S=0, CzA=0, Alhpa_0 = 0, Cx0 = 0, k=0):
         super().__init__(position , masse, inertie, father)
         self.S = S
         self.CzA = CzA
         self.Alhpa_0 = Alhpa_0
         self.Cx0 = Cx0
         self.k = k
+    
+    def Cz(self,Alpha):
+        return self.CzA*(Alpha - self.Alhpa_0)
+
+    def getTorseurLift(self,Alpha,V):
+        
+        lift = 0.5 * CE.rho_air_0 * V**2 *self.Cz(Alpha)
+        return T.Torseur(self.position,E.Vecteur(0,lift,refAero),0)
+    
+    def Cx(self,Alpha):
+        return self.Cx0 + self.k*self.Cz(Alpha)**2
+
+    def getTorseurDrag(self,Alpha,V):
+        drag = 0.5 * CE.rho_air_0 * V**2 *self.Cx(Alpha)
+        return T.Torseur(self.position,E.Vecteur(drag,0,refAero),0)
+
+class Aile(SurfacePortante):
+    def __init__(self,position = E.Vecteur(), masse = 0, inertie = 0, father = None, S=0, CzA=0, Alhpa_0 = 0, Cx0 = 0, k=0, angleAileron = 0, pourcentageAileron = 0):
+        super().__init__(position , masse, inertie, father, S, CzA, Alhpa_0, Cx0 , k )
         self.angleAileron = angleAileron
         self.pourcentageAileron = pourcentageAileron
     
     def setangleAileron(self, angleAileron):
         self.angleAileron = angleAileron
 
-    def Cz(self,Alpha):
-        return self.CzA*(Alpha + self.angleAileron*self.pourcentageAileron - self.Alhpa_0)
-
-    def getTorseurLift(self,Alpha,V):
+    def getAlpha(self):
+        return 1
+        #return self.getVitesse().arg() + self.angleAileron*np.pi/180*self.pourcentageAileron
         
-        lift = 0.5 * CE.rho_air_0 * V**2 *self.Cz(Alpha)
-        return T.Torseur(self.position,E.Vecteur(0,lift,refAero),0)
-    
-    def Cx(self,Alpha):
-        return self.Cx0 + self.k*self.Cz(Alpha)**2
-
-    def getTorseurDrag(self,Alpha,V):
-        drag = 0.5 * CE.rho_air_0 * V**2 *self.Cx(Alpha)
-        return T.Torseur(self.position,E.Vecteur(drag,0,refAero),0)
-    
     def getTorseurEffortsAttachement(self):
         torseurPoids = self.getTorseurPoids()
         V = self.getVitesse().norm()
-        torseurLift = self.getTorseurLift(self.father.getTorseurCinematique().vecteur.ref.angleAxeY,V)
-        torseurDrag = self.getTorseurDrag(self.father.getTorseurCinematique().vecteur.ref.angleAxeY,V)
+        alpha = self.getAlpha()
+        torseurLift = self.getTorseurLift(alpha,V)
+        torseurDrag = self.getTorseurDrag(alpha,V)
         return torseurLift + torseurDrag + torseurPoids
 
-class Empennage(Attachements):
-    def __init__(self,position = E.Vecteur(), masse = 0, inertie = 0, father = None, S=0, CzA=0, Alhpa_0 = 0, Cx0 = 0, k=0, angleEmpennage = 0, pourcentageEmpenage = 0):
-        super().__init__(position , masse, inertie, father)
-        self.S = S
-        self.CzA = CzA
-        self.Alhpa_0 = Alhpa_0
-        self.Cx0 = Cx0
-        self.k = k
+class Empennage(SurfacePortante):
+    def __init__(self,position = E.Vecteur(), masse = 0, inertie = 0, father = None, S=0, CzA=0, Alhpa_0 = 0, Cx0 = 0, k=0, angleEmpennage = 0, pourcentageEmpennage = 0):
+        super().__init__(position , masse, inertie, father, S, CzA, Alhpa_0, Cx0 , k )
         self.angleEmpennage = angleEmpennage
-        self.pourcentageEmpenage = pourcentageEmpenage
+        self.pourcentageEmpennage = pourcentageEmpennage
     
     def setangleEmpennage(self, angleEmpennage):
         self.angleEmpennage = angleEmpennage
 
-    def Cz(self,Alpha):
-        return self.CzA*(Alpha + self.angleEmpennage*self.pourcentageEmpenage - self.Alhpa_0)
-
-    def getTorseurLift(self,Alpha,V):
+    def getAlpha(self):
+        return 1
+        #return self.getVitesse().arg() + self.angleEmpennage*np.pi*self.pourcentageEmpennage
         
-        lift = 0.5 * CE.rho_air_0 * V**2 *self.Cz(Alpha)
-        return T.Torseur(self.position,E.Vecteur(0,lift,refAero),0)
-    
-    def Cx(self,Alpha):
-        return self.Cx0 + self.k*self.Cz(Alpha)**2
-
-    def getTorseurDrag(self,Alpha,V):
-        drag = 0.5 * CE.rho_air_0 * V**2 *self.Cx(Alpha)
-        return T.Torseur(self.position,E.Vecteur(drag,0,refAero),0)
-    
     def getTorseurEffortsAttachement(self):
         torseurPoids = self.getTorseurPoids()
         V = self.getVitesse().norm()
-        torseurLift = self.getTorseurLift(self.father.getTorseurCinematique().vecteur.ref.angleAxeY,V)
-        torseurDrag = self.getTorseurDrag(self.father.getTorseurCinematique().vecteur.ref.angleAxeY,V)
+        alpha = self.getAlpha()
+        torseurLift = self.getTorseurLift(alpha,V)
+        torseurDrag = self.getTorseurDrag(alpha,V)
         return torseurLift + torseurDrag + torseurPoids
+
 
 class CorpsRigide(Attachements):
     def __init__(self,position = E.Vecteur(), father = None):
-        super().__init__(self, position, 0, 0, father)
+        super().__init__(position, 0, 0, father)
 
     def getTorseurEffortsAttachement(self):
 
