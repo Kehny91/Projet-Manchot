@@ -57,6 +57,12 @@ class Referentiel:
     
     def setOrigine(self,newOrigine):
         self.origine = newOrigine
+
+    def getAxeX(self):
+        return Vecteur(1,0,self)
+
+    def getAxeZ(self):
+        return Vecteur(0,1,self)
         
     def __eq__(self, ref):
         if (type(ref)!=type(self)):

@@ -26,6 +26,7 @@ class Corps:
         self.inertie = inertie
         self.father = None
         self.attachements = []
+        self.corpsRigides = [] #ATTENTION, UN CORPS RIGIDE DOIT ETRE DANS LES DEUX LISTES
     #Geter/Seter
 
     def getTorseurCinematique(self):
@@ -63,6 +64,10 @@ class Corps:
     def addAttachement(self,solide):
         self.attachements.append(solide)
         solide.father = self
+
+    def addCorpsRigide(self, cr):
+        self.addAttachement(cr)
+        self.corpsRigides.append(cr)
     
     def updateCinematique(self,dt):
         torseurEfforts = self.computeTorseurEfforts()
@@ -135,6 +140,7 @@ class Attachements:
     def getTorseurPoids(self):
         #Poids
         return T.Torseur(self.position,E.Vecteur(0,-self.masse * CE.g_0,refTerrestre),0)
+
 
 class Propulseur(Attachements):
     def __init__(self,position = E.Vecteur(), masse = 0, inertie = 0, father = None, throttle = 0, throttleMax = 0):
@@ -225,18 +231,60 @@ class Empennage(Attachements):
         torseurDrag = self.getTorseurDrag(self.father.getTorseurCinematique().vecteur.ref.angleAxeY,V)
         return torseurLift + torseurDrag + torseurPoids
 
+
+
+#Utilisation:
+# 1) Calculer et mettre a jour la vitesse et w du corps entier, avec les corpsRigides désactivé.
+# 2) Set le DT de tous les corps rigides
+# 3) Tant que tous les corps rigides ne sont pas "ok", recalculer et mettre a jour la vitesse et w
+# 4) Reset les corps rigides
 class CorpsRigide(Attachements):
-    def __init__(self,position = E.Vecteur(), father = None):
+    def __init__(self, position, father, referentielSol, epsilon):
         super().__init__(self, position, 0, 0, father)
+        self._thisTurnTotalForce = 0
+        self._epsilon = epsilon
+        self._referentielSol = referentielSol
+        self._axeXSol = referentielSol.getAxeX()
+        self._axeZSol = referentielSol.getAxeZ()
+        self._dt = 0.001
+        self._active = False
+
+    def setDt(self,dt):
+        self._dt = dt
+
+    def _m0(self):
+        #deltaX est censé etre la distance CG -> self, projetée sur l'axe X du sol !
+        deltaX = self.getPosition().projectionRef(self._referentielSol).prodScal(self._axeXSol)
+        return 1/self.father.getMasseTotal() + (deltaX**2)/self.father.getInertieTotal()
+
+    def reset(self):
+        self._thisTurnTotalForce = 0
+        self._active = False
+
+    def activer(self):
+        self._active = True
+
+    def _underground(self):
+        return self.getPosition().changeRef(self._referentielSol).getZ()>0
+
+    def ok(self):
+        if (not self._underground()) or (not self._active):
+            return True #Si on est au dessus du sol, pas de problème
+        #Sinon
+        return abs(self.getVitesse().getZ())<self._epsilon
 
     def getTorseurEffortsAttachement(self):
+        """Le dt doit etre celui qui sera utilisé pour l'intégration de la vitesse"""
+        if (not self._underground()) or (not self._active):
+            return T.Torseur(self.getPosition())
+        #Sinon
+        F = -1*self.getVitesse().getZ()*self._m0()/self._dt
+        #La force totale appliquée ne peut pas etre négative, donc au minimum, F peut valoir -thisTurnTotalForce
+        F = max(-1*self._thisTurnTotalForce,F)
+        self._thisTurnTotalForce += F
+        return T.Torseur(self.getPosition(),E.Vecteur(0,F,self._referentielSol),0)
 
-        #Poids
-        torseurPoids=self.getTorseurPoids()
-        #Poussee, ne prend pas en compte la montee ne puisance (puissance instantannee) = moteur tres reactif
-        torseurPoussee = T.Torseur(self.position,E.Vecteur(self.throttle,0,refAvion),0)
-        #Somme
-        return torseurPoussee + torseurPoids
+        
     
 class Planeur():
     def __init__(self):
