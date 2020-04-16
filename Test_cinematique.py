@@ -1,6 +1,6 @@
 import Solide as S
 from Torseur import Torseur
-from Espace import Vecteur,Referentiel
+from Espace import Vecteur,Referentiel,ReferentielAbsolu
 print("Creation d'un corps")
 corps = S.Corps()
 
@@ -11,8 +11,31 @@ referentielCorps = Referentiel("refCorps",0,Vecteur(10,10))
 
 print("Torseur Cinematique = ", corps.getTorseurCinematique())
 print("")
-
 print("Je veux maintenant connaitre la vitesse d'un point de ce solide sité a 1 0 du CG")
 print("Je devrais trouver une vitesse de (1 , -2) /!\ sens horaire")
 vecteurLiantCGauPoint = Vecteur(1,0,referentielCorps)
 print("Torseur Cinematique au point = ", corps.getTorseurCinematique().changePoint(vecteurLiantCGauPoint))
+print("")
+print("")
+print("Creation d'un attachement au point précédant")
+att = S.Attachements(vecteurLiantCGauPoint,father=corps)
+print("")
+print("Lecture de sa position dans le ref avion normalement (1,0)")
+print(att.getPosition())
+print("")
+print("Lecture de sa position dans le ref abs normalement (11,10)")
+print(att.getPosition().changeRef(ReferentielAbsolu()))
+print("")
+print("Lecture de sa vitesse normalement (1,-2) /!\ sens horaire")
+print(att.getVitesse())
+print("")
+print("Deplacement du corps en 15,12")
+corps.setTorseurCinematique(Torseur(Vecteur(15,12),Vecteur(1,-1),1))
+print("Torseur Cinematique = ", corps.getTorseurCinematique())
+print("")
+print("Lecture de la pos de l'attachement")
+print("Lecture de sa position dans le ref avion normalement (1,0)")
+print(att.getPosition())
+print("")
+print("Lecture de sa position dans le ref abs normalement (16,12)")
+print(att.getPosition().changeRef(ReferentielAbsolu()))
