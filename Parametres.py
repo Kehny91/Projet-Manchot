@@ -10,7 +10,7 @@ class ConstanteEnvironement:
 
 class ParametresModele:
     #parametre structure
-    masseTotal            = 1           #kg
+    masseTotal            = 0.3           #kg
     inertieTotal          = 0.1           #kg.m2, au centre de gravite par rapport a l axe Y
     
     #parametre aile droite

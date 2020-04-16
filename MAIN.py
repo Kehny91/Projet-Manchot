@@ -41,14 +41,12 @@ class LaPhysiqueDeTom:
     def __init__(self, flightData):
         # definition du modele
         self.planeur = S.Planeur()
-        self.planeur.setPosition(flightData.getPosAvion())
-        self.planeur.setAssiette(flightData.getAssiette())
-        self.planeur.setvitesse(flightData.getVAvion())
         pass
 
     def mettreAJourModeleAvecRawInput(self, rawInputDict):
         # Propagation du dictionnaire d'input dans le modele.
         # planeur.structure.setPosAvion
+        self.planeur.diffuseDictRawInput(rawInputDict)
         # Mise a jour des Cz, alpha etc...
         # Ne retourne rien
 
@@ -57,12 +55,16 @@ class LaPhysiqueDeTom:
     def compute(self, flightData, dt):
         # Grace au modele fraichement mis a jour, cette methode renvoie le nouveau flight data
         # Compute sera appelé en boucle par le PhysicThread
-        self.planeur.structure.updateCinematique(dt)
+        self.planeur.setPosition(flightData.getPosAvion())
+        self.planeur.setAssiette(flightData.getAssiette())
+        self.planeur.setvitesse(flightData.getVAvion())
+        self.planeur.structure.updateCinematique(0.1*dt)
         flightData.setPosAvion(self.planeur.getPosition())
         flightData.setAssiette(self.planeur.getAssiette())
         flightData.setVAvion(self.planeur.getVitesse())
         # Retourne un nouveau flight data
-        pass
+        return flightData
+        
 
 class PhysiqueDunObjetUniquementSoumisASonInertie(LaPhysiqueDeTom):
     def __init__(self):
