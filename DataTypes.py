@@ -166,10 +166,12 @@ class RapportDeCollision:
 L'ensemble des informations de vol
 """
 class FlightData:
-    def __init__(self, posAvion, vAvion, assiette):
+    def __init__(self, posAvion, vAvion, assiette, w):
         self._posAvion = posAvion
         self._vAvion = vAvion
         self._assiette = assiette
+        self._w = w
+        self._time = 0
 
     def getPosAvion(self):
         return self._posAvion
@@ -188,3 +190,15 @@ class FlightData:
 
     def setAssiette(self, assiette):
         self._assiette = assiette
+
+    def setW(self, w):
+        self._w = w
+
+    def getW(self):
+        return self._w
+
+    def setTime(self, t):
+        self._time = t
+
+    def getTime(self):
+        return self._time

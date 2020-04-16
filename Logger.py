@@ -31,13 +31,13 @@ class Logger:
         pathToFile = path.join(pathToFile,fileName)
         Logger.file = open(pathToFile, mode="w")
 
-        Logger.file.write("  time ,  posX  , posZ   ,assiette,   vX   ,   vZ   ,  elevG ,  elevD , flapsG , flapsD ,throttle,col1PosX,col1PosZ, col1FX , col1FZ ,col2PosX,col2PosZ, col2FX , col2FZ\n")
+        Logger.file.write("  time ,  posX  , posZ   ,assiette,   vX   ,   vZ   ,  vRot  ,  elevG ,  elevD , flapsG , flapsD ,throttle,col1PosX,col1PosZ, col1FX , col1FZ ,col2PosX,col2PosZ, col2FX , col2FZ\n")
         Logger.tStart = time.time()
 
     @staticmethod
     def pushNewLine(flightData, rawInput, rapportDeCollision):
         assert (Logger.file != None), "Il faut d'abord setup le logger"
-        line = formatFloat(time.time() - Logger.tStart)
+        line = formatFloat(flightData.getTime())
         line += " , "
 
         line += formatFloat(flightData.getPosAvion().getX())
@@ -53,6 +53,9 @@ class Logger:
         line += " , "
 
         line += formatFloat(flightData.getVAvion().getZ())
+        line += " , "
+
+        line += formatFloat(flightData.getW())
         line += " , "
 
         line += formatFloat(rawInput.getElevG())
