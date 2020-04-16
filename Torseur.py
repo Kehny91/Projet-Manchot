@@ -20,7 +20,28 @@ class Torseur:
         self.vecteur = E.Vecteur(pointx,pointz,ref)
         self.resultante = E.Vecteur(resultantex,resultantez,ref)
         self.moment = momenty
-        
+ 
+    """seter/geter
+
+    """   
+    def getVecteur(self):
+        return self.vecteur
+
+    def setVecteur(self, nexVecteur):
+        self.vecteur = nexVecteur
+    
+    def getResultante(self):
+        return self.resultante
+    
+    def setResultante(self,newResultante):
+        self.resultante = newResultante
+    
+    def getMoment(self):
+        return self.moment
+
+    def setMoment(self, newMoment):
+        self.moment = newMoment
+
     """__str__
         utile a l affichage
     """

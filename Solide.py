@@ -7,8 +7,8 @@ from Parametres import ParametresModele as PM
 
 
 refTerrestre = E.Referentiel("refTerrestre",10,E.Vecteur(1,1,E.ReferentielAbsolu())) 
-refAero = E.Referentiel("refAero",np.pi/2,E.Vecteur(3,5,E.ReferentielAbsolu())) 
-refAvion = E.Referentiel("refAero",np.pi/2,E.Vecteur(3,5,E.ReferentielAbsolu())) 
+refAero = E.Referentiel("refAero",np.pi/2,E.Vecteur(3,5,refTerrestre)) 
+refAvion = E.Referentiel("refAvion",np.pi/2,E.Vecteur(3,5,refTerrestre)) 
 
 """classe Corps
     permet de definir un le corps du planeur, le torseur cinematique est donnee au centre de gravite
@@ -20,18 +20,12 @@ refAvion = E.Referentiel("refAero",np.pi/2,E.Vecteur(3,5,E.ReferentielAbsolu()))
 class Corps:
     #Init
     def __init__(self, torseurCinetique = T.Torseur(), masse = 0, inertie = 0):
-        self.torseurCinetique = torseurCinetique
+        self.torseurCinematique = torseurCinetique
         self.masse = masse
         self.inertie = inertie
         self.father = None
         self.attachements = []
     #Geter/Seter
-
-    def getPosition(self):
-        return self.torseurCinematique.vecteur
-    
-    def setPosition(self,newPosition):
-        self.torseurCinematique.vecteur = newPosition
 
     def getTorseurCinematique(self):
         return self.torseurCinematique
@@ -60,7 +54,7 @@ class Corps:
     def getInertieTotal(self):
         inertietot = self.inertie
         for p in self.attachements:
-            vecteurAB = self.torseurCinematique.vecteur.pointToVect(p.torseurCinematique.vecteur)
+            vecteurAB = self.torseurCinematique.vecteur.pointToVect(p.position)
             inertietot += p.inertie + p.masse* (vecteurAB.x**2 + vecteurAB.z**2)
         return inertietot
 
@@ -68,24 +62,27 @@ class Corps:
         self.attachements.append(solide)
         solide.father = self
     
-    def updateCinematic(self,dt):
+    def updateCinematique(self,dt):
         torseurEfforts = self.computeTorseurEfforts()
         #PFD
-        accX = torseurEfforts.resultante.x/self.getMasseTotal()- self.torseurCinematique.moment*self.torseurCinematique.resulante.z
-        accZ = torseurEfforts.resultante.z/self.getMasseTotal() + self.torseurCinematique.moment*self.torseurCinematique.resulante.x
-        wpoint = torseurEfforts.moment/self.getInertieTotal
+        accX = torseurEfforts.resultante.x/self.getMasseTotal()- self.torseurCinematique.moment*self.torseurCinematique.resultante.z
+        accZ = torseurEfforts.resultante.z/self.getMasseTotal() + self.torseurCinematique.moment*self.torseurCinematique.resultante.x
+        wpoint = torseurEfforts.moment/self.getInertieTotal()
         #construction vecteur acceleration
         torseurAcc= T.Torseur(self.torseurCinematique.vecteur,E.Vecteur(accX,accZ,self.torseurCinematique.vecteur.ref),wpoint)
         #update
         self.torseurCinematique += torseurAcc*dt
-        self.torseurCinematique.vecteur += E.Vecteur(self.torseurCinematique.resulante)*dt
-        self.torseurCinematique.vecteur.ref.setAngleAxeY = torseurAcc.moment*dt
+        self.move(self.torseurCinematique,dt)
+    
+    def move(self,torseurCinematique,dt):
+        self.torseurCinematique.vecteur.ref.setOrigine(self.torseurCinematique.vecteur.ref.getOrigine() + torseurCinematique.resultante*dt)
+        self.torseurCinematique.vecteur.ref.setAngleAxeY(self.torseurCinematique.vecteur.ref.getAngleAxeY() + torseurCinematique.moment*dt )
 
     def computeTorseurEfforts(self):
         torseurEfforts = self.getTorseurPoids()
         for attachement in self.attachements:
             torseurEffortsAttachements = attachement.getTorseurEffortsAttachement()
-            torseursEfforts += torseurEffortsAttachements
+            torseurEfforts += torseurEffortsAttachements
         return torseurEfforts
 
     def getTorseurPoids(self):
@@ -113,8 +110,8 @@ class Attachements:
         self.position = newPosition
 
     def getVitesse(self):
-        vitessex =  self.father.getTorseurCinematique().resulante.x + self.father.getTorseurCinematique().moment * self.position.projectionRef(refTerrestre).z
-        vitessez =  self.father.getTorseurCinematique().resulante.x - self.father.getTorseurCinematique().moment * self.position.projectionRef(refTerrestre).x
+        vitessex =  self.father.getTorseurCinematique().resultante.x + self.father.getTorseurCinematique().moment * self.position.projectionRef(refTerrestre).z
+        vitessez =  self.father.getTorseurCinematique().resultante.x - self.father.getTorseurCinematique().moment * self.position.projectionRef(refTerrestre).x
         return E.Vecteur(vitessex,vitessez,refTerrestre)
 
     def getMasse(self):
@@ -135,7 +132,7 @@ class Attachements:
 
 class Propulseur(Attachements):
     def __init__(self,position = E.Vecteur(), masse = 0, inertie = 0, father = None, throttle = 0, throttleMax = 0):
-        super().__init__(self, position, masse, inertie, father)
+        super().__init__(position, masse, inertie, father)
         self.throttle = throttle
         self.throttleMax = throttleMax
 
@@ -152,7 +149,7 @@ class Propulseur(Attachements):
 
 class Aile(Attachements):
     def __init__(self,position = E.Vecteur(), masse = 0, inertie = 0, father = None, S=0, CzA=0, Alhpa_0 = 0, Cx0 = 0, k=0, angleAileron = 0, pourcentageAileron = 0):
-        super().__init__(self, position , masse, inertie, father)
+        super().__init__(position , masse, inertie, father)
         self.S = S
         self.CzA = CzA
         self.Alhpa_0 = Alhpa_0
@@ -176,16 +173,16 @@ class Aile(Attachements):
         drag = 0.5 * CE.rho_air_0 * V**2 *self.Cx(Alpha)
         return T.Torseur(self.position,E.Vecteur(drag,0,refAero),0)
     
-    def getTorseurEffortsAttachement(self,Alpha):
+    def getTorseurEffortsAttachement(self):
         torseurPoids = self.getTorseurPoids()
         V = self.getVitesse().norm()
-        torseurLift = self.getTorseurLift(Alpha,V)
-        torseurDrag = self.getTorseurDrag(Alpha,V)
+        torseurLift = self.getTorseurLift(self.father.getTorseurCinematique().vecteur.ref.angleAxeY,V)
+        torseurDrag = self.getTorseurDrag(self.father.getTorseurCinematique().vecteur.ref.angleAxeY,V)
         return torseurLift + torseurDrag + torseurPoids
 
 class Empennage(Attachements):
     def __init__(self,position = E.Vecteur(), masse = 0, inertie = 0, father = None, S=0, CzA=0, Alhpa_0 = 0, Cx0 = 0, k=0, angleEmpennage = 0, pourcentageEmpenage = 0):
-        super().__init__(self, position , masse, inertie, father)
+        super().__init__(position , masse, inertie, father)
         self.S = S
         self.CzA = CzA
         self.Alhpa_0 = Alhpa_0
@@ -212,35 +209,49 @@ class Empennage(Attachements):
         drag = 0.5 * CE.rho_air_0 * V**2 *self.Cx(Alpha)
         return T.Torseur(self.position,E.Vecteur(drag,0,refAero),0)
     
-    def getTorseurEffortsAttachement(self,Alpha):
+    def getTorseurEffortsAttachement(self):
         torseurPoids = self.getTorseurPoids()
         V = self.getVitesse().norm()
-        torseurLift = self.getTorseurLift(Alpha,V)
-        torseurDrag = self.getTorseurDrag(Alpha,V)
+        torseurLift = self.getTorseurLift(self.father.getTorseurCinematique().vecteur.ref.angleAxeY,V)
+        torseurDrag = self.getTorseurDrag(self.father.getTorseurCinematique().vecteur.ref.angleAxeY,V)
         return torseurLift + torseurDrag + torseurPoids
 
 class CorpsRigide(Attachements):
     def __init__(self,position = E.Vecteur(), father = None):
         super().__init__(self, position, 0, 0, father)
     
-class Planeur:
+class Planeur():
     def __init__(self):
-        self.structure = Corps(T.Torseur(E.Vecteur(0,0,refAvion),E.Vecteur(0,0,refTerrestre),0),PM.masseTotal,PM.inertieTotal)
-        self.aileD = Aile(E.Vecteur(PM.ailesD_x_Foyer,PM.ailesD_z_Foyer,refAvion), 0, 0, self.structure, PM.aileD_S, PM.aileD_CzA, PM.aileD_Alpha_0, PM.aileD_Cx0, PM.aileD_k, 0, PM.flapsDPourcentage)
+        self.structure = Corps(T.Torseur(E.Vecteur(0,0,refAvion),E.Vecteur(0,0,refTerrestre),0),PM.masseTotal,PM.inertieTotal)         
+    
+    def getPosition(self):
+        return self.structure.getTorseurCinematique().vecteur.changeRef(refTerrestre)
+    
+    def setPosition(self, newPosition):
+        self.structure.setTorseurCinematique(T.Torseur(newPosition,self.structure.torseurCinematique.resultante,self.structure.torseurCinematique.moment))
+    
+    def getAssiette(self):
+        return self.structure.getTorseurCinematique().vecteur.ref.getAngleAxeY()
+
+    def setAssiette(self, newAssiete):
+        self.structure.getTorseurCinematique().vecteur.ref.setAngleAxeY(newAssiete)
+
+    def getVitesse(self):
+        return self.structure.getTorseurCinematique().getResultante()
+    
+    def setvitesse(self, newVitesse):
+        return self.structure.getTorseurCinematique().setResultante(newVitesse)
+
+"""         self.aileD = Aile(E.Vecteur(PM.ailesD_x_Foyer,PM.ailesD_z_Foyer,refAvion), 0, 0, self.structure, PM.aileD_S, PM.aileD_CzA, PM.aileD_Alpha_0, PM.aileD_Cx0, PM.aileD_k, 0, PM.flapsDPourcentage)
         self.aileG = Aile(E.Vecteur(PM.ailesG_x_Foyer,PM.ailesG_z_Foyer,refAvion), 0, 0, self.structure, PM.aileG_S, PM.aileG_CzA, PM.aileG_Alpha_0, PM.aileG_Cx0, PM.aileG_k, 0, PM.flapsGPourcentage)
+        self.structure.addAttachement(self.aileD)
         self.empennageD = Empennage(E.Vecteur(PM.empennageD_x_Foyer,PM.empennageD_z_Foyer,refAvion), 0, 0, self.structure, PM.empennageD_S, PM.empennageD_Alpha_0, PM.empennageD_Cx0, PM.empennageD_k,0 ,PM.elevDMaxAnglePourcentage)
         self.empennageG = Empennage(E.Vecteur(PM.empennageG_x_Foyer,PM.empennageG_z_Foyer,refAvion), 0, 0, self.structure, PM.empennageG_S, PM.empennageG_Alpha_0, PM.empennageG_Cx0, PM.empennageG_k,0 ,PM.elevGMaxAnglePourcentage)
-        self.propulseur = Propulseur(E.Vecteur(PM.engine_x,PM.engine_z, refAvion),0,0,self.structure,0,PM.engineMaxThrust)
+        self.propulseur = Propulseur(E.Vecteur(PM.engine_x,PM.engine_z, refAvion),0,0,self.structure,0.1,PM.engineMaxThrust)
         self.structure.addAttachement(self.aileD)
         self.structure.addAttachement(self.aileG)
         self.structure.addAttachement(self.empennageD)
         self.structure.addAttachement(self.empennageG)
-        self.structure.addAttachement(self.propulseur)
-
-        
-        
-    def setPosition(self,position):
-        self.structure.setPosition(position)
-
-    def setVitesse(self,vitesse):
-        self.structure.setTorseurCinematique(vitesse)
+        self.structure.addAttachement(self.propulseur)  """
+       
+    

@@ -11,7 +11,7 @@ class ConstanteEnvironement:
 class ParametresModele:
     #parametre structure
     masseTotal            = 1           #kg
-    inertieTotal          = 0           #kg.m2, au centre de gravite par rapport a l axe Y
+    inertieTotal          = 0.1           #kg.m2, au centre de gravite par rapport a l axe Y
     
     #parametre aile droite
     ailesD_x_Foyer      = 0.01          #m, coordonnee x entre le centre de gravite et le foyer de l'aile
@@ -63,8 +63,8 @@ class ParametresModele:
     elevGMaxAnglePourcentage = 0.2      #%, pourcentage d'influence de la gouverne sur l incidence de l empennage
     
     #parametre propulseur
-    engine_x            = 0             #m, coordonne x entre le centre de gravite et le centre de poussee du propulseur
-    engine_z            = 0.05          #m, coordonne z entre le centre de gravite et le centre de poussee du propulseur
+    engine_x            = 0.05          #m, coordonne x entre le centre de gravite et le centre de poussee du propulseur
+    engine_z            = 0.1             #m, coordonne z entre le centre de gravite et le centre de poussee du propulseur
     engineMaxThrust     = 200           #Newton
 
     #parametre auto-pilote

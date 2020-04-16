@@ -168,7 +168,7 @@ class Vecteur:
             
     def prodVect(self, vecteur):
         if self.ref == vecteur.ref:
-            return self.x*vecteur.z - self.z*vecteur.x
+            return self.z*vecteur.x - self.x*vecteur.z
         else:
             return self.prodVect(vecteur.projectionRef(self.ref))
     

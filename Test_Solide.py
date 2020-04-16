@@ -18,3 +18,12 @@ aileD = S.Aile(T.Torseur(E.Vecteur(1,1,refAvion),E.Vecteur(0,0),0),0.2,0))
 aileronD = S.Aileron(T.Torseur(E.vecteur(0,0,)))
 
 aileG = S.Aile(T.Torseur(E.Vecteur(1,1,refAvion),E.Vecteur(0,0),0),0.2,0)) """
+planeur = S.Planeur()
+print(planeur.getPosition())
+torseurCinematique = T.Torseur(E.Vecteur(1,1,S.refAvion),E.Vecteur(10,0,S.refTerrestre),0)
+#print(torseurCinematique.resultante)
+planeur.structure.updateCinematique(0.1)
+print(planeur.getPosition())
+""" print(planeur.structure.computeTorseurEfforts())
+print(planeur.propulseur.getTorseurEffortsAttachement())
+print(planeur.propulseur.getTorseurEffortsAttachement().changePoint(E.Vecteur(0,0,S.refAvion))) """

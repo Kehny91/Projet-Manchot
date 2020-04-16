@@ -38,19 +38,29 @@ class MixerThread(th.Thread):
         self._pauser.requestPause()
 
 class LaPhysiqueDeTom:
-    def __init__(self):
+    def __init__(self, flightData):
         # definition du modele
+        self.planeur = S.Planeur()
+        self.planeur.setPosition(flightData.getPosAvion())
+        self.planeur.setAssiette(flightData.getAssiette())
+        self.planeur.setvitesse(flightData.getVAvion())
         pass
 
     def mettreAJourModeleAvecRawInput(self, rawInputDict):
         # Propagation du dictionnaire d'input dans le modele.
+        # planeur.structure.setPosAvion
         # Mise a jour des Cz, alpha etc...
         # Ne retourne rien
+
         pass
 
     def compute(self, flightData, dt):
         # Grace au modele fraichement mis a jour, cette methode renvoie le nouveau flight data
         # Compute sera appelé en boucle par le PhysicThread
+        self.planeur.structure.updateCinematique(dt)
+        flightData.setPosAvion(self.planeur.getPosition())
+        flightData.setAssiette(self.planeur.getAssiette())
+        flightData.setVAvion(self.planeur.getVitesse())
         # Retourne un nouveau flight data
         pass
 
@@ -72,7 +82,7 @@ class PhysicThread(th.Thread):
         self._mddRawInput = mddRawInput
         self._period = 1/frequence
         self._continue = True
-        self._physique = PhysiqueDunObjetUniquementSoumisASonInertie()
+        self._physique = LaPhysiqueDeTom(self._mddFlightData)
 
     def run(self):
         while self._continue:
