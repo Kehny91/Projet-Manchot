@@ -21,9 +21,24 @@ def flattenFichier(fichier):
     return out
 
 
+
 class Polaire:
+    """ Alpha positif = portance"""
+    def getCl(self, alpha, v):
+        pass
+
+    def getCd(self, alpha, v):
+        pass
+
+    def getCM(self, alpha, v):
+        pass 
+
+class PolaireTabulee(Polaire):
+    """ Alpha positif = portance"""
     def __init__(self,fichierCL,fichierCD,fichierCM_BA):
         """Attention l'ordre doit etre: alpha 1m/s alpha 10m/s alpha 15m/s alpha 20m/s alpha 40m/s alpha 5m/s alpha 60m/s"""
+        super(PolaireTabulee,self).__init__()
+        
         self._fichierCL = open(fichierCL,"r")
         self._fichierCD = open(fichierCD,"r")
         self._fichierCM_BA = open(fichierCM_BA,"r")
@@ -120,6 +135,24 @@ class Polaire:
             t = (alphas[i] - alpha)/(alphas[i]-alphas[i-1])
             return values[i]*(1-t) + values[i-1]*t
         
+class PolaireLineaire(Polaire):
+    """ Alpha positif = portance"""
+    def __init__(self, Cza, a0, Cd0, k, Cm0):
+        self._Cza = Cza
+        self._a0 = a0
+        self._Cd0 = Cd0
+        self._k = k
+        self._Cm0 = Cm0
+    
+    def getCl(self, alpha, v):
+        return self._Cza*(alpha + self._a0)
+
+    def getCd(self, alpha, v):
+        Cl = self.getCl(alpha, v)
+        return self._Cd0 + (Cl**2)*self._k
+
+    def getCM(self, alpha, v):
+        return self._Cm0 #Si on est au foyer, c'est constant
 
 
 
