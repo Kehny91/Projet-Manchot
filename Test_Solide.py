@@ -16,7 +16,7 @@ planeur.setAssiette(0.1)
 #torseurCinematique = T.Torseur(E.Vecteur(1,1,S.refAvion),E.Vecteur(10,0,S.refTerrestre),0)
 #print(torseurCinematique.resultante)
 print("vitesseAile")
-print(planeur.aileD.getVitesse())
+print(planeur.aileD.getVitesse())ed
 print("torseurEffort")
 print(planeur.structure.computeTorseurEfforts().changeRef(S.refTerrestre))
 print("update")
