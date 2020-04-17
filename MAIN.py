@@ -12,6 +12,7 @@ from DataManagement import MDD,Pauser
 import Parametres
 import Modes as M
 import Solide as S
+import Espace as E
 
 class MixerThread(th.Thread):
     def __init__(self,mddRawInput,mddPilotInput,frequence):
@@ -56,11 +57,11 @@ class LaPhysiqueDeTom:
         # Grace au modele fraichement mis a jour, cette methode renvoie le nouveau flight data
         # Compute sera appelé en boucle par le PhysicThread
         self.planeur.setPosition(flightData.getPosAvion())
-        self.planeur.setAssiette(flightData.getAssiette())
-        self.planeur.setvitesse(flightData.getVAvion())
-        self.planeur.structure.updateCinematique(0.05*dt)
+        self.planeur.setAssiette(E.normalise(flightData.getAssiette()))
+        self.planeur.setVitesse(flightData.getVAvion())
+        self.planeur.structure.updateCinematique(0.1*dt)
         flightData.setPosAvion(self.planeur.getPosition())
-        flightData.setAssiette(self.planeur.getAssiette())
+        flightData.setAssiette(E.normalise(self.planeur.getAssiette()))
         flightData.setVAvion(self.planeur.getVitesse())
         flightData.setTime(flightData.getTime()+dt)
         # Retourne un nouveau flight data

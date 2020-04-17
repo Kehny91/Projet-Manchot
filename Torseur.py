@@ -75,7 +75,7 @@ class Torseur:
     """        
     def changePoint(self,vecteur):
         if self.vecteur.ref == vecteur.ref:
-            Mpoint = self.moment + vecteur.pointToVect(self.resultante).prodVect(self.resultante)
+            Mpoint = self.moment + self.vecteur.pointToVect(vecteur).prodVect(self.resultante)
             return Torseur(vecteur,self.resultante,Mpoint)
         else:
             return self.changeRef(vecteur.ref).changePoint(vecteur)
