@@ -58,10 +58,11 @@ class LaPhysiqueDeTom:
         self.planeur.setPosition(flightData.getPosAvion())
         self.planeur.setAssiette(flightData.getAssiette())
         self.planeur.setvitesse(flightData.getVAvion())
-        self.planeur.structure.updateCinematique(0.1*dt)
+        self.planeur.structure.updateCinematique(0.05*dt)
         flightData.setPosAvion(self.planeur.getPosition())
         flightData.setAssiette(self.planeur.getAssiette())
         flightData.setVAvion(self.planeur.getVitesse())
+        flightData.setTime(flightData.getTime()+dt)
         # Retourne un nouveau flight data
         return flightData
         
@@ -212,7 +213,7 @@ if __name__ == "__main__":
 
     referentielSol = Referentiel("referentielSol",0,Vecteur(0,0))
 
-    mddFlightData = MDD(FlightData(Vecteur(0,1,referentielSol),Vecteur(1,-0.1,referentielSol),0.3), True)
+    mddFlightData = MDD(FlightData(Vecteur(0,1,referentielSol),Vecteur(1,-0.1,referentielSol),0.3,0), True)
     mddRawInput = MDD(RawInput(0.30,0.30,0.50,0.50,0.100), False)
     mddPilotInput = MDD(PilotInput(0,0,0), False)
     mddAutoPilotInput = MDD(AutoPilotInput(Vecteur(0,0,referentielSol)), True)

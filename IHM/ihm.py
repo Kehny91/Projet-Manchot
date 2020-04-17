@@ -2,6 +2,7 @@ from IHM.Widgets.ControlSurfaceWidget import ControlSurfaceWidget
 from IHM.Widgets.EngineWidget import EngineWidget
 from IHM.Widgets.GraphWidget import GraphWidget
 from IHM.Widgets.SliderControlWidget import SliderControlWidget
+from IHM.Widgets.ValueWidget import ValueWidget
 from DataTypes import PilotInput,AutoPilotInput,RawInput
 import PyQt5.QtWidgets as QtWidgets
 import PyQt5
@@ -135,6 +136,55 @@ class _InputWidget(QtWidgets.QWidget):
             stack.widget(index).refreshAllSliders()
 
 
+class _TelemetryWidget(QtWidgets.QWidget):
+    def __init__(self, mddFlightData, parent):
+        super(_TelemetryWidget,self).__init__(parent)
+
+        self._mddFlightData = mddFlightData
+
+        myLayout = QtWidgets.QGridLayout(self)
+        
+        self._speedWidget = ValueWidget(self,"Speed","m/s",0)
+        myLayout.addWidget(self._speedWidget,0,0)
+
+        self._verticalSpeedWidget = ValueWidget(self,"VerticalSpeed","m/s",0)
+        myLayout.addWidget(self._verticalSpeedWidget,1,0)
+
+        self._assietteWidget = ValueWidget(self,"Assiette","°",0)
+        myLayout.addWidget(self._assietteWidget,2,0)
+
+        self._timeWidget = ValueWidget(self,"Time","s",0)
+        myLayout.addWidget(self._timeWidget,0,1)
+
+        self._posXWidget = ValueWidget(self,"posX","m",0)
+        myLayout.addWidget(self._posXWidget,1,1)
+
+        self._posZWidget = ValueWidget(self,"posZ","m",0)
+        myLayout.addWidget(self._posZWidget,2,1)
+
+    def refresh(self):
+        fd = self._mddFlightData.read()
+        self._speedWidget.setValue(fd.getVAvion().norm())
+        self._speedWidget.refresh()
+
+        self._verticalSpeedWidget.setValue(fd.getVAvion().getZ())
+        self._verticalSpeedWidget.refresh()
+
+        self._assietteWidget.setValue(fd.getAssiette()*TODEG)
+        self._assietteWidget.refresh()
+
+        self._timeWidget.setValue(fd.getTime())
+        self._timeWidget.refresh()
+
+        self._posXWidget.setValue(fd.getPosAvion().getX())
+        self._posXWidget.refresh()
+
+        self._posZWidget.setValue(fd.getPosAvion().getZ())
+        self._posZWidget.refresh()
+
+
+
+
 
 class IHM(QtWidgets.QWidget):
     def __init__(self, mddFlightData, mddMode, mddRawInput, mddPilotInput, mddAutoPilotInput, frequenceAffichage):
@@ -167,6 +217,9 @@ class IHM(QtWidgets.QWidget):
         self._userInput = _InputWidget(mddMode,mddRawInput,mddPilotInput,mddAutoPilotInput)
         myLayout.addWidget(self._userInput,3,4,2,1)
 
+        self._telemetry = _TelemetryWidget(mddFlightData,self)
+        myLayout.addWidget(self._telemetry,5,0,1,5)
+
         self._updateThread = _UpdateThread(mddFlightData,frequenceAffichage)
         self._updateThread.refreshPlease.connect(self.refresh)
 
@@ -179,3 +232,4 @@ class IHM(QtWidgets.QWidget):
     def refresh(self):
         self._affichageAvion.refresh()
         self._affichageRawInput.refresh()
+        self._telemetry.refresh()
