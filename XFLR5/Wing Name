@@ -1,0 +1,63 @@
+ProjetXFLR5
+0.0                          | Mach
+0     0     0.0              | iYsym  iZsym  Zsym
+
+389700.000    181.146   2200.000  | Sref   Cref   Bref
+# Note : check consistency of area unit above with length units of the file
+   0.000     0.000     0.000          | Xref   Yref   Zref
+ 0.00                        | CDp  (optional)
+
+
+
+#=================================================
+SURFACE                      | (keyword)
+Wing Name
+#Nchord    Cspace   [ Nspan Sspace ]
+13        1.0
+
+INDEX                        | (keyword)
+846930886                          | Lsurf
+
+YDUPLICATE
+0.0
+
+SCALE
+1.0  1.0  1.0
+
+TRANSLATE
+0.0  0.0  0.0
+
+ANGLE
+   0.000                         | dAinc
+
+
+#______________
+SECTION                                                     |  (keyword)
+   0.0000    0.0000    0.0000  200.0000   0.000   19    3   | Xle Yle Zle   Chord Ainc   [ Nspan Sspace ]
+
+AFIL 0.0 1.0
+Empl.dat
+
+#______________
+SECTION                                                     |  (keyword)
+   0.0000  310.0000    0.0000  200.0000   0.000   20    1   | Xle Yle Zle   Chord Ainc   [ Nspan Sspace ]
+
+AFIL 0.0 1.0
+Empl.dat
+
+#______________
+SECTION                                                     |  (keyword)
+  40.0000  930.0000    0.0000  160.0000   0.000   20    1   | Xle Yle Zle   Chord Ainc   [ Nspan Sspace ]
+
+AFIL 0.0 1.0
+Mid.dat
+
+#______________
+SECTION                                                     |  (keyword)
+  68.0000 1100.0000    0.0000   90.0000   0.000   20    1   | Xle Yle Zle   Chord Ainc   [ Nspan Sspace ]
+
+AFIL 0.0 1.0
+Tip.dat
+
+
+
