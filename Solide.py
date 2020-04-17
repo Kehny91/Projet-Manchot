@@ -229,7 +229,7 @@ class CorpsRigide(Attachements):
         #Poids
         torseurPoids=self.getTorseurPoids()
         #Poussee, ne prend pas en compte la montee ne puisance (puissance instantannee) = moteur tres reactif
-        torseurPoussee = T.Torseur(self.position,E.Vecteur(self.throttle,0,refAvion),0)
+        torseurPoussee = T.Torseur(self.position,E.Vecteur(0,0,refAvion),0)
         #Somme
         return torseurPoussee + torseurPoids
     
