@@ -9,9 +9,8 @@ import Parametres as P
 
 
 refTerrestre = E.Referentiel("refTerrestre",0,E.Vecteur(0,0,E.ReferentielAbsolu())) 
-refAvion = E.Referentiel("refAvion",0,E.Vecteur(13,15,refTerrestre)) 
-#refAero = E.Referentiel("refAero",0,E.Vecteur(0,0,refAvion)) 
-refAero = E.Referentiel("refAero",0,E.Vecteur(13,15,refTerrestre)) 
+refAvion = E.Referentiel("refAvion",0,E.Vecteur(0,0,refTerrestre)) 
+refAero = E.Referentiel("refAero",0,E.Vecteur(0,0,refTerrestre)) 
 
 
 class Corps:
