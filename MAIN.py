@@ -54,13 +54,14 @@ class LaPhysiqueDeTom:
         # Grace au modele fraichement mis a jour, cette methode renvoie le nouveau flight data
         # Compute sera appelé en boucle par le PhysicThread
         self.planeur.setPosition(flightData.getPosAvion())
-        print(flightData.getVAvion())
         self.planeur.setAssiette(E.normalise(flightData.getAssiette()))
         self.planeur.setVitesse(flightData.getVAvion())
+        self.planeur.setVitesseRot(flightData.getW())
         self.planeur.structure.updateCinematique(dt)
         flightData.setPosAvion(self.planeur.getPosition())
         flightData.setAssiette(E.normalise(self.planeur.getAssiette()))
         flightData.setVAvion(self.planeur.getVitesse())
+        flightData.setW(self.planeur.getVitesseRot())
         flightData.setTime(flightData.getTime()+dt)
         # Retourne un nouveau flight data
         return flightData
@@ -77,7 +78,7 @@ class PhysiqueDunObjetUniquementSoumisASonInertie(LaPhysiqueDeTom):
         return flightData
 
 
-DILATATION = 4
+DILATATION = 2
 class PhysicThread(th.Thread):
     def __init__(self,mddFlightData, mddRawInput, frequence):
         super(PhysicThread,self).__init__()
@@ -213,7 +214,7 @@ if __name__ == "__main__":
 
     referentielSol = Referentiel("referentielSol",0,Vecteur(0,0))
 
-    mddFlightData = MDD(FlightData(Vecteur(0,20,referentielSol),Vecteur(20,0,referentielSol),0,0), True)
+    mddFlightData = MDD(FlightData(Vecteur(0,10,referentielSol),Vecteur(10,0,referentielSol),0.3,-10), True)
     mddRawInput = MDD(RawInput(0.30,0.30,0.50,0.50,0.100), False)
     mddPilotInput = MDD(PilotInput(0,0,0), False)
     mddAutoPilotInput = MDD(AutoPilotInput(Vecteur(0,0,referentielSol)), True)
