@@ -10,14 +10,14 @@ class ConstanteEnvironement:
 
 class ParametresModele:
     #parametre structure
-    masseTotal            = 10           #kg
+    masseTotal            = 3           #kg
     inertieTotal          = 0.045           #kg.m2, au centre de gravite par rapport a l axe Y
     
     #parametre aile droite
     #ailesD_x_Foyer      = 0.01          #m, coordonnee x entre le centre de gravite et le foyer de l'aile
     #ailesD_z_Foyer      = 0.01          #m, coordonnee z entre le centre de gravite et le foyer de l'aile
-    ailesD_x_BA      = -0.2             #m, coordonnee x entre le centre de gravite et le bord d'attaque de l'aile
-    ailesD_z_BA      = 0.01             #m, coordonnee z entre le centre de gravite et le bord d'attaque de l'aile
+    ailesD_x_BA      = 0.1             #m, coordonnee x entre le centre de gravite et le bord d'attaque de l'aile
+    ailesD_z_BA      = 0.02             #m, coordonnee z entre le centre de gravite et le bord d'attaque de l'aile
     ailesD_corde        = 0.2           #m
     aileD_S             = 0.25           #m2, surface alaire
     aileD_Alpha_0       = -2.5*TORAD    #Radians
@@ -31,7 +31,7 @@ class ParametresModele:
     #parametre aile gauche
     #ailesG_x_Foyer      = 0.01          #m, coordonnee x entre le centre de gravite et le foyer de l'aile
     #ailesG_z_Foyer      = 0.01          #m, coordonnee z entre le centre de gravite et le foyer de l'aile
-    ailesG_x_BA      = -0.2             #m, coordonnee x entre le centre de gravite et le bord d'attaque de l'aile
+    ailesG_x_BA      = 0.1             #m, coordonnee x entre le centre de gravite et le bord d'attaque de l'aile
     ailesG_z_BA      = 0.01             #m, coordonnee z entre le centre de gravite et le bord d'attaque de l'aile
     ailesG_corde        = 0.2           #m
     aileG_S             = 0.25           #m2, surface alaire
