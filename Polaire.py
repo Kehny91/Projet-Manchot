@@ -146,11 +146,17 @@ class PolaireLineaire(Polaire):
         self._Cm0 = Cm0
     
     def getCl(self, alpha, v):
-        return self._Cza*sin(alpha + self._a0)
+        if (abs(alpha)<20*TORAD):
+            return self._Cza*sin(alpha + self._a0)
+        else: #DECROCHAGE:
+            return 1.0 * sin(2*alpha*TORAD)
 
     def getCd(self, alpha, v):
-        Cl = self.getCl(alpha, v)
-        return self._Cd0 + (Cl**2)*self._k 
+        if (abs(alpha)<20*TORAD):
+            Cl = self.getCl(alpha, v)
+            return self._Cd0 + (Cl**2)*self._k
+        else:
+            return 2.0 * abs(sin(alpha*TORAD))
 
     def getCm(self, alpha, v):
         return self._Cm0 + 0.25*self.getCl(alpha,v)
