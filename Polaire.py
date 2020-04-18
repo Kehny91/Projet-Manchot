@@ -103,7 +103,8 @@ class PolaireTabulee(Polaire):
             i+=1
 
         if (i == 0 or i == n-1): #DECROCHAGE
-            return 1.0 * sin(2*alpha*TORAD)
+            #return 1.0 * sin(2*alpha*TORAD)
+            return values[i]
         else:
             t = (alphas[i] - alpha)/(alphas[i]-alphas[i-1])
             return values[i]*(1-t) + values[i-1]*t
@@ -149,7 +150,11 @@ class PolaireLineaire(Polaire):
         if (abs(alpha)<20*TORAD):
             return self._Cza*sin(alpha + self._a0)
         else: #DECROCHAGE:
-            return 1.0 * sin(2*alpha)
+            #return 1.0 * sin(2*alpha)
+            if (alpha>0):
+                return self._Cza*sin(20*TORAD + self._a0)
+            else:
+                return self._Cza*sin(-20*TORAD + self._a0)
 
     def getCd(self, alpha, v):
         if (abs(alpha)<20*TORAD):
@@ -159,7 +164,13 @@ class PolaireLineaire(Polaire):
             return 2.0 * abs(sin(alpha))
 
     def getCm(self, alpha, v):
-        return self._Cm0 + 0.25*self.getCl(alpha,v)
+        if (abs(alpha)<20*TORAD):
+            return self._Cm0 + 0.25*self.getCl(alpha,v)
+        else:
+            if (alpha>0):
+                return self._Cm0 + 0.25*self.getCl(20*TORAD,v)
+            else:
+                return self._Cm0 + 0.25*self.getCl(-20*TORAD,v)
 
 
 
