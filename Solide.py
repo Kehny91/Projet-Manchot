@@ -75,14 +75,14 @@ class Corps:
     def updateCinematique(self,dt):
         torseurEfforts = self.computeTorseurEfforts().changePoint(self.torseurCinematique.vecteur) # C'est mieux de faire le PFD au CG...
         #PFD
-        accX = torseurEfforts.resultante.x/self.getMasseTotal()- self.torseurCinematique.moment*self.torseurCinematique.resultante.z
-        accZ = torseurEfforts.resultante.z/self.getMasseTotal() + self.torseurCinematique.moment*self.torseurCinematique.resultante.x
+        accX = torseurEfforts.resultante.x/self.getMasseTotal() #- self.torseurCinematique.moment*self.torseurCinematique.resultante.z
+        accZ = torseurEfforts.resultante.z/self.getMasseTotal() #+ self.torseurCinematique.moment*self.torseurCinematique.resultante.x
         wpoint = torseurEfforts.moment/self.getInertieTotal()
         vecteurAcce = E.Vecteur(accX,accZ,refTerrestre)
         #construction vecteur acceleration
         torseurAcc= T.Torseur(self.torseurCinematique.vecteur,vecteurAcce.projectionRef(refAvion),wpoint)
         #update
-        self.torseurCinematique += torseurAcc*dt
+        self.torseurCinematique = self.torseurCinematique + torseurAcc*dt
         self.move(self.torseurCinematique,dt)
 
     def move(self,torseurCinematique,dt):
@@ -174,7 +174,7 @@ class SurfacePortante(Attachements):
         drag = Fdyn*self.polaire.getCd(alpha,v)
         moment = Fdyn*self.polaire.getCm(alpha,v) # IL FAUDRA CHECKER LES SIGNES !!!
         #return T.Torseur(self.position.changeRef(refAero),E.Vecteur(-drag,lift,refAero),moment)
-        return T.Torseur(self.position.changeRef(refAvion),E.Vecteur(-drag,lift,refAero),moment)
+        return T.Torseur(self.position.changeRef(refAvion),E.Vecteur(-drag,lift,refAvion),moment)
 
     #TODO Tom. Attention, alpha c'est bien une différence d'angle entre l'angle du fuselage et l'angle de la vitesse
     def getAlpha(self):
