@@ -16,12 +16,12 @@ class ParametresModele:
     #parametre aile droite
     #ailesD_x_Foyer      = 0.01          #m, coordonnee x entre le centre de gravite et le foyer de l'aile
     #ailesD_z_Foyer      = 0.01          #m, coordonnee z entre le centre de gravite et le foyer de l'aile
-    ailesD_x_BA      = 0.1             #m, coordonnee x entre le centre de gravite et le bord d'attaque de l'aile
+    ailesD_x_BA      = -0.15             #m, coordonnee x entre le centre de gravite et le bord d'attaque de l'aile
     ailesD_z_BA      = 0.02             #m, coordonnee z entre le centre de gravite et le bord d'attaque de l'aile
     ailesD_corde        = 0.2           #m
     aileD_S             = 0.25           #m2, surface alaire
     aileD_Alpha_0       = -2.5*TORAD    #Radians
-    aileD_CzA           = 0.944*TORAD         #SI, dCz/dAlpha
+    aileD_CzA           = 0.1/TORAD         #SI, dCz/dAlpha
     aileD_Cx0           = 0.00            #SI, trainee a portance nulle
     aileD_Allongemet    = 10000            #SI, allongement = envergure**2/SurfacePortante
     aileD_k             =   1/(pi*aileD_Allongemet) #SI, 
@@ -32,12 +32,12 @@ class ParametresModele:
     #parametre aile gauche
     #ailesG_x_Foyer      = 0.01          #m, coordonnee x entre le centre de gravite et le foyer de l'aile
     #ailesG_z_Foyer      = 0.01          #m, coordonnee z entre le centre de gravite et le foyer de l'aile
-    ailesG_x_BA      = 0.1             #m, coordonnee x entre le centre de gravite et le bord d'attaque de l'aile
+    ailesG_x_BA      = -0.15             #m, coordonnee x entre le centre de gravite et le bord d'attaque de l'aile
     ailesG_z_BA      = 0.01             #m, coordonnee z entre le centre de gravite et le bord d'attaque de l'aile
     ailesG_corde        = 0.2           #m
     aileG_S             = 0.25           #m2, surface alaire
     aileG_Alpha_0       = -2.5*TORAD      #Radians
-    aileG_CzA           = 0.944*TORAD             #SI, dCz/dAlpha
+    aileG_CzA           = 0.1/TORAD             #SI, dCz/dAlpha
     aileG_Cx0           = 0.00             #SI, trainee a portance nulle
     aileG_Allongemet    = 10000            #SI, allongement = envergure**2/SurfacePortante
     aileG_k             =   1/(pi*aileD_Allongemet) #SI, 
@@ -53,7 +53,7 @@ class ParametresModele:
     empennageD_corde = 0.1              #m
     empennageD_S        = 0.1           #m2, surface ailaire
     empennageD_Alpha_0  = -2.5*TORAD       #Radians
-    empennageD_CzA      = 0.944*TORAD              #SI, dCz/dAlpha
+    empennageD_CzA      = 0.1/TORAD              #SI, dCz/dAlpha
     empennageD_Cx0      = 0             #SI, trainee a portance nulle
     empennageD_Allongement= 10000          #SI, allongement = envergure**2/SurfacePortante
     empennageD_k =1/(pi*empennageD_Allongement) #SI, 
@@ -70,7 +70,7 @@ class ParametresModele:
     empennageG_corde = 0.1              #m
     empennageG_S        = 0.1           #m2, surface ailaire
     empennageG_Alpha_0  = -2.5*TORAD       #Radians
-    empennageG_CzA      = 0.944*TORAD             #SI, dCz/dAlpha
+    empennageG_CzA      = 0.1/TORAD             #SI, dCz/dAlpha
     empennageG_Cx0      = 0             #SI, trainee a portance nulle
     empennageG_Allongement= 1000          #SI, allongement = envergure**2/SurfacePortante
     empennageG_k =1/(pi*empennageG_Allongement) #SI, 
