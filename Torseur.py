@@ -46,7 +46,7 @@ class Torseur:
         utile a l affichage
     """
     def __str__(self):
-        return ("Le torseur s'esprime dans le referentiel : " + str(self.vecteur.ref.nom) +
+        return ("Le torseur s'exprime dans le referentiel : " + str(self.vecteur.ref.nom) +
         " au point : " + '('+str(self.vecteur.x) +','+str(self.vecteur.z) + ')' +
         "\nles composantes de la resultante sont les suivantes : " + '('+str(self.resultante.x) +','+str(self.resultante.z) + ')'+
         "\nles composantes du moment sont les suivantes : " + str(self.moment))

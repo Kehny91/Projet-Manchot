@@ -72,7 +72,7 @@ class Corps:
         self.corpsRigides.append(cr)
     
     def updateCinematique(self,dt):
-        torseurEfforts = self.computeTorseurEfforts()
+        torseurEfforts = self.computeTorseurEfforts().changePoint(self.torseurCinematique.vecteur) # C'est mieux de faire le PFD au CG...
         #PFD
         accX = torseurEfforts.resultante.x/self.getMasseTotal()- self.torseurCinematique.moment*self.torseurCinematique.resultante.z
         accZ = torseurEfforts.resultante.z/self.getMasseTotal() + self.torseurCinematique.moment*self.torseurCinematique.resultante.x
@@ -90,10 +90,14 @@ class Corps:
         #TODO Mettre a jour refaero ?
 
     def computeTorseurEfforts(self):
-        torseurEfforts = self.getTorseurPoids()
+        print("Torseur computations")
+        torseurEfforts = self.getTorseurPoids().changePoint(self.torseurCinematique.vecteur)
+        print("Poids = ",torseurEfforts)
+        print
         for attachement in self.attachements:
-            torseurEffortsAttachements = attachement.getTorseurEffortsAttachement()
+            torseurEffortsAttachements = attachement.getTorseurEffortsAttachement().changePoint(self.torseurCinematique.vecteur)
             torseurEfforts += torseurEffortsAttachements
+            print("Attachement situé en ",attachement.position," = ", torseurEffortsAttachements)
         return torseurEfforts
 
     def getTorseurPoids(self):
