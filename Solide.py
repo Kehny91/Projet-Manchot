@@ -168,11 +168,9 @@ class Propulseur(Attachements):
         self.throttle = self.throttleMax*throttlePercent
 
     def getTorseurEffortsAttachement(self):
-
         #Poussee, ne prend pas en compte la montee ne puisance (puissance instantannee) = moteur tres reactif
-        #torseurPoussee = T.Torseur(self.position,E.Vecteur(self.throttle,0,refAvion),0)
-        #return torseurPoussee
-        return T.Torseur(self.position,E.Vecteur(0,0,refAvion),0) #DEBUGUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUG
+        torseurPoussee = T.Torseur(self.position,E.Vecteur(self.throttle,0,refAvion),0)
+        return torseurPoussee
 
 class SurfacePortante(Attachements):
     def __init__(self, position, polaire, S, corde, masse = 0, inertie = 0, father = None):
@@ -208,7 +206,7 @@ class Aile(SurfacePortante):
 
     def getAlpha(self):
         alphaFixe = super().getAlpha() #Appelle SurfacePortante.getAlpha()
-        return  alphaFixe + 0*self.angleFlaps*self.pourcentageInfluenceFlaps #DEBUUUUUUUUUUUUUUG
+        return  alphaFixe + self.angleFlaps*self.pourcentageInfluenceFlaps
         
     def getTorseurEffortsAttachement(self):
         v = self.getVitesse().norm()
@@ -230,7 +228,7 @@ class Empennage(SurfacePortante):
 
     def getAlpha(self):
         alphaFixe = super().getAlpha() #Appelle SurfacePortante.getAlpha()
-        return  alphaFixe + 0*self.angleGouverne*self.pourcentageInfluenceGouverne #DEBUUUUUUUUUUUUUUG
+        return  alphaFixe + self.angleGouverne*self.pourcentageInfluenceGouverne
         
     def getTorseurEffortsAttachement(self):
         v = self.getVitesse().norm()
