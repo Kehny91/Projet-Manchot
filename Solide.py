@@ -162,16 +162,17 @@ class Propulseur(Attachements):
         return T.Torseur(self.position,E.Vecteur(0,0,refAvion),0) #DEBUGUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUG
 
 class SurfacePortante(Attachements):
-    def __init__(self, position, polaire, S, masse = 0, inertie = 0, father = None):
+    def __init__(self, position, polaire, S, corde, masse = 0, inertie = 0, father = None):
         super().__init__(position , masse, inertie, father)
         self.S = S
         self.polaire = polaire
+        self.corde = corde
 
     def getResultanteAero(self, alpha, v): #Permet de ne pas creer puis sommer les torseur
         Fdyn = 0.5 * CE.rho_air_0 *self.S*(v**2)
         lift = Fdyn*self.polaire.getCl(alpha,v)
         drag = Fdyn*self.polaire.getCd(alpha,v)
-        moment = Fdyn*self.polaire.getCm(alpha,v) # IL FAUDRA CHECKER LES SIGNES !!!
+        moment = Fdyn*self.polaire.getCm(alpha,v)*self.corde # IL FAUDRA CHECKER LES SIGNES !!!
         #return T.Torseur(self.position.changeRef(refAero),E.Vecteur(-drag,lift,refAero),moment)
         return T.Torseur(self.position.changeRef(refAvion),E.Vecteur(-drag,lift,refAvion),moment)
 
@@ -186,8 +187,8 @@ class SurfacePortante(Attachements):
 
 
 class Aile(SurfacePortante):
-    def __init__(self, position, polaire, S, pourcentageInfluenceFlaps, angleMaxFlaps, masse = 0, inertie = 0, father = None):
-        super().__init__(position, polaire , S, masse, inertie, father)
+    def __init__(self, position, polaire, S, corde, pourcentageInfluenceFlaps, angleMaxFlaps, masse = 0, inertie = 0, father = None):
+        super().__init__(position, polaire , S, corde, masse, inertie, father)
         self.angleFlaps = 0
         self.pourcentageInfluenceFlaps = pourcentageInfluenceFlaps
         self.angleMaxFlaps = angleMaxFlaps
@@ -208,8 +209,8 @@ class Aile(SurfacePortante):
 
 
 class Empennage(SurfacePortante):
-    def __init__(self, position, polaire, S, pourcentageInfluenceGouverne, angleMaxGouverne, masse = 0, inertie = 0, father = None):
-        super().__init__(position, polaire , S, masse, inertie, father)
+    def __init__(self, position, polaire, S, corde, pourcentageInfluenceGouverne, angleMaxGouverne, masse = 0, inertie = 0, father = None):
+        super().__init__(position, polaire , S, corde, masse, inertie, father)
         self.angleGouverne = 0
         self.pourcentageInfluenceGouverne = pourcentageInfluenceGouverne
         self.angleMaxGouverne = angleMaxGouverne
@@ -297,11 +298,11 @@ class Planeur():
         #self.structure.addAttachement(self.aileG)
 
         #self.empennageD = Empennage(E.Vecteur(PM.empennageD_x_Foyer,PM.empennageD_z_Foyer,refAvion), 0, 0, self.structure, PM.empennageD_S,PM.empennageD_CzA, PM.empennageD_Alpha_0, PM.empennageD_Cx0, PM.empennageD_k,0 ,PM.elevDMaxAnglePourcentage)
-        self.empennageD = Empennage(E.Vecteur(PM.empennageD_x_BA,PM.empennageD_z_BA,refAvion),PolaireLineaire(PM.empennageD_CzA, PM.empennageD_Alpha_0,PM.empennageD_Cx0, PM.empennageD_k,0),PM.empennageD_S,PM.elevDPourcentage,PM.elevDMaxAngle,father= self.structure)
+        self.empennageD = Empennage(E.Vecteur(PM.empennageD_x_BA,PM.empennageD_z_BA,refAvion),PolaireLineaire(PM.empennageD_CzA, PM.empennageD_Alpha_0,PM.empennageD_Cx0, PM.empennageD_k,0),PM.empennageD_S,PM.empennageD_corde,PM.elevDPourcentage,PM.elevDMaxAngle,father= self.structure)
         self.structure.addAttachement(self.empennageD)
 
         #self.empennageG = Empennage(E.Vecteur(PM.empennageG_x_Foyer,PM.empennageG_z_Foyer,refAvion), 0, 0, self.structure, PM.empennageG_S,PM.empennageG_CzA, PM.empennageG_Alpha_0, PM.empennageG_Cx0, PM.empennageG_k,0 ,PM.elevGMaxAnglePourcentage)
-        self.empennageG = Empennage(E.Vecteur(PM.empennageG_x_BA,PM.empennageG_z_BA,refAvion),PolaireLineaire(PM.empennageG_CzA, PM.empennageG_Alpha_0,PM.empennageG_Cx0, PM.empennageG_k,0),PM.empennageG_S,PM.elevGPourcentage,PM.elevGMaxAngle,father= self.structure)
+        self.empennageG = Empennage(E.Vecteur(PM.empennageG_x_BA,PM.empennageG_z_BA,refAvion),PolaireLineaire(PM.empennageG_CzA, PM.empennageG_Alpha_0,PM.empennageG_Cx0, PM.empennageG_k,0),PM.empennageG_S,PM.empennageG_corde,PM.elevGPourcentage,PM.elevGMaxAngle,father= self.structure)
         self.structure.addAttachement(self.empennageG)
 
 
