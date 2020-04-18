@@ -1,6 +1,8 @@
 import Solide as S
 from Torseur import Torseur
 from Espace import Vecteur,Referentiel,ReferentielAbsolu
+
+
 print("Creation d'un corps")
 corps = S.Corps()
 refTerrestre = Referentiel("refterrestre", 0,Vecteur(0,0))
@@ -66,3 +68,31 @@ print("vitesse de l'att dans ref terrestre normalement (0,-1)")
 print(att.getVitesse())
 print("Affichage du torseur au CG")
 print(tor.changePoint(corps.getTorseurCinematique().getVecteur()))
+
+print("==== VECTEUR COPY ====")
+"""
+torseur1 = Torseur(Vecteur(0,0,referentielCorps),Vecteur(0,1,referentielCorps),0)
+print("torseur1 ",torseur1)
+torseur2 = torseur1 * 2
+torseur2 = torseur2.changePoint(Vecteur(1,1))
+print("")
+print("torseur1 ",torseur1)
+print("torseur2 ",torseur2) 
+torseur2 = torseur2.changeRef(refTerrestre)
+print("")
+print("torseur1 ",torseur1)
+print("torseur2 ",torseur2) 
+torseur2 += torseur1
+print("")
+print("torseur1 ",torseur1)
+print("torseur2 ",torseur2) 
+"""
+torseur1 = Torseur(Vecteur(0,0,referentielCorps),Vecteur(0,1,referentielCorps),0)
+print(" ini torseur1",torseur1)
+print(" ini torseur1 refT",torseur1.changeRef(refTerrestre))
+torseur2 = Torseur(Vecteur(0,0,referentielCorps),Vecteur(10,10,referentielCorps),0)
+torseur3 = torseur1 + torseur2 # Torseur 3 a peut etre son vecteur qui est lié a torseur 1
+torseur3.vecteur.ref.setOrigine(Vecteur(15,15,refTerrestre))
+print("")
+print(" fin torseur1",torseur1)
+print(" fin torseur1 refT",torseur1.changeRef(refTerrestre))

@@ -1,4 +1,5 @@
 import Espace as E
+from copy import copy
 
 """ Classe Torseur
     permet de definir un torseur
