@@ -127,13 +127,13 @@ class Vecteur:
         return Vecteur(self.x*np.cos(angle)+self.z*np.sin(angle) , self.z*np.cos(angle) - self.x*np.sin(angle),self.ref)
     
     def projectionRef(self,ref): 
-        angleRefY = normalise(ref.angleAxeY-self.ref.angleAxeY)
+        angleRefY = normalise(self.ref.angleAxeY-ref.angleAxeY)
         rotated = self.rotate(angleRefY)
         return Vecteur(rotated.x,rotated.z,ref)
 
-    """Renvoie le vecteur entre les deux origine Oerf-Oself
-    """
+    
     def translationRef(self,ref):
+        """Renvoie le vecteur entre les deux origine Oref->Oself dans les coordonnee de ref"""
         return Vecteur(self.ref.origine.x-ref.origine.x,self.ref.origine.z-ref.origine.z).projectionRef(ref)                       
                       
     def changeRef(self,ref):
