@@ -22,11 +22,11 @@ torseur1 = T.Torseur(E.Vecteur(3,5,refTerrestre), E.Vecteur(1,1,refTerrestre), 8
 torseur1bis = T.Torseur()
 torseur1bis.init2(1,1,refTerrestre,3,1,8.5)
 torseur2 = T.Torseur()
-""" torseur2.init2(3,4,refAero,4,5,1.1)
-origineRefAero = E.Vecteur(3,5,refTerrestre) """
-
-torseur2.init2(0.08,0,refAero,200,0,0)
+torseur2.init2(3,4,refAero,4,5,1.1)
 origineRefAero = E.Vecteur(3,5,refTerrestre)
+
+""" torseur2.init2(0.08,0,refAero,200,0,0)
+origineRefAero = E.Vecteur(3,5,refTerrestre) """
 
 pointA = E.Vecteur(7,1,refAero)
 """ print("Init_Fin")
@@ -69,6 +69,6 @@ print("\n")
 print(torseur2.changeRef(refTerrestre)) """
 #print(torseur1)
 #print(origineRefAero.pointToVect(torseur2.vecteur).prodVect(E.Vecteur(141,141,refTerrestre)))#
-#print(torseur2.changePoint(origineRefAero))
+print(torseur2.changePoint(origineRefAero))
 #print(torseur1 + torseur2.changePoint(origineRefAero))
 #print(torseur1 + torseur2)
