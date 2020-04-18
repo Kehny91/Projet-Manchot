@@ -85,6 +85,7 @@ class Corps:
         self.move(self.torseurCinematique,dt)
 
     def move(self,torseurCinematique,dt):
+        print("W = ",torseurCinematique.moment)
         self.torseurCinematique.vecteur.ref.setOrigine(self.torseurCinematique.vecteur.ref.getOrigine() + torseurCinematique.resultante.projectionRef(refTerrestre)*dt)
         self.torseurCinematique.vecteur.ref.setAngleAxeY(self.torseurCinematique.vecteur.ref.getAngleAxeY() + torseurCinematique.moment*dt )
         #TODO Mettre a jour refaero ?
@@ -167,7 +168,7 @@ class SurfacePortante(Attachements):
         self.S = S
         self.polaire = polaire
         self.corde = corde
-
+    """
     def getResultanteAero(self, alpha, v): #Permet de ne pas creer puis sommer les torseur
         Fdyn = 0.5 * CE.rho_air_0 *self.S*(v**2)
         lift = Fdyn*self.polaire.getCl(alpha,v)
@@ -175,9 +176,14 @@ class SurfacePortante(Attachements):
         moment = Fdyn*self.polaire.getCm(alpha,v)*self.corde # IL FAUDRA CHECKER LES SIGNES !!!
         #return T.Torseur(self.position.changeRef(refAero),E.Vecteur(-drag,lift,refAero),moment)
         return T.Torseur(self.position.changeRef(refAvion),E.Vecteur(-drag,lift,refAvion),moment)
+    """
+    def getResultanteAero(self, alpha, v):
+        return T.Torseur(self.position.changeRef(refAvion),E.Vecteur(0,0,refAvion),0) #DEBUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUG
+
 
     #TODO Tom. Attention, alpha c'est bien une différence d'angle entre l'angle du fuselage et l'angle de la vitesse
     def getAlpha(self):
+        print("Assiette = ",refAvion.getAngleAxeY())
         vitesseRefSol = self.getVitesse()
         angleVitesse = vitesseRefSol.arg()
         refAero.setOrigine(refAvion.getOrigine()) # Ces 2 lignes
