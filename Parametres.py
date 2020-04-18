@@ -18,6 +18,7 @@ class ParametresModele:
     #ailesD_z_Foyer      = 0.01          #m, coordonnee z entre le centre de gravite et le foyer de l'aile
     ailesD_x_BA      = -0.2             #m, coordonnee x entre le centre de gravite et le bord d'attaque de l'aile
     ailesD_z_BA      = 0.01             #m, coordonnee z entre le centre de gravite et le bord d'attaque de l'aile
+    ailesD_corde        = 0.2           #m
     aileD_S             = 0.25           #m2, surface alaire
     aileD_Alpha_0       = -2.5*TORAD    #Radians
     aileD_CzA           = 0.944*TORAD         #SI, dCz/dAlpha
@@ -32,6 +33,7 @@ class ParametresModele:
     #ailesG_z_Foyer      = 0.01          #m, coordonnee z entre le centre de gravite et le foyer de l'aile
     ailesG_x_BA      = -0.2             #m, coordonnee x entre le centre de gravite et le bord d'attaque de l'aile
     ailesG_z_BA      = 0.01             #m, coordonnee z entre le centre de gravite et le bord d'attaque de l'aile
+    ailesG_corde        = 0.2           #m
     aileG_S             = 0.25           #m2, surface alaire
     aileG_Alpha_0       = -2.5*TORAD      #Radians
     aileG_CzA           = 0.944*TORAD             #SI, dCz/dAlpha
@@ -46,6 +48,7 @@ class ParametresModele:
     #empennageD_z_Foyer  = -0.1          #m, coordonnee z entre le centre de gravite et le foyer de la gouverne
     empennageD_x_BA  = -1.5             #m, coordonnee x entre le centre de gravite et le BA du stab
     empennageD_z_BA  = -0.1             #m, coordonnee z entre le centre de gravite et le BA du stab
+    empennageD_corde = 0.1              #m
     empennageD_S        = 0.1           #m2, surface ailaire
     empennageD_Alpha_0  = -2.5*TORAD       #Radians
     empennageD_CzA      = 0.944*TORAD              #SI, dCz/dAlpha
@@ -61,6 +64,7 @@ class ParametresModele:
     #empennageG_z_Foyer  = -0.1          #m, coordonnee z entre le centre de gravite et le foyer de la gouverne
     empennageG_x_BA  = -1.5             #m, coordonnee x entre le centre de gravite et le BA du stab
     empennageG_z_BA  = -0.1             #m, coordonnee z entre le centre de gravite et le BA du stab
+    empennageG_corde = 0.1              #m
     empennageG_S        = 0.1           #m2, surface ailaire
     empennageG_Alpha_0  = -2.5*TORAD       #Radians
     empennageG_CzA      = 0.944*TORAD             #SI, dCz/dAlpha

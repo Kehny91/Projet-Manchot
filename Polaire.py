@@ -150,13 +150,10 @@ class PolaireLineaire(Polaire):
 
     def getCd(self, alpha, v):
         Cl = self.getCl(alpha, v)
-        return self._Cd0 + (Cl**2)*self._k
-        return 0
+        return self._Cd0 + (Cl**2)*self._k 
 
     def getCm(self, alpha, v):
-        return self._Cm0
-        pass#TODO
-        #return self._Cm0 + #TODO car on renvoie au bord d'attaque
+        return self._Cm0 + 0.25*self.getCl(alpha,v)
 
 
 
