@@ -194,5 +194,8 @@ class Vecteur:
             n= self.norm()
             return self*(1/n)
 
+    #Il faut utiliser atan2 pour eviter les divisions par 0
+    #Et rajouter un moins pour le sens trigo
     def arg(self):
-        return np.arctan(self.z/self.x)
+        """ Renvoie l'angle du vecteur dans son referentiel"""
+        return -1*np.arctan2(self.z,self.x)

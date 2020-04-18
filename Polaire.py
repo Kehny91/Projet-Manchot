@@ -30,7 +30,8 @@ class Polaire:
     def getCd(self, alpha, v):
         pass
 
-    def getCM(self, alpha, v):
+    def getCm(self, alpha, v):
+        """ Au bord d'attaque !! """
         pass 
 
 class PolaireTabulee(Polaire):
@@ -121,7 +122,7 @@ class PolaireTabulee(Polaire):
             t = (alphas[i] - alpha)/(alphas[i]-alphas[i-1])
             return values[i]*(1-t) + values[i-1]*t
 
-    def getCM(self, alpha, v):
+    def getCm(self, alpha, v):
         alpha = alpha*TODEG
         v = self._round(v)
         (alphas,values) = self._getAlphaAndValues("CM",v)
@@ -130,10 +131,10 @@ class PolaireTabulee(Polaire):
         while (i<n-1 and alpha > alphas[i]):
             i+=1
         if (i == 0 or i == n-1):
-            return values[i]
+            return -1 * values[i] #SENS HORAIRE
         else:
             t = (alphas[i] - alpha)/(alphas[i]-alphas[i-1])
-            return values[i]*(1-t) + values[i-1]*t
+            return -1 * (values[i]*(1-t) + values[i-1]*t) #SENS HORAIRE
         
 class PolaireLineaire(Polaire):
     """ Alpha positif = portance"""
@@ -145,14 +146,17 @@ class PolaireLineaire(Polaire):
         self._Cm0 = Cm0
     
     def getCl(self, alpha, v):
-        return self._Cza*(alpha + self._a0)
+        return self._Cza*sin(alpha + self._a0)
 
     def getCd(self, alpha, v):
         Cl = self.getCl(alpha, v)
         return self._Cd0 + (Cl**2)*self._k
+        return 0
 
-    def getCM(self, alpha, v):
-        return self._Cm0 #Si on est au foyer, c'est constant
+    def getCm(self, alpha, v):
+        return self._Cm0
+        pass#TODO
+        #return self._Cm0 + #TODO car on renvoie au bord d'attaque
 
 
 
@@ -161,12 +165,12 @@ class PolaireLineaire(Polaire):
 
 
 if __name__ =="__main__":
-    c = Polaire("./XFLR5/CLwing","./XFLR5/CDwing","./XFLR5/CMwingBA")
+    c = PolaireTabulee("./XFLR5/CLwing","./XFLR5/CDwing","./XFLR5/CMwingBA")
 
-    alphas = [-pi/2 + (i/1000)*(pi) for i in range(1000)]
+    alphas = [-pi/2 + (i/1000)*(pi*3/2) for i in range(1000)]
     Cl = [c.getCl(a,676) for a in alphas]
     Cd = [c.getCd(a,676) for a in alphas]
-    Cm = [c.getCM(a,676) for a in alphas]
+    Cm = [c.getCm(a,676) for a in alphas]
 
     plt.plot(alphas,Cl)
     plt.plot(alphas,Cd)

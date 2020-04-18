@@ -75,7 +75,7 @@ class Torseur:
     """        
     def changePoint(self,vecteur):
         if self.vecteur.ref == vecteur.ref:
-            Mpoint = self.moment + self.vecteur.pointToVect(vecteur).prodVect(self.resultante)
+            Mpoint = self.moment + vecteur.pointToVect(self.vecteur).prodVect(self.resultante)   #TODO Tom Je t'avais dit que t'avais fait un BAABR et pas un BABAR...
             return Torseur(vecteur,self.resultante,Mpoint)
         else:
             return self.changeRef(vecteur.ref).changePoint(vecteur)
