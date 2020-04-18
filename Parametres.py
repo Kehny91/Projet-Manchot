@@ -26,7 +26,8 @@ class ParametresModele:
     aileD_Allongemet    = 10000            #SI, allongement = envergure**2/SurfacePortante
     aileD_k             =   1/(pi*aileD_Allongemet) #SI, 
     flapsDMaxAngle      = 45*TORAD      #Radians
-    flapsDPourcentage   = 0.5           #%, pourcentage d influence du flap sur l incidence de l aile
+    flapsDPourcentageCordeArticulee   = 0.5           #%
+    flapsDPourcentageEnvergureArticulee   = 0.5
     
     #parametre aile gauche
     #ailesG_x_Foyer      = 0.01          #m, coordonnee x entre le centre de gravite et le foyer de l'aile
@@ -41,7 +42,8 @@ class ParametresModele:
     aileG_Allongemet    = 10000            #SI, allongement = envergure**2/SurfacePortante
     aileG_k             =   1/(pi*aileD_Allongemet) #SI, 
     flapsGMaxAngle      = 45*TORAD      #Radians
-    flapsGPourcentage   = 0.5           #%, pourcentage d influence du flap sur l incidence de l aile
+    flapsGPourcentageCordeArticulee   = 0.5           #%
+    flapsGPourcentageEnvergureArticulee   = 0.5
     
     #parametre empennage droit
     #empennageD_x_Foyer  = 0.01          #m, coordonnee x entre le centre de gravite et le foyer de la gouverne
@@ -56,7 +58,8 @@ class ParametresModele:
     empennageD_Allongement= 10000          #SI, allongement = envergure**2/SurfacePortante
     empennageD_k =1/(pi*empennageD_Allongement) #SI, 
     elevDMaxAngle        = 20*TORAD     #Radians
-    elevDPourcentage = 0.2      #%, pourcentage d'influence de la gouverne sur l incidence de l empennage
+    elevDPourcentageCordeArticulee   = 0.5           #%
+    elevDPourcentageEnvergureArticulee   = 0.5
     
     
     #parametre empennage gauche
@@ -72,7 +75,8 @@ class ParametresModele:
     empennageG_Allongement= 1000          #SI, allongement = envergure**2/SurfacePortante
     empennageG_k =1/(pi*empennageG_Allongement) #SI, 
     elevGMaxAngle        = 20*TORAD     #Radians
-    elevGPourcentage = 0.2      #%, pourcentage d'influence de la gouverne sur l incidence de l empennage
+    elevGPourcentageCordeArticulee   = 0.5           #%
+    elevGPourcentageEnvergureArticulee   = 0.5
     
     #parametre propulseur
     engine_x            = .08          #m, coordonne x entre le centre de gravite et le centre de poussee du propulseur

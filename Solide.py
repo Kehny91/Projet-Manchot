@@ -194,10 +194,11 @@ class SurfacePortante(Attachements):
 
 
 class Aile(SurfacePortante):
-    def __init__(self, position, polaire, S, corde, pourcentageInfluenceFlaps, angleMaxFlaps, masse = 0, inertie = 0, father = None):
+    def __init__(self, position, polaire, S, corde, pourcentageCordeArticulee, pourcentageEnvergureArticulee, angleMaxFlaps, masse = 0, inertie = 0, father = None):
         super().__init__(position, polaire , S, corde, masse, inertie, father)
         self.angleFlaps = 0
-        self.pourcentageInfluenceFlaps = pourcentageInfluenceFlaps
+        self.pourcentageCordeArticulee = pourcentageCordeArticulee
+        self.pourcentageEnvergureArticulee = pourcentageEnvergureArticulee
         self.angleMaxFlaps = angleMaxFlaps
     
     def setBraquageFlaps(self, pourcentageBraquageFlaps):
@@ -205,21 +206,29 @@ class Aile(SurfacePortante):
 
     def getAlpha(self):
         alphaFixe = super().getAlpha() #Appelle SurfacePortante.getAlpha()
-        return  alphaFixe + self.angleFlaps*self.pourcentageInfluenceFlaps
+        theta = self.angleFlaps
+        if self.pourcentageCordeArticulee == 0:
+            gainAlpha = 0
+        else:
+            gainAlpha = np.arctan2(np.sin(theta),(1-self.pourcentageCordeArticulee)/self.pourcentageCordeArticulee + np.cos(theta))
+        return  (alphaFixe , gainAlpha)
         
     def getTorseurEffortsAttachement(self):
         v = self.getVitesse().norm()
-        alpha = self.getAlpha()
-        torseurTot = self.getResultanteAero(alpha,v)
-        print("aile v = ",v,"alpha = ", alpha," fzAvion = ",torseurTot.getResultante().projectionRef(refAvion).getZ()," fxAvion = ", torseurTot.getResultante().projectionRef(refAvion).getX())
+        (alphaFixe,gainAlpha) = self.getAlpha()
+        torseurFixe = self.getResultanteAero(alphaFixe,v)*(1 - self.pourcentageEnvergureArticulee)
+        torseurFlaps = self.getResultanteAero(alphaFixe + gainAlpha,v)*self.pourcentageEnvergureArticulee
+        torseurTot = torseurFixe + torseurFlaps
+        print("aile v = ",v,"alpha = ", alphaFixe + gainAlpha," fzAvion = ",torseurTot.getResultante().projectionRef(refAvion).getZ()," fxAvion = ", torseurTot.getResultante().projectionRef(refAvion).getX())
         return torseurTot
 
 
 class Empennage(SurfacePortante):
-    def __init__(self, position, polaire, S, corde, pourcentageInfluenceGouverne, angleMaxGouverne, masse = 0, inertie = 0, father = None):
+    def __init__(self, position, polaire, S, corde, pourcentageCordeArticulee, pourcentageEnvergureArticulee, angleMaxGouverne, masse = 0, inertie = 0, father = None):
         super().__init__(position, polaire , S, corde, masse, inertie, father)
         self.angleGouverne = 0
-        self.pourcentageInfluenceGouverne = pourcentageInfluenceGouverne
+        self.pourcentageCordeArticulee = pourcentageCordeArticulee
+        self.pourcentageEnvergureArticulee = pourcentageEnvergureArticulee
         self.angleMaxGouverne = angleMaxGouverne
     
     def setBraquageGouverne(self, pourcentageBraquageGouverne):
@@ -227,13 +236,20 @@ class Empennage(SurfacePortante):
 
     def getAlpha(self):
         alphaFixe = super().getAlpha() #Appelle SurfacePortante.getAlpha()
-        return  alphaFixe + self.angleGouverne*self.pourcentageInfluenceGouverne
+        theta = self.angleGouverne
+        if self.pourcentageCordeArticulee == 0:
+            gainAlpha = 0
+        else:
+            gainAlpha = np.arctan2(np.sin(theta),(1-self.pourcentageCordeArticulee)/self.pourcentageCordeArticulee + np.cos(theta))
+        return  (alphaFixe , gainAlpha)
         
     def getTorseurEffortsAttachement(self):
         v = self.getVitesse().norm()
-        alpha = self.getAlpha()
-        torseurTot = self.getResultanteAero(alpha,v)
-        print("emp v = ",v,"alpha = ", alpha," fzavion = ",torseurTot.getResultante().projectionRef(refAvion).getZ()," fxavion = ", torseurTot.getResultante().projectionRef(refAvion).getX(),"vZ = ", self.getVitesse().projectionRef(refAvion).getZ())
+        (alphaFixe,gainAlpha) = self.getAlpha()
+        torseurFixe = self.getResultanteAero(alphaFixe,v)*(1 - self.pourcentageEnvergureArticulee)
+        torseurGouverne = self.getResultanteAero(alphaFixe + gainAlpha,v)*self.pourcentageEnvergureArticulee
+        torseurTot = torseurFixe + torseurGouverne
+        print("emp v = ",v,"alpha = ", alphaFixe + gainAlpha," fzavion = ",torseurTot.getResultante().projectionRef(refAvion).getZ()," fxavion = ", torseurTot.getResultante().projectionRef(refAvion).getX(),"vZ = ", self.getVitesse().projectionRef(refAvion).getZ())
         return torseurTot
 
 
@@ -298,20 +314,20 @@ class Planeur():
 
         #self.aileD = Aile(E.Vecteur(PM.ailesD_x_Foyer,PM.ailesD_z_Foyer,refAvion), 0, 0, self.structure, PM.aileD_S, PM.aileD_CzA, PM.aileD_Alpha_0, PM.aileD_Cx0, PM.aileD_k, 0, PM.flapsDPourcentage)
         #self.aileD = Aile(E.Vecteur(PM.ailesD_x_BA,PM.ailesD_z_BA,refAvion),PolaireTabulee("./XFLR5/CLwing","./XFLR5/CDwing","./XFLR5/CMwingBA"), PM.aileD_S, PM.ailesD_corde, PM.flapsDPourcentage, PM.flapsDMaxAngle, father = self.structure)
-        self.aileD = Aile(E.Vecteur(PM.ailesD_x_BA,PM.ailesD_z_BA,refAvion),PolaireLineaire(PM.aileD_CzA, PM.aileD_Alpha_0, PM.aileD_Cx0, PM.aileD_k,0), PM.aileD_S, PM.ailesD_corde, PM.flapsDPourcentage, PM.flapsDMaxAngle, father = self.structure)
+        self.aileD = Aile(E.Vecteur(PM.ailesD_x_BA,PM.ailesD_z_BA,refAvion),PolaireLineaire(PM.aileD_CzA, PM.aileD_Alpha_0, PM.aileD_Cx0, PM.aileD_k,0), PM.aileD_S, PM.ailesD_corde, PM.flapsDPourcentageCordeArticulee,PM.flapsDPourcentageEnvergureArticulee, PM.flapsDMaxAngle, father = self.structure)
         self.structure.addAttachement(self.aileD)
 
         #self.aileG = Aile(E.Vecteur(PM.ailesG_x_Foyer,PM.ailesG_z_Foyer,refAvion), 0, 0, self.structure, PM.aileG_S, PM.aileG_CzA, PM.aileG_Alpha_0, PM.aileG_Cx0, PM.aileG_k, 0, PM.flapsGPourcentage)
         #self.aileG = Aile(E.Vecteur(PM.ailesG_x_BA,PM.ailesG_z_BA,refAvion),PolaireTabulee("./XFLR5/CLwing","./XFLR5/CDwing","./XFLR5/CMwingBA"), PM.aileG_S, PM.ailesG_corde, PM.flapsGPourcentage, PM.flapsGMaxAngle, father = self.structure)
-        self.aileG = Aile(E.Vecteur(PM.ailesG_x_BA,PM.ailesG_z_BA,refAvion),PolaireLineaire(PM.aileG_CzA, PM.aileG_Alpha_0, PM.aileG_Cx0, PM.aileG_k,0), PM.aileG_S, PM.ailesG_corde, PM.flapsGPourcentage, PM.flapsGMaxAngle, father = self.structure)
+        self.aileG = Aile(E.Vecteur(PM.ailesG_x_BA,PM.ailesG_z_BA,refAvion),PolaireLineaire(PM.aileG_CzA, PM.aileG_Alpha_0, PM.aileG_Cx0, PM.aileG_k,0), PM.aileG_S, PM.ailesG_corde, PM.flapsGPourcentageCordeArticulee,PM.flapsGPourcentageEnvergureArticulee, PM.flapsGMaxAngle, father = self.structure)
         self.structure.addAttachement(self.aileG)
 
         #self.empennageD = Empennage(E.Vecteur(PM.empennageD_x_Foyer,PM.empennageD_z_Foyer,refAvion), 0, 0, self.structure, PM.empennageD_S,PM.empennageD_CzA, PM.empennageD_Alpha_0, PM.empennageD_Cx0, PM.empennageD_k,0 ,PM.elevDMaxAnglePourcentage)
-        self.empennageD = Empennage(E.Vecteur(PM.empennageD_x_BA,PM.empennageD_z_BA,refAvion),PolaireLineaire(PM.empennageD_CzA, PM.empennageD_Alpha_0,PM.empennageD_Cx0, PM.empennageD_k,0),PM.empennageD_S,PM.empennageD_corde,PM.elevDPourcentage,PM.elevDMaxAngle,father= self.structure)
+        self.empennageD = Empennage(E.Vecteur(PM.empennageD_x_BA,PM.empennageD_z_BA,refAvion),PolaireLineaire(PM.empennageD_CzA, PM.empennageD_Alpha_0,PM.empennageD_Cx0, PM.empennageD_k,0),PM.empennageD_S,PM.empennageD_corde,PM.elevDPourcentageCordeArticulee,PM.elevDPourcentageEnvergureArticulee,PM.elevDMaxAngle,father= self.structure)
         self.structure.addAttachement(self.empennageD)
 
         #self.empennageG = Empennage(E.Vecteur(PM.empennageG_x_Foyer,PM.empennageG_z_Foyer,refAvion), 0, 0, self.structure, PM.empennageG_S,PM.empennageG_CzA, PM.empennageG_Alpha_0, PM.empennageG_Cx0, PM.empennageG_k,0 ,PM.elevGMaxAnglePourcentage)
-        self.empennageG = Empennage(E.Vecteur(PM.empennageG_x_BA,PM.empennageG_z_BA,refAvion),PolaireLineaire(PM.empennageG_CzA, PM.empennageG_Alpha_0,PM.empennageG_Cx0, PM.empennageG_k,0),PM.empennageG_S,PM.empennageG_corde,PM.elevGPourcentage,PM.elevGMaxAngle,father= self.structure)
+        self.empennageG = Empennage(E.Vecteur(PM.empennageG_x_BA,PM.empennageG_z_BA,refAvion),PolaireLineaire(PM.empennageG_CzA, PM.empennageG_Alpha_0,PM.empennageG_Cx0, PM.empennageG_k,0),PM.empennageG_S,PM.empennageG_corde,PM.elevGPourcentageCordeArticulee,PM.elevGPourcentageEnvergureArticulee,PM.elevGMaxAngle,father= self.structure)
         self.structure.addAttachement(self.empennageG)
 
     def diffuseDictRawInput(self,rawInputDict):
