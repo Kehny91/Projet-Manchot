@@ -26,13 +26,15 @@ class Torseur:
 
     """   
     def getVecteur(self):
-        return self.vecteur
+        """ Renvoie une copy du vecteur position du torseur"""
+        return copy(self.vecteur)
 
     def setVecteur(self, nexVecteur):
         self.vecteur = nexVecteur
     
     def getResultante(self):
-        return self.resultante
+        """ Renvoie une copy du vecteur resultante du torseur"""
+        return copy(self.resultante)
     
     def setResultante(self,newResultante):
         self.resultante = newResultante
@@ -61,7 +63,7 @@ class Torseur:
 
         
     """changeRef
-        permet de changer le referentiel dans lequel le torseur est exprimé
+        permet de renvoyer un nouveau torseur où le referentiel dans lequel le torseur est exprimé a été changé
         @param Refenciel : ref
     """
     def changeRef(self,ref):
@@ -71,13 +73,13 @@ class Torseur:
             return Torseur(self.vecteur.changeRef(ref),self.resultante.projectionRef(ref),self.moment) #En 2D, le changement de repere n'affecte pas le moment
   
     """changePoint
-       Se place dans un referentiel commun (en l'occurance self.ref) et change le point d application du torseur
+       Se place dans un referentiel commun (en l'occurance self.ref) et renvoie un torseur où le point d application du torseur a été changé
        @param Vecteur : vecteur, le point ou on souhaite exprimer le torseur
     """        
     def changePoint(self,vecteur):
         if self.vecteur.ref == vecteur.ref:
-            Mpoint = self.moment + vecteur.pointToVect(self.vecteur).prodVect(self.resultante)   #TODO Tom Je t'avais dit que t'avais fait un BAABR et pas un BABAR...
-            return Torseur(vecteur,self.resultante,Mpoint)
+            Mpoint = self.moment + vecteur.pointToVect(self.vecteur).prodVect(self.resultante)
+            return Torseur(copy(vecteur),copy(self.resultante),Mpoint)
         else:
             return self.changeRef(vecteur.ref).changePoint(vecteur)
  
@@ -87,7 +89,7 @@ class Torseur:
     """    
     def __add__(self,torseur):
             if (self.vecteur == torseur.vecteur):
-                return Torseur(self.vecteur,self.resultante+torseur.resultante,self.moment+torseur.moment)
+                return Torseur(copy(self.vecteur),self.resultante+torseur.resultante,self.moment+torseur.moment)
             else :
                 return self + torseur.changePoint(self.vecteur)
  
@@ -97,7 +99,7 @@ class Torseur:
     """    
     def __sub__(self,torseur):
         if (self.vecteur == torseur.vecteur):
-            return Torseur(self.vecteur,self.resultante-torseur.resultante,self.moment-torseur.moment)
+            return Torseur(copy(self.vecteur),self.resultante-torseur.resultante,self.moment-torseur.moment)
         else :
             return self - torseur.changePoint(self.vecteur)
     
@@ -106,4 +108,4 @@ class Torseur:
         @param float : scal, le mutiplicateur
     """
     def __mul__(self,scal):
-        return Torseur(self.vecteur,self.resultante*scal, self.moment*scal)
+        return Torseur(copy(self.vecteur),self.resultante*scal, self.moment*scal)
