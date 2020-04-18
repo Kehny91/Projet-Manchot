@@ -50,10 +50,10 @@ class ParametresModele:
     empennageD_z_BA  = -0.1             #m, coordonnee z entre le centre de gravite et le BA du stab
     empennageD_corde = 0.1              #m
     empennageD_S        = 0.1           #m2, surface ailaire
-    empennageD_Alpha_0  = 0*TORAD       #Radians
-    empennageD_CzA      = 10             #SI, dCz/dAlpha
+    empennageD_Alpha_0  = -2.5*TORAD       #Radians
+    empennageD_CzA      = 0.944*TORAD              #SI, dCz/dAlpha
     empennageD_Cx0      = 0             #SI, trainee a portance nulle
-    empennageD_Allongement= 25          #SI, allongement = envergure**2/SurfacePortante
+    empennageD_Allongement= 10000          #SI, allongement = envergure**2/SurfacePortante
     empennageD_k =1/(pi*empennageD_Allongement) #SI, 
     elevDMaxAngle        = 20*TORAD     #Radians
     elevDPourcentage = 0.2      #%, pourcentage d'influence de la gouverne sur l incidence de l empennage
@@ -66,10 +66,10 @@ class ParametresModele:
     empennageG_z_BA  = -0.1             #m, coordonnee z entre le centre de gravite et le BA du stab
     empennageG_corde = 0.1              #m
     empennageG_S        = 0.1           #m2, surface ailaire
-    empennageG_Alpha_0  = 0*TORAD       #Radians
-    empennageG_CzA      = 10             #SI, dCz/dAlpha
+    empennageG_Alpha_0  = -2.5*TORAD       #Radians
+    empennageG_CzA      = 0.944*TORAD             #SI, dCz/dAlpha
     empennageG_Cx0      = 0             #SI, trainee a portance nulle
-    empennageG_Allongement= 25          #SI, allongement = envergure**2/SurfacePortante
+    empennageG_Allongement= 1000          #SI, allongement = envergure**2/SurfacePortante
     empennageG_k =1/(pi*empennageG_Allongement) #SI, 
     elevGMaxAngle        = 20*TORAD     #Radians
     elevGPourcentage = 0.2      #%, pourcentage d'influence de la gouverne sur l incidence de l empennage
