@@ -149,14 +149,14 @@ class PolaireLineaire(Polaire):
         if (abs(alpha)<20*TORAD):
             return self._Cza*sin(alpha + self._a0)
         else: #DECROCHAGE:
-            return 1.0 * sin(2*alpha*TORAD)
+            return 1.0 * sin(2*alpha)
 
     def getCd(self, alpha, v):
         if (abs(alpha)<20*TORAD):
             Cl = self.getCl(alpha, v)
             return self._Cd0 + (Cl**2)*self._k
         else:
-            return 2.0 * abs(sin(alpha*TORAD))
+            return 2.0 * abs(sin(alpha))
 
     def getCm(self, alpha, v):
         return self._Cm0 + 0.25*self.getCl(alpha,v)
@@ -168,7 +168,9 @@ class PolaireLineaire(Polaire):
 
 
 if __name__ =="__main__":
-    c = PolaireTabulee("./XFLR5/CLwing","./XFLR5/CDwing","./XFLR5/CMwingBA")
+    from Parametres import ParametresModele as PM
+    #c = PolaireTabulee("./XFLR5/CLwing","./XFLR5/CDwing","./XFLR5/CMwingBA")
+    c=PolaireLineaire(PM.empennageD_CzA, PM.empennageD_Alpha_0,PM.empennageD_Cx0, PM.empennageD_k,0)
 
     alphas = [-pi/2 + (i/1000)*(pi*3/2) for i in range(1000)]
     Cl = [c.getCl(a,676) for a in alphas]
