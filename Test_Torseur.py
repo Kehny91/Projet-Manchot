@@ -14,7 +14,7 @@ print("__Classe_Torseur__")
 #Constructeur
 print("__Init__")
 
-refAero = E.Referentiel("refAero",np.pi/3,E.Vecteur(3,5))
+refAero = E.Referentiel("refAero",np.pi/2,E.Vecteur(3,5))
 refTerrestre = E.Referentiel("refTerrestre",0,E.Vecteur(0,0))
 
 
@@ -22,12 +22,10 @@ torseur1 = T.Torseur(E.Vecteur(3,5,refTerrestre), E.Vecteur(1,1,refTerrestre), 8
 torseur1bis = T.Torseur()
 torseur1bis.init2(1,1,refTerrestre,3,1,8.5)
 torseur2 = T.Torseur()
-""" torseur2.init2(3,4,refAero,4,5,1.1)
-origineRefAero = E.Vecteur(3,5,refTerrestre) """
+torseur2.init2(3,4,refAero,4,5,1.1)
+origineRefAero = E.Vecteur(3,5,refTerrestre)
 
-torseur2.init2(-1.5,0.1,refAero,0,10,0)
-origineRefAero = E.Vecteur(0,0,refAero)
-#origineRefAero = E.Vecteur(3,5,refTerrestre)
+origineRefAero = E.Vecteur(3,5,refTerrestre)
 
 pointA = E.Vecteur(7,1,refAero)
 """ print("Init_Fin")
@@ -67,9 +65,11 @@ print(torseur1*2.)
 print("\n")
  """
 """ print(origineRefAero.pointToVect(torseur2.vecteur))
-print(torseur2.changeRef(refTerrestre)) """
+"""
+print(torseur2.changePoint(origineRefAero))
+
 #print(torseur1)
 #print(origineRefAero.pointToVect(torseur2.vecteur).prodVect(E.Vecteur(141,141,refTerrestre)))#
-print(torseur2.changePoint(origineRefAero))
+#print(torseur2.changePoint(origineRefAero))
 #print(torseur1 + torseur2.changePoint(origineRefAero))
 #print(torseur1 + torseur2)

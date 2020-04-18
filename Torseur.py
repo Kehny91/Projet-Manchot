@@ -83,20 +83,20 @@ class Torseur:
             return self.changeRef(vecteur.ref).changePoint(vecteur)
     
     def __add__(self,torseur):
-    """__add__
+        """__add__
         adition de torseurs, pour cela il faut que les torseurs soient exprimes au meme point, meme referentiel
         \n @param Torseur : torseur, l element a ajouter
-    """ 
-            if (self.vecteur == torseur.vecteur):
-                return Torseur(copy(self.vecteur),self.resultante+torseur.resultante,self.moment+torseur.moment)
-            else :
-                return self + torseur.changePoint(self.vecteur)
+        """ 
+        if (self.vecteur == torseur.vecteur):
+              return Torseur(copy(self.vecteur),self.resultante+torseur.resultante,self.moment+torseur.moment)
+        else :
+             return self + torseur.changePoint(self.vecteur)
     
     def __sub__(self,torseur):        
-    """__sub__
+        """__sub__
         soustraction de torseurs, pour cela il faut que les torseurs soient exprimes au meme point, meme referentiel
         @param Torseur : torseur, l element a soustraire
-    """
+        """
         if (self.vecteur == torseur.vecteur):
             return Torseur(copy(self.vecteur),self.resultante-torseur.resultante,self.moment-torseur.moment)
         else :
@@ -107,5 +107,5 @@ class Torseur:
         """__mul__
         mutiplication par un scalaire
         \n @param float : scal, le mutiplicateur
-    """
+        """
         return Torseur(copy(self.vecteur),self.resultante*scal, self.moment*scal)
