@@ -5,6 +5,7 @@ from Polaire import PolaireLineaire,PolaireTabulee
 from Parametres import ConstanteEnvironement as CE
 from Parametres import ParametresModele as PM
 import Parametres as P
+from DataManagement import normalize
 
 
 
@@ -179,18 +180,24 @@ class SurfacePortante(Attachements):
         self.polaire = polaire
         self.corde = corde
     
-    def getResultanteAero(self, alpha, v): #Permet de ne pas creer puis sommer les torseur
+    def getResultanteAero(self,alpha): #Permet de ne pas creer puis sommer les torseur
+        VrefSol = self.getVitesse()
+        VecteurXaeroLocal = VrefSol.unitaire()
+        VecteurZaeroLocal = VecteurXaeroLocal.rotate(-np.pi/2)
+        
+        v = VrefSol.norm()
         Fdyn = 0.5 * CE.rho_air_0 *self.S*(v**2)
         lift = Fdyn*self.polaire.getCl(alpha,v)
         drag = Fdyn*self.polaire.getCd(alpha,v)
         moment = Fdyn*self.polaire.getCm(alpha,v)*self.corde
-        return T.Torseur(self.position.changeRef(refAvion),E.Vecteur(-drag,lift,refAero).projectionRef(refAvion),moment)
+
+        forceAeroRefSol = VecteurXaeroLocal*(-1*drag) + VecteurZaeroLocal*lift
+        return T.Torseur(self.position.changeRef(refAvion),forceAeroRefSol.projectionRef(refAvion),moment)
 
     #TODO Tom. Attention, alpha c'est bien une différence d'angle entre l'angle du fuselage et l'angle de la vitesse
-    def getAlpha(self):
+    def getAlpha(self, VrefSol):
         print("Assiette = ",refAvion.getAngleAxeY())
-        vitesseRefSol = self.getVitesse()
-        return vitesseRefSol.projectionRef(refAvion).arg()
+        return normalize(VrefSol.projectionRef(refAvion).arg())
 
 
 class Aile(SurfacePortante):
@@ -205,21 +212,22 @@ class Aile(SurfacePortante):
         self.angleFlaps = pourcentageBraquageFlaps*self.angleMaxFlaps
 
     def getAlpha(self):
-        alphaFixe = super().getAlpha() #Appelle SurfacePortante.getAlpha()
+        VrefSol = self.getVitesse()
+        alphaFixe = super().getAlpha(VrefSol) #Appelle SurfacePortante.getAlpha()
         theta = self.angleFlaps
         if self.pourcentageCordeArticulee == 0:
             gainAlpha = 0
         else:
             gainAlpha = np.arctan2(np.sin(theta),(1-self.pourcentageCordeArticulee)/self.pourcentageCordeArticulee + np.cos(theta))
-        return  (alphaFixe , gainAlpha)
+        return  (normalize(alphaFixe) , normalize(gainAlpha))
         
     def getTorseurEffortsAttachement(self):
         v = self.getVitesse().norm()
         (alphaFixe,gainAlpha) = self.getAlpha()
-        torseurFixe = self.getResultanteAero(alphaFixe,v)*(1 - self.pourcentageEnvergureArticulee)
-        torseurFlaps = self.getResultanteAero(alphaFixe + gainAlpha,v)*self.pourcentageEnvergureArticulee
+        torseurFixe = self.getResultanteAero(alphaFixe)*(1 - self.pourcentageEnvergureArticulee)
+        torseurFlaps = self.getResultanteAero(normalize(alphaFixe + gainAlpha))*self.pourcentageEnvergureArticulee
         torseurTot = torseurFixe + torseurFlaps
-        print("aile v = ",v,"alpha = ", alphaFixe + gainAlpha," fzAvion = ",torseurTot.getResultante().projectionRef(refAvion).getZ()," fxAvion = ", torseurTot.getResultante().projectionRef(refAvion).getX())
+        print("aile v = ",v,"alpha = ", normalize(alphaFixe + gainAlpha)," fzAvion = ",torseurTot.getResultante().projectionRef(refAvion).getZ()," fxAvion = ", torseurTot.getResultante().projectionRef(refAvion).getX())
         return torseurTot
 
 
@@ -235,19 +243,20 @@ class Empennage(SurfacePortante):
         self.angleGouverne = pourcentageBraquageGouverne*self.angleMaxGouverne
 
     def getAlpha(self):
-        alphaFixe = super().getAlpha() #Appelle SurfacePortante.getAlpha()
+        VrefSol = self.getVitesse()
+        alphaFixe = super().getAlpha(VrefSol) #Appelle SurfacePortante.getAlpha()
         theta = self.angleGouverne
         if self.pourcentageCordeArticulee == 0:
             gainAlpha = 0
         else:
             gainAlpha = np.arctan2(np.sin(theta),(1-self.pourcentageCordeArticulee)/self.pourcentageCordeArticulee + np.cos(theta))
-        return  (alphaFixe , gainAlpha)
+        return  (normalize(alphaFixe) , normalize(gainAlpha))
         
     def getTorseurEffortsAttachement(self):
         v = self.getVitesse().norm()
         (alphaFixe,gainAlpha) = self.getAlpha()
-        torseurFixe = self.getResultanteAero(alphaFixe,v)*(1 - self.pourcentageEnvergureArticulee)
-        torseurGouverne = self.getResultanteAero(alphaFixe + gainAlpha,v)*self.pourcentageEnvergureArticulee
+        torseurFixe = self.getResultanteAero(alphaFixe)*(1 - self.pourcentageEnvergureArticulee)
+        torseurGouverne = self.getResultanteAero(normalize(alphaFixe + gainAlpha))*self.pourcentageEnvergureArticulee
         torseurTot = torseurFixe + torseurGouverne
         print("emp v = ",v,"alpha = ", alphaFixe + gainAlpha," fzavion = ",torseurTot.getResultante().projectionRef(refAvion).getZ()," fxavion = ", torseurTot.getResultante().projectionRef(refAvion).getX(),"vZ = ", self.getVitesse().projectionRef(refAvion).getZ())
         return torseurTot
@@ -344,7 +353,7 @@ class Planeur():
         refAero.setOrigine(newPosition-self.propulseur.position)
     
     def getAssiette(self):
-        return self.structure.getTorseurCinematique().vecteur.ref.getAngleAxeY()
+        return normalize(self.structure.getTorseurCinematique().vecteur.ref.getAngleAxeY())
 
     def setAssiette(self, newAssiete):
         self.structure.getTorseurCinematique().vecteur.ref.setAngleAxeY(newAssiete)

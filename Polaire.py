@@ -103,7 +103,8 @@ class PolaireTabulee(Polaire):
             i+=1
 
         if (i == 0 or i == n-1): #DECROCHAGE
-            return 1.0 * sin(2*alpha*TORAD)
+            #return 1.0 * sin(2*alpha*TORAD)
+            return values[i]
         else:
             t = (alphas[i] - alpha)/(alphas[i]-alphas[i-1])
             return values[i]*(1-t) + values[i-1]*t
@@ -117,7 +118,8 @@ class PolaireTabulee(Polaire):
         while (i<n-1 and alpha > alphas[i]):
             i+=1
         if (i == 0 or i == n-1): #DECROCHAGE
-            return 2.0 * abs(sin(alpha*TORAD))
+            #return 2.0 * abs(sin(alpha*TORAD))
+            return values[i]
         else:
             t = (alphas[i] - alpha)/(alphas[i]-alphas[i-1])
             return values[i]*(1-t) + values[i-1]*t
@@ -149,17 +151,27 @@ class PolaireLineaire(Polaire):
         if (abs(alpha)<20*TORAD):
             return self._Cza*sin(alpha + self._a0)
         else: #DECROCHAGE:
-            return 1.0 * sin(2*alpha)
+            #return 1.0 * sin(2*alpha)
+            if (alpha>0):
+                return self._Cza*sin(20*TORAD + self._a0)
+            else:
+                return self._Cza*sin(-20*TORAD + self._a0)
 
     def getCd(self, alpha, v):
-        if (abs(alpha)<20*TORAD):
+        if True or (abs(alpha)<20*TORAD):
             Cl = self.getCl(alpha, v)
             return self._Cd0 + (Cl**2)*self._k
         else:
             return 2.0 * abs(sin(alpha))
 
     def getCm(self, alpha, v):
-        return self._Cm0 + 0.25*self.getCl(alpha,v)
+        if (abs(alpha)<20*TORAD):
+            return self._Cm0 + 0.25*self.getCl(alpha,v)
+        else:
+            if (alpha>0):
+                return self._Cm0 + 0.25*self.getCl(20*TORAD,v)
+            else:
+                return self._Cm0 + 0.25*self.getCl(-20*TORAD,v)
 
 
 
@@ -169,8 +181,8 @@ class PolaireLineaire(Polaire):
 
 if __name__ =="__main__":
     from Parametres import ParametresModele as PM
-    #c = PolaireTabulee("./XFLR5/CLwing","./XFLR5/CDwing","./XFLR5/CMwingBA")
-    c=PolaireLineaire(PM.empennageD_CzA, PM.empennageD_Alpha_0,PM.empennageD_Cx0, PM.empennageD_k,0)
+    c = PolaireTabulee("./XFLR5/CLwing","./XFLR5/CDwing","./XFLR5/CMwingBA")
+    #c=PolaireLineaire(PM.empennageD_CzA, PM.empennageD_Alpha_0,PM.empennageD_Cx0, PM.empennageD_k,0)
 
     alphas = [-pi/2 + (i/1000)*(pi*3/2) for i in range(1000)]
     Cl = [c.getCl(a,676) for a in alphas]
