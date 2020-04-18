@@ -59,7 +59,7 @@ class ParametresModele:
     empennageD_k =1/(pi*empennageD_Allongement) #SI, 
     elevDMaxAngle        = 20*TORAD     #Radians
     elevDPourcentageCordeArticulee   = 0.5           #%
-    elevDPourcentageEnvergureArticulee   = 0.5
+    elevDPourcentageEnvergureArticulee   = 1    #L'elevator a une gouverne sur toute son envergure !
     
     
     #parametre empennage gauche
@@ -76,7 +76,7 @@ class ParametresModele:
     empennageG_k =1/(pi*empennageG_Allongement) #SI, 
     elevGMaxAngle        = 20*TORAD     #Radians
     elevGPourcentageCordeArticulee   = 0.5           #%
-    elevGPourcentageEnvergureArticulee   = 0.5
+    elevGPourcentageEnvergureArticulee   = 1 #L'elevator a une gouverne sur toute son envergure !
     
     #parametre propulseur
     engine_x            = .08          #m, coordonne x entre le centre de gravite et le centre de poussee du propulseur
