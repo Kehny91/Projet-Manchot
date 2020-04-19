@@ -1,5 +1,5 @@
 
-from math import cos,sin
+from math import cos,sin,pi
 import time
 import threading as th
 import Mixer
@@ -42,6 +42,10 @@ class LaPhysiqueDeTom:
     def __init__(self, flightData):
         # definition du modele
         self.planeur = S.Planeur()
+        self.planeur.setAssiette(E.normalise(flightData.getAssiette()))
+        self.planeur.setPosition(flightData.getPosAvion())
+        self.planeur.setVitesseRot(flightData.getW())
+        self.planeur.setVitesse(flightData.getVAvion())
 
     def mettreAJourModeleAvecRawInput(self, rawInputDict):
         # Propagation du dictionnaire d'input dans le modele.
@@ -53,11 +57,9 @@ class LaPhysiqueDeTom:
     def compute(self, flightData, dt):
         # Grace au modele fraichement mis a jour, cette methode renvoie le nouveau flight data
         # Compute sera appelé en boucle par le PhysicThread
-        self.planeur.setPosition(flightData.getPosAvion())
-        self.planeur.setAssiette(E.normalise(flightData.getAssiette()))
-        self.planeur.setVitesse(flightData.getVAvion())
-        self.planeur.setVitesseRot(flightData.getW())
+      
         self.planeur.structure.updateCinematique(dt)
+
         flightData.setPosAvion(self.planeur.getPosition())
         flightData.setAssiette(E.normalise(self.planeur.getAssiette()))
         flightData.setVAvion(self.planeur.getVitesse())
@@ -86,7 +88,7 @@ class PhysicThread(th.Thread):
         self._mddRawInput = mddRawInput
         self._period = 1/frequence
         self._continue = True
-        self._physique = LaPhysiqueDeTom(self._mddFlightData)
+        self._physique = LaPhysiqueDeTom(self._mddFlightData.read())
 
     def run(self):
         while self._continue:
@@ -214,7 +216,7 @@ if __name__ == "__main__":
 
     referentielSol = Referentiel("referentielSol",0,Vecteur(0,0))
 
-    mddFlightData = MDD(FlightData(Vecteur(0,10,referentielSol),Vecteur(10,0,referentielSol),0.3,-10), True)
+    mddFlightData = MDD(FlightData(Vecteur(0,0,referentielSol),Vecteur(10,0,referentielSol),-pi/2,-10), True)
     mddRawInput = MDD(RawInput(0.30,0.30,0.50,0.50,0.100), False)
     mddPilotInput = MDD(PilotInput(0,0,0), False)
     mddAutoPilotInput = MDD(AutoPilotInput(Vecteur(0,0,referentielSol)), True)
