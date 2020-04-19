@@ -80,8 +80,11 @@ class Corps:
         accZ = torseurEfforts.resultante.z/self.getMasseTotal() #+ self.torseurCinematique.moment*self.torseurCinematique.resultante.x
         wpoint = torseurEfforts.moment/self.getInertieTotal()
         vecteurAcce = E.Vecteur(accX,accZ,refAvion)
+        
         #construction vecteur acceleration dans le refAvion
-        torseurAcc= T.Torseur(self.torseurCinematique.vecteur,vecteurAcce,wpoint)
+        #torseurAcc= T.Torseur(self.torseurCinematique.vecteur,vecteurAcce,wpoint)
+
+        torseurAcc= T.Torseur(self.torseurCinematique.vecteur,E.Vecteur(0,0,refAvion),0)
 
         #update
         dV = torseurAcc*dt
@@ -350,7 +353,8 @@ class Planeur():
         refAero.setAngleAxeY(self.structure.getTorseurCinematique().resultante.projectionRef(refTerrestre).arg())
     
     def getVitesse(self): 
-       return self.propulseur.getVitesse()
+        return self.structure.torseurCinematique.getResultante()
+        #return self.propulseur.getVitesse()
     
     def setVitesse(self, newVitesse):
         self.structure.torseurCinematique.setResultante(newVitesse.projectionRef(refTerrestre))
