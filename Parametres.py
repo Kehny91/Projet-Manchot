@@ -12,6 +12,7 @@ class ParametresModele:
     #parametre structure
     masseTotal            = 3           #kg
     inertieTotal          = 0.045           #kg.m2, au centre de gravite par rapport a l axe Y
+    longueurDrone = 2
     
     #parametre aile droite
     #ailesD_x_Foyer      = 0.01          #m, coordonnee x entre le centre de gravite et le foyer de l'aile
@@ -102,6 +103,8 @@ class ParametresModele:
 
     p5_x = 0.2
     p5_z = 0
+
+    muFrottementSol = 0.4
 
 
 class ParametresSimulation:

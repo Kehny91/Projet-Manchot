@@ -5,7 +5,7 @@ import PyQt5.QtWidgets as QtWidgets
 import sys
 import time
 import os
-from AlexPhy.Espace import Vecteur,ReferentielAbsolu
+from Espace import Vecteur,ReferentielAbsolu,moduloF
 from math import sqrt,cos,sin
 
 """
@@ -65,13 +65,24 @@ class GraphWidget(QtWidgets.QWidget):
     #PRIVATE
     #Ground and sky
     def _drawGround(self, painter):
+        #Le ground est en deux couleurs qui s'alterne
+        tailleBande = 1 #m
+        realWidthScreen = self.width()*self._scale
+        limite =  self.width() - moduloF(self._realPositionFenetre.getX(),realWidthScreen+tailleBande)/self._scale
+
+        #Sky
         painter.setPen(Qt.QColor(28, 98, 230))
         painter.setBrush(Qt.QColor(28, 98, 230))
         painter.drawRect(0,0,self.width(), self.height())
+
+        #Ground
         painter.setPen(Qt.QColor(21, 173, 21))
         painter.setBrush(Qt.QColor(21, 173, 21))
         pixPos = self._realToPix(Vecteur(0,0))
         painter.drawRect(0,max(pixPos[1],0),self.width(), self.height())
+        painter.setPen(Qt.QColor(21, 255, 21))
+        painter.setBrush(Qt.QColor(21, 255, 21))
+        painter.drawRect(limite,max(pixPos[1],0),tailleBande/self._scale, self.height())
 
     #PRIVATE
     def _drawRunway(self, painter, xStart,longueur):
