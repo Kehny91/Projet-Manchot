@@ -135,7 +135,10 @@ class Vecteur:
     def translationRef(self,ref):
         """Renvoie le vecteur entre les deux origine Oref->Oself dans les coordonnee de ref"""
         return Vecteur(self.ref.origine.x-ref.origine.x,self.ref.origine.z-ref.origine.z).projectionRef(ref)                       
-                      
+    
+    def getRef(self):
+        return self.ref
+
     def changeRef(self,ref):
         return self.translationRef(ref)+self.projectionRef(ref)
         

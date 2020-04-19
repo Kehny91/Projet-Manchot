@@ -4,15 +4,15 @@ import time
 import threading as th
 import Mixer
 import PyQt5
-from Espace import Vecteur,Referentiel,ReferentielAbsolu
+from AlexPhy.Espace import Vecteur,Referentiel,ReferentielAbsolu
 from PyQt5 import Qt
 from PyQt5.QtCore import pyqtSignal,QObject
 from Asservissement import Asservissement
 from DataManagement import MDD,Pauser
 import Parametres
 import Modes as M
-import Solide as S
-import Espace as E
+import AlexPhy.Solide as S
+import AlexPhy.Espace as E
 
 class MixerThread(th.Thread):
     def __init__(self,mddRawInput,mddPilotInput,frequence):
@@ -39,13 +39,13 @@ class MixerThread(th.Thread):
         self._pauser.requestPause()
 
 class LaPhysiqueDeTom:
-    def __init__(self, flightData):
+    def __init__(self, flightData, referentielSol):
         # definition du modele
-        self.planeur = S.Planeur()
+        self.planeur = S.Planeur(referentielSol)
         self.planeur.setAssiette(E.normalise(flightData.getAssiette()))
-        self.planeur.setPosition(flightData.getPosAvion())
-        self.planeur.setVitesseRot(flightData.getW())
-        self.planeur.setVitesse(flightData.getVAvion())
+        self.planeur.setPositionBati(flightData.getPosAvion())
+        self.planeur.setWCG(flightData.getW())
+        self.planeur.setVitesseBati(flightData.getVAvion())
 
     def mettreAJourModeleAvecRawInput(self, rawInputDict):
         # Propagation du dictionnaire d'input dans le modele.
@@ -58,11 +58,16 @@ class LaPhysiqueDeTom:
         # Grace au modele fraichement mis a jour, cette methode renvoie le nouveau flight data
         # Compute sera appelé en boucle par le PhysicThread
       
-        self.planeur.structure.updateCinematique(dt)
+        self.planeur.setAssiette(E.normalise(flightData.getAssiette()))
+        self.planeur.setPositionBati(flightData.getPosAvion())
+        self.planeur.setWCG(flightData.getW())
+        self.planeur.setVitesseBati(flightData.getVAvion())
 
-        flightData.setPosAvion(self.planeur.getPosition())
+        self.planeur.structure.update(dt)
+
+        flightData.setPosAvion(self.planeur.getPositionBati())
         flightData.setAssiette(E.normalise(self.planeur.getAssiette()))
-        flightData.setVAvion(self.planeur.getVitesse())
+        flightData.setVAvion(self.planeur.getVitesseBati())
         flightData.setW(self.planeur.getVitesseRot())
         flightData.setTime(flightData.getTime()+dt)
         # Retourne un nouveau flight data
@@ -82,13 +87,13 @@ class PhysiqueDunObjetUniquementSoumisASonInertie(LaPhysiqueDeTom):
 
 DILATATION = 2
 class PhysicThread(th.Thread):
-    def __init__(self,mddFlightData, mddRawInput, frequence):
+    def __init__(self,mddFlightData, mddRawInput, referentielSol, frequence):
         super(PhysicThread,self).__init__()
         self._mddFlightData = mddFlightData
         self._mddRawInput = mddRawInput
         self._period = 1/frequence
         self._continue = True
-        self._physique = LaPhysiqueDeTom(self._mddFlightData.read())
+        self._physique = LaPhysiqueDeTom(self._mddFlightData.read(), referentielSol)
 
     def run(self):
         while self._continue:
@@ -216,7 +221,7 @@ if __name__ == "__main__":
 
     referentielSol = Referentiel("referentielSol",0,Vecteur(0,0))
 
-    mddFlightData = MDD(FlightData(Vecteur(0,5,referentielSol),Vecteur(55,0,referentielSol), 0, 0), True)
+    mddFlightData = MDD(FlightData(Vecteur(0,10,referentielSol),Vecteur(55,0,referentielSol), 0.1, 0), True)
     mddRawInput = MDD(RawInput(0.30,0.30,0.50,0.50,0.100), False)
     mddPilotInput = MDD(PilotInput(0,0,0), False)
     mddAutoPilotInput = MDD(AutoPilotInput(Vecteur(0,0,referentielSol)), True)
@@ -233,7 +238,7 @@ if __name__ == "__main__":
     mainW.setCentralWidget(graph)
     mainW.show()
 
-    pT = PhysicThread(mddFlightData,mddRawInput, 100)
+    pT = PhysicThread(mddFlightData,mddRawInput, referentielSol, 100)
     pT.start()
 
     aT = AsserThread(mddFlightData,mddAutoPilotInput,mddPilotInput,150)

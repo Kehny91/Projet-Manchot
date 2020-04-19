@@ -5,7 +5,7 @@ import PyQt5.QtWidgets as QtWidgets
 import sys
 import time
 import os
-from Espace import Vecteur
+from AlexPhy.Espace import Vecteur,ReferentielAbsolu
 from math import sqrt,cos,sin
 
 """
@@ -46,19 +46,20 @@ class GraphWidget(QtWidgets.QWidget):
     def setRealPositionFenetreCenter(self, realPositionFenetreCenter):
         realWidth = self.width()*self._scale
         realHeight = self.height()*self._scale
-        self.setRealPositionFenetre(realPositionFenetreCenter - Vecteur(realWidth/2,realHeight/2))
+        self.setRealPositionFenetre(realPositionFenetreCenter.changeRef(ReferentielAbsolu()) - Vecteur(realWidth/2,realHeight/2))
 
     #PRIVATE
     #Se referencer a point.png
     def _getCPosition(self,flightData):
         #Un flight data contient la position B
         #TODO Utilisation de ref ?
-        return flightData.getPosAvion()+(self._B0_C0.rotate(flightData.getAssiette()))
+        posAvion = flightData.getPosAvion()
+        return posAvion + (self._B0_C0.rotate(flightData.getAssiette())).projectionRef(posAvion.getRef())
 
     #PRIVATE
     def _realToPix(self,O_M):
         #TODO verifier que le vecteur est dans le referentiel absolu
-        rpf_M = O_M-self._realPositionFenetre #vecteur realPositionFenetre -> M
+        rpf_M = O_M.changeRef(ReferentielAbsolu())-self._realPositionFenetre #vecteur realPositionFenetre -> M
         return (int(rpf_M.getX()/self._scale),self.height() - int(rpf_M.getZ()/self._scale) )
 
     #PRIVATE

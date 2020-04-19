@@ -151,14 +151,14 @@ class PolaireLineaire(Polaire):
         if (abs(alpha)<20*TORAD):
             return self._Cza*sin(alpha + self._a0)
         else: #DECROCHAGE:
-            #return 1.0 * sin(2*alpha)
-            if (alpha>0):
-                return self._Cza*sin(20*TORAD + self._a0)
-            else:
-                return self._Cza*sin(-20*TORAD + self._a0)
+            return 1.0 * sin(2*alpha)
+            #if (alpha>0):
+            #    return self._Cza*sin(20*TORAD + self._a0)
+            #else:
+            #    return self._Cza*sin(-20*TORAD + self._a0)
 
     def getCd(self, alpha, v):
-        if True or (abs(alpha)<20*TORAD):
+        if (abs(alpha)<20*TORAD):
             Cl = self.getCl(alpha, v)
             return self._Cd0 + (Cl**2)*self._k
         else:

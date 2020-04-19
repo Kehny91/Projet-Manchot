@@ -38,7 +38,7 @@ def normalise(angle):
 """
 class Referentiel:
     
-    def __init__(self,nom=0,angleAxeY=0, origine=0):
+    def __init__(self, nom, angleAxeY, origine):
         self.nom=nom
         self.angleAxeY= angleAxeY
         self.origine = origine
@@ -76,7 +76,7 @@ class Referentiel:
             return False
             
     def __str__(self):
-        return "ref " + str(self.nom) + " origine: " + '(' + str(self.origine.x)  +',' + str(self.origine.z) + ')' +" angleRef : " + str(self.angleAxeY)
+        return "ref " + str(self.nom) + " origine: " + str(self.origine) + " angleRef : " + str(self.angleAxeY)
 
 """classe ReferentielAbsolu
     creation d'un referentiel sur lequel tout les autres referentiel vont etre places
@@ -107,11 +107,14 @@ class Vecteur:
     def getZ(self):
         return self.z
 
+    def getRef(self):
+        return self.ref
+
     def withZmin(self,zMin):
         return Vecteur(self.x,max(zMin,self.z),self.ref)
     
     def __str__(self):
-        return "(" + str(self.x) +"," + str(self.z) + ") \\ " + str(self.ref.nom)
+        return "(" + str(self.x) +"," + str(self.z) + ")\\" + str(self.ref.nom)
     
     def __eq__(self,vecteur):
         if (type(vecteur)!=type(self)):
@@ -139,12 +142,18 @@ class Vecteur:
         if self.ref == vecteur.ref:
             return Vecteur(self.x+vecteur.x, self.z+vecteur.z, self.ref)
         else : 
+            print(self.ref)
+            print(" + ")
+            print(vecteur.ref)
             raise ExceptionNotSameRef()
             
     def __sub__(self,vecteur):
         if self.ref == vecteur.ref:
             return Vecteur(self.x-vecteur.x, self.z-vecteur.z, self.ref)
         else : 
+            print(self.ref)
+            print(" - ")
+            print(vecteur.ref)
             raise ExceptionNotSameRef()
 
     
@@ -181,3 +190,40 @@ class Vecteur:
     def arg(self):
         """ Renvoie l'angle du vecteur dans son referentiel"""
         return -1*np.arctan2(self.z,self.x)
+
+
+if __name__ == "__main__":
+    from math import pi
+    refSol = Referentiel("refSol",0,Vecteur(0,0))
+    refAvion = Referentiel("refAvion",pi/2,Vecteur(10,5,refSol))
+    refAbs = ReferentielAbsolu()
+
+    print(refSol)
+    print(refAvion)
+
+    vecteur1 = Vecteur(2,1,refAvion)
+    print("(2,1) ?")
+    print("vecteur1 ", vecteur1)
+    print("(11,3) ?")
+    print("vecteur1refSol", vecteur1.changeRef(refSol))
+    print("")
+    print("On bouge le refAvion de 1 sur la droite")
+    refAvion.setOrigine(refAvion.getOrigine()+Vecteur(1,0,refSol))
+    print("(11,5) ?")
+    print(refAvion)
+    print("(2,1) ?")
+    print("vecteur1 ", vecteur1)
+    print("(12,3) ?")
+    print("vecteur1refSol", vecteur1.changeRef(refSol))
+    print("")
+    print("On retourne le refAvion")
+    refAvion.setAngleAxeY(refAvion.getAngleAxeY()+pi)
+    print("(2,1) ?")
+    print("vecteur1 ", vecteur1)
+    print("(10,7) ?")
+    print("vecteur1refSol", vecteur1.changeRef(refSol))
+
+    try:
+        vecteur1 + Vecteur(1,0)
+    except:
+        print("Parfait, ça crash")
