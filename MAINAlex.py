@@ -221,7 +221,7 @@ if __name__ == "__main__":
 
     referentielSol = Referentiel("referentielSol",0,Vecteur(0,0))
 
-    mddFlightData = MDD(FlightData(Vecteur(0,10,referentielSol),Vecteur(40,0,referentielSol), 0.1, 0), True)
+    mddFlightData = MDD(FlightData(Vecteur(0,10,referentielSol),Vecteur(55,0,referentielSol), 0.1, 0), True)
     mddRawInput = MDD(RawInput(0.30,0.30,0.50,0.50,0.100), False)
     mddPilotInput = MDD(PilotInput(0,0,0), False)
     mddAutoPilotInput = MDD(AutoPilotInput(Vecteur(0,0,referentielSol)), True)

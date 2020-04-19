@@ -168,6 +168,7 @@ class SurfacePortante(Attachements):
         moment = Fdyn*self.polaire.getCm(alpha,v)*self.corde
 
         forceAero = (VecteurXaeroLocal*(-1*drag) + VecteurZaeroLocal*lift).projectionRef(self.father)
+        #forceAero = (self.father.getAxeX()*(-1*drag) + self.father.getAxeZ()*lift).projectionRef(self.father)
         return T.TorseurAction(self.position, forceAero, moment)
 
     #TODO Tom. Attention, alpha c'est bien une différence d'angle entre l'angle du fuselage et l'angle de la vitesse

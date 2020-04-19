@@ -54,7 +54,7 @@ class ParametresModele:
     empennageD_S        = 0.0485           #m2, surface ailaire
     empennageD_Alpha_0  = -2.5*TORAD       #Radians
     empennageD_CzA      = 0.1/TORAD              #SI, dCz/dAlpha
-    empennageD_Cx0      = 0             #SI, trainee a portance nulle
+    empennageD_Cx0      = 0.05             #SI, trainee a portance nulle
     empennageD_Allongement= 1.3          #SI, allongement = envergure**2/SurfacePortante
     empennageD_k =1/(pi*empennageD_Allongement) #SI, 
     elevDMaxAngle        = 20*TORAD     #Radians
@@ -71,7 +71,7 @@ class ParametresModele:
     empennageG_S         =  0.0485           #m2, surface ailaire
     empennageG_Alpha_0   = -2.5*TORAD       #Radians
     empennageG_CzA       = 0.1/TORAD             #SI, dCz/dAlpha
-    empennageG_Cx0       = 0             #SI, trainee a portance nulle
+    empennageG_Cx0       = 0.05             #SI, trainee a portance nulle
     empennageG_Allongement= 1.3          #SI, allongement = envergure**2/SurfacePortante
     empennageG_k =1/(pi*empennageG_Allongement) #SI, 
     elevGMaxAngle        = 20*TORAD     #Radians
