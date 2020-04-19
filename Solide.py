@@ -89,15 +89,30 @@ class Corps:
         return True
 
     def applyAction(self, torseurAction, totMass, totInertie, dt):
+        """ Modifie le torseur cinematique"""
         torseurCin = self.getTorseurCinematique()
         torseurAction = torseurAction.changePoint(torseurCin.vecteur)
         torseurCin.setResultante(torseurCin.getResultante() + torseurAction.getResultante()*(dt/totMass))
         torseurCin.setMoment(torseurCin.getMoment() + torseurAction.getMoment()*(dt/totInertie))
     
     def update(self,dt):
-        
+        self.deactivateAllCorpsRigide()
         torseurEfforts = self.computeTorseurEfforts().changePoint(self.torseurCinematique.vecteur) # C'est mieux de faire le PFD au CG...
         self.applyAction(torseurEfforts, self.getMasseTotal(), self.getInertieTotal(), dt)
+
+        self.activateAllCorpsRigides(dt)
+        
+        i=0
+        while (not self.corpsRigideOk()):
+            torseurEffortsCollisions = T.Torseur(self.torseurCinematique.vecteur)
+            for cr in self.corpsRigides:
+                torseur = cr.getTorseurEffortsAttachement()
+                torseurEffortsCollisions += torseur.changePoint(self.torseurCinematique.vecteur)
+            self.applyAction(torseurEffortsCollisions, self.getMasseTotal(), self.getInertieTotal(), dt)
+            i+=1
+            if (i==100):
+                assert False
+        
         self.updatePosAndAssiette(dt)
 
     def updatePosAndAssiette(self,dt):
@@ -277,8 +292,9 @@ class Empennage(SurfacePortante):
 # 3) Tant que tous les corps rigides ne sont pas "ok", recalculer et mettre a jour la vitesse et w
 # 4) Reset les corps rigides
 class CorpsRigide(Attachements):
-    def __init__(self, position, father, referentielSol, epsilon):
+    def __init__(self, position, father, referentielSol, epsilon, name = ""):
         super().__init__(position, 0, 0, father)
+        self._name = name
         self._thisTurnTotalForce = 0
         self._epsilon = epsilon
         self._referentielSol = referentielSol
@@ -292,8 +308,8 @@ class CorpsRigide(Attachements):
 
     def _m0(self):
         #deltaX est censé etre la distance CG -> self, projetée sur l'axe X du sol !
-        deltaX = self.getPosition().projectionRef(self._referentielSol).prodScal(self._axeXSol)
-        return 1/self.father.getMasseTotal() + (deltaX**2)/self.father.getInertieTotal()
+        deltaX = self.getPosition().projectionRef(self._referentielSol).x
+        return 1/(1.0/self.father.getMasseTotal() + (deltaX**2)/self.father.getInertieTotal())
 
     def reset(self):
         self._thisTurnTotalForce = 0
@@ -306,7 +322,7 @@ class CorpsRigide(Attachements):
         return self.getPosition().changeRef(self._referentielSol).getZ()<=0
 
     def ok(self):
-        if (not self._underground()) or (not self._active):
+        if (not self._underground()) or (not self._active) or self.getVitesse().getZ()>0:
             return True #Si on est au dessus du sol, pas de problème
         #Sinon
         return abs(self.getVitesse().getZ())<self._epsilon
@@ -345,15 +361,15 @@ class Planeur():
         self.empennageG = Empennage(E.Vecteur(PM.empennageG_x_BA,PM.empennageG_z_BA,refAvion),PolaireLineaire(PM.empennageG_CzA, PM.empennageG_Alpha_0,PM.empennageG_Cx0, PM.empennageG_k,0),PM.empennageG_S,PM.empennageG_corde,PM.elevGPourcentageCordeArticulee,PM.elevGPourcentageEnvergureArticulee,PM.elevGMaxAngle,father= self.structure)
         self.structure.addAttachement(self.empennageG)
 
-        self.p1 = CorpsRigide(E.Vecteur(PM.p1_x,PM.p1_z,refAvion),self.structure,refTerrestre,PS.maxAcceptablePenetrationSpeed)
+        self.p1 = CorpsRigide(E.Vecteur(PM.p1_x,PM.p1_z,refAvion),self.structure,refTerrestre,PS.maxAcceptablePenetrationSpeed,"p1")
         self.structure.addCorpsRigide(self.p1)
-        self.p2 = CorpsRigide(E.Vecteur(PM.p2_x,PM.p2_z,refAvion),self.structure,refTerrestre,PS.maxAcceptablePenetrationSpeed)
+        self.p2 = CorpsRigide(E.Vecteur(PM.p2_x,PM.p2_z,refAvion),self.structure,refTerrestre,PS.maxAcceptablePenetrationSpeed,"p2")
         self.structure.addCorpsRigide(self.p2)
-        self.p3 = CorpsRigide(E.Vecteur(PM.p3_x,PM.p3_z,refAvion),self.structure,refTerrestre,PS.maxAcceptablePenetrationSpeed)
+        self.p3 = CorpsRigide(E.Vecteur(PM.p3_x,PM.p3_z,refAvion),self.structure,refTerrestre,PS.maxAcceptablePenetrationSpeed,"p3")
         self.structure.addCorpsRigide(self.p3)
-        self.p4 = CorpsRigide(E.Vecteur(PM.p4_x,PM.p4_z,refAvion),self.structure,refTerrestre,PS.maxAcceptablePenetrationSpeed)
+        self.p4 = CorpsRigide(E.Vecteur(PM.p4_x,PM.p4_z,refAvion),self.structure,refTerrestre,PS.maxAcceptablePenetrationSpeed,"p4")
         self.structure.addCorpsRigide(self.p4)
-        self.p5 = CorpsRigide(E.Vecteur(PM.p5_x,PM.p5_z,refAvion),self.structure,refTerrestre,PS.maxAcceptablePenetrationSpeed)
+        self.p5 = CorpsRigide(E.Vecteur(PM.p5_x,PM.p5_z,refAvion),self.structure,refTerrestre,PS.maxAcceptablePenetrationSpeed,"p5")
         self.structure.addCorpsRigide(self.p5)
 
     def diffuseDictRawInput(self,rawInputDict):
