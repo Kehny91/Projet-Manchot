@@ -4,6 +4,7 @@ import numpy as np
 from Polaire import PolaireLineaire,PolaireTabulee
 from Parametres import ConstanteEnvironement as CE
 from Parametres import ParametresModele as PM
+from Parametres import ParametresSimulation as PS
 import Parametres as P
 from DataManagement import normalize
 
@@ -71,30 +72,38 @@ class Corps:
     def addCorpsRigide(self, cr):
         self.addAttachement(cr)
         self.corpsRigides.append(cr)
+
+    def deactivateAllCorpsRigide(self):
+        for cr in self.corpsRigides:
+            cr.reset()
+
+    def activateAllCorpsRigides(self, dt):
+        for cr in self.corpsRigides: 
+            cr.activer()
+            cr.setDt(dt)
     
-    def updateCinematique(self,dt):
+    def corpsRigideOk(self):
+        for cr in self.corpsRigides:
+            if not cr.ok():
+                return False
+        return True
+
+    def applyAction(self, torseurAction, totMass, totInertie, dt):
+        torseurCin = self.getTorseurCinematique()
+        torseurAction = torseurAction.changePoint(torseurCin.vecteur)
+        torseurCin.setResultante(torseurCin.getResultante() + torseurAction.getResultante()*(dt/totMass))
+        torseurCin.setMoment(torseurCin.getMoment() + torseurAction.getMoment()*(dt/totInertie))
+    
+    def update(self,dt):
         
         torseurEfforts = self.computeTorseurEfforts().changePoint(self.torseurCinematique.vecteur) # C'est mieux de faire le PFD au CG...
-        #PFD
-        accX = torseurEfforts.resultante.x/self.getMasseTotal()# - self.torseurCinematique.moment*self.torseurCinematique.resultante.z
-        accZ = torseurEfforts.resultante.z/self.getMasseTotal()# + self.torseurCinematique.moment*self.torseurCinematique.resultante.x
-        wpoint = torseurEfforts.moment/self.getInertieTotal()
-        vecteurAcce = E.Vecteur(accX,accZ,refAvion)
-        
-        #construction vecteur acceleration dans le refAvion
-        torseurAcc= T.Torseur(self.torseurCinematique.vecteur,vecteurAcce,wpoint)
+        self.applyAction(torseurEfforts, self.getMasseTotal(), self.getInertieTotal(), dt)
+        self.updatePosAndAssiette(dt)
 
-        #torseurAcc= T.Torseur(self.torseurCinematique.vecteur,E.Vecteur(0,0,refAvion),0)
-
-        #update
-        dV = torseurAcc*dt
-        self.setTorseurCinematique(self.getTorseurCinematique() + dV)
-        self.move(self.torseurCinematique,dt)
-
-    def move(self,torseurCinematique,dt):
+    def updatePosAndAssiette(self,dt):
         #print("W = ",torseurCinematique.moment)
-        self.torseurCinematique.vecteur.ref.setOrigine(self.torseurCinematique.vecteur.ref.getOrigine() + torseurCinematique.resultante.projectionRef(refTerrestre)*dt)
-        self.torseurCinematique.vecteur.ref.setAngleAxeY(self.torseurCinematique.vecteur.ref.getAngleAxeY() + torseurCinematique.moment*dt )
+        self.torseurCinematique.vecteur.ref.setOrigine(self.torseurCinematique.vecteur.ref.getOrigine() + self.torseurCinematique.resultante.projectionRef(refTerrestre)*dt)
+        self.torseurCinematique.vecteur.ref.setAngleAxeY(self.torseurCinematique.vecteur.ref.getAngleAxeY() + self.torseurCinematique.moment*dt )
 
     def computeTorseurEfforts(self):
         torseurEfforts = self.getTorseurPoids().changePoint(self.torseurCinematique.vecteur)
@@ -186,15 +195,6 @@ class SurfacePortante(Attachements):
         vectAero = VecteurXaeroLocal + VecteurZaeroLocal
         forceAero = E.Vecteur(vectAero.projectionRef(refAvion).x*(-1*drag), vectAero.projectionRef(refAvion).z*lift, refAvion)
         
-        if forceAero.x > 0 :
-            print("alpha")
-            print(refAvion.getAngleAxeY() - VecteurXaeroLocal.arg())
-            print("vectAero")
-            print(vectAero.projectionRef(refAvion))
-            print ("drag")
-            print(drag)
-            print("forceAero")
-            print(forceAero)
         return T.Torseur(self.position.changeRef(refAvion),forceAero,moment)
         ####forceAeroRefSol = VecteurXaeroLocal*(-1*drag) + VecteurZaeroLocal*lift
         #print("forceAero")
@@ -278,7 +278,7 @@ class Empennage(SurfacePortante):
 # 4) Reset les corps rigides
 class CorpsRigide(Attachements):
     def __init__(self, position, father, referentielSol, epsilon):
-        super().__init__(self, position, 0, 0, father)
+        super().__init__(position, 0, 0, father)
         self._thisTurnTotalForce = 0
         self._epsilon = epsilon
         self._referentielSol = referentielSol
@@ -303,7 +303,7 @@ class CorpsRigide(Attachements):
         self._active = True
 
     def _underground(self):
-        return self.getPosition().changeRef(self._referentielSol).getZ()>0
+        return self.getPosition().changeRef(self._referentielSol).getZ()<=0
 
     def ok(self):
         if (not self._underground()) or (not self._active):
@@ -344,6 +344,17 @@ class Planeur():
         #self.empennageG = Empennage(E.Vecteur(PM.empennageG_x_Foyer,PM.empennageG_z_Foyer,refAvion), 0, 0, self.structure, PM.empennageG_S,PM.empennageG_CzA, PM.empennageG_Alpha_0, PM.empennageG_Cx0, PM.empennageG_k,0 ,PM.elevGMaxAnglePourcentage)
         self.empennageG = Empennage(E.Vecteur(PM.empennageG_x_BA,PM.empennageG_z_BA,refAvion),PolaireLineaire(PM.empennageG_CzA, PM.empennageG_Alpha_0,PM.empennageG_Cx0, PM.empennageG_k,0),PM.empennageG_S,PM.empennageG_corde,PM.elevGPourcentageCordeArticulee,PM.elevGPourcentageEnvergureArticulee,PM.elevGMaxAngle,father= self.structure)
         self.structure.addAttachement(self.empennageG)
+
+        self.p1 = CorpsRigide(E.Vecteur(PM.p1_x,PM.p1_z,refAvion),self.structure,refTerrestre,PS.maxAcceptablePenetrationSpeed)
+        self.structure.addCorpsRigide(self.p1)
+        self.p2 = CorpsRigide(E.Vecteur(PM.p2_x,PM.p2_z,refAvion),self.structure,refTerrestre,PS.maxAcceptablePenetrationSpeed)
+        self.structure.addCorpsRigide(self.p2)
+        self.p3 = CorpsRigide(E.Vecteur(PM.p3_x,PM.p3_z,refAvion),self.structure,refTerrestre,PS.maxAcceptablePenetrationSpeed)
+        self.structure.addCorpsRigide(self.p3)
+        self.p4 = CorpsRigide(E.Vecteur(PM.p4_x,PM.p4_z,refAvion),self.structure,refTerrestre,PS.maxAcceptablePenetrationSpeed)
+        self.structure.addCorpsRigide(self.p4)
+        self.p5 = CorpsRigide(E.Vecteur(PM.p5_x,PM.p5_z,refAvion),self.structure,refTerrestre,PS.maxAcceptablePenetrationSpeed)
+        self.structure.addCorpsRigide(self.p5)
 
     def diffuseDictRawInput(self,rawInputDict):
         self.propulseur.setThrottlePercent(rawInputDict["throttle"])

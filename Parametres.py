@@ -87,7 +87,24 @@ class ParametresModele:
     maxAutoPilotSpeed   = 200*TOMpS     #m/s
     maxAutoPilotZSpeed  = 20*TOMpS      #m/s
 
+    #parametres collision
+    p1_x = -1.5
+    p1_z = 0
+
+    p2_x = -1.4
+    p2_z = -0.1
+
+    p3_x = -0.2
+    p3_z = -0.2
+
+    p4_x = 0.1
+    p4_z = -0.2
+
+    p5_x = 0.2
+    p5_z = 0
+
 
 class ParametresSimulation:
     scriptToLoad = Scripts.scriptTest.ScriptExemple
+    maxAcceptablePenetrationSpeed = 0.001
 
