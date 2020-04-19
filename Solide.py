@@ -353,8 +353,7 @@ class Planeur():
         refAero.setAngleAxeY(self.structure.getTorseurCinematique().resultante.projectionRef(refTerrestre).arg())
     
     def getVitesse(self): 
-        return self.structure.torseurCinematique.getResultante()
-        #return self.propulseur.getVitesse()
+        return self.propulseur.getVitesse()
     
     def setVitesse(self, newVitesse):
         self.structure.torseurCinematique.setResultante(newVitesse.projectionRef(refTerrestre))
