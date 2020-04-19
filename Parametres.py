@@ -58,7 +58,7 @@ class ParametresModele:
     empennageD_Allongement= 1.3          #SI, allongement = envergure**2/SurfacePortante
     empennageD_k =1/(pi*empennageD_Allongement) #SI, 
     elevDMaxAngle        = 20*TORAD     #Radians
-    elevDPourcentageCordeArticulee   = 0.5           #%
+    elevDPourcentageCordeArticulee   = 0.7           #%
     elevDPourcentageEnvergureArticulee   = 1    #L'elevator a une gouverne sur toute son envergure !
     
     
@@ -66,16 +66,16 @@ class ParametresModele:
     #empennageG_x_Foyer  = 0.01          #m, coordonnee x entre le centre de gravite et le foyer de la gouverne
     #empennageG_z_Foyer  = -0.1          #m, coordonnee z entre le centre de gravite et le foyer de la gouverne
     empennageG_x_BA      = -1.02             #m, coordonnee x entre le centre de gravite et le BA du stab
-    empennageG_z_BA      = 0.115             #m, coordonnee z entre le centre de gravite et le BA du stab
-    empennageG_corde     = 0.1              #m
-    empennageG_S         = 0.1           #m2, surface ailaire
+    empennageG_z_BA      = 0.1             #m, coordonnee z entre le centre de gravite et le BA du stab
+    empennageG_corde     = 0.115              #m
+    empennageG_S         =  0.0485           #m2, surface ailaire
     empennageG_Alpha_0   = -2.5*TORAD       #Radians
     empennageG_CzA       = 0.1/TORAD             #SI, dCz/dAlpha
     empennageG_Cx0       = 0             #SI, trainee a portance nulle
     empennageG_Allongement= 1.3          #SI, allongement = envergure**2/SurfacePortante
     empennageG_k =1/(pi*empennageG_Allongement) #SI, 
     elevGMaxAngle        = 20*TORAD     #Radians
-    elevGPourcentageCordeArticulee   = 0.5           #%
+    elevGPourcentageCordeArticulee   = 0.7           #%
     elevGPourcentageEnvergureArticulee   = 1 #L'elevator a une gouverne sur toute son envergure !
     
     #parametre propulseur
