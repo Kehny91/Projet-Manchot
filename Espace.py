@@ -62,7 +62,8 @@ class Referentiel:
 
     def getAxeZ(self):
         return Vecteur(0,1,self)
-        
+
+    #methodes  
     def __eq__(self, ref):
         """Test si deux referentiels sont identiques
         \nreturn bool
@@ -113,6 +114,7 @@ class Vecteur:
     def getRef(self):
         return self.ref
 
+    #methodes
     #TODO :  Alex, je ne l'utilise pas dans mes classes, en as tu besoin ?
     def withZmin(self,zMin):
         return Vecteur(self.x,max(zMin,self.z),self.ref)
