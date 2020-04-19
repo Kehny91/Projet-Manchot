@@ -335,8 +335,19 @@ class CorpsRigide(Attachements):
         F = -1*self.getVitesse().getZ()*self._m0()/self._dt
         #La force totale appliquée ne peut pas etre négative, donc au minimum, F peut valoir -thisTurnTotalForce
         F = max(-1*self._thisTurnTotalForce,F)
+        vx = self.getVitesse().getX()
+        Fr = 0
+        if (abs(vx)>self._epsilon): #On applique les frottements
+            if vx>0:
+                Fr = -PM.muFrottementSol*F
+            else:
+                Fr = PM.muFrottementSol*F
+
+
+        m = PM.muFrottementSol*F
+
         self._thisTurnTotalForce += F
-        return T.Torseur(self.getPosition(),E.Vecteur(0,F,self._referentielSol),0)
+        return T.Torseur(self.getPosition(),E.Vecteur(Fr,F,self._referentielSol),0)
     
 class Planeur():
     def __init__(self):

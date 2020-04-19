@@ -103,6 +103,8 @@ class ParametresModele:
     p5_x = 0.2
     p5_z = 0
 
+    muFrottementSol = 0.4
+
 
 class ParametresSimulation:
     scriptToLoad = Scripts.scriptTest.ScriptExemple
