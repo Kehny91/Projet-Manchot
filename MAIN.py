@@ -97,7 +97,7 @@ class PhysicThread(th.Thread):
             self._physique.mettreAJourModeleAvecRawInput(rawInput.getInputDict())
             newFlightData = self._physique.compute(current, self._period/DILATATION)
             self._mddFlightData.write(newFlightData)
-            Logger.pushNewLine(newFlightData, rawInput, RapportDeCollision())
+            Logger.pushNewLine(newFlightData, rawInput, self._physique.planeur.generateRapportCollision())
             time.sleep(self._period)
     
     def stop(self):

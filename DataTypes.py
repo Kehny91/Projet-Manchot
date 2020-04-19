@@ -148,7 +148,18 @@ class RapportDeCollision:
             self.pos2 = pos
             self.force2 = force
         else:
-            assert False, "Trop d'impactes"
+            if self.force1.norm()<self.force2.norm():
+                if (self.force1.norm()<force):
+                    self.force1 = force
+                    self.pos1 = pos
+                else:
+                    pass #On ne prend pas
+            else:
+                if (self.force2.norm()<force):
+                    self.force2 = force
+                    self.pos2 = pos
+                else:
+                    pass #On ne prend pas
 
     def getPos1(self):
         return self.pos1

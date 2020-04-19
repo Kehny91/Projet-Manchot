@@ -6,6 +6,7 @@ from Parametres import ConstanteEnvironement as CE
 from Parametres import ParametresModele as PM
 from Parametres import ParametresSimulation as PS
 import Parametres as P
+from DataTypes import RapportDeCollision
 from DataManagement import normalize
 
 
@@ -114,6 +115,14 @@ class Corps:
                 assert False
         
         self.updatePosAndAssiette(dt)
+
+    def generateRapportCollision(self):
+        out = RapportDeCollision()
+        for cr in self.corpsRigides:
+            if cr._thisTurnTotalForce > 0:
+                out.addImpact(cr.position,E.Vecteur(cr._thisTurnTotalForceX,cr._thisTurnTotalForce,refTerrestre))
+        return out
+
 
     def updatePosAndAssiette(self,dt):
         #print("W = ",torseurCinematique.moment)
@@ -296,6 +305,7 @@ class CorpsRigide(Attachements):
         super().__init__(position, 0, 0, father)
         self._name = name
         self._thisTurnTotalForce = 0
+        self._thisTurnTotalForceX = 0
         self._epsilon = epsilon
         self._referentielSol = referentielSol
         self._axeXSol = referentielSol.getAxeX()
@@ -313,6 +323,7 @@ class CorpsRigide(Attachements):
 
     def reset(self):
         self._thisTurnTotalForce = 0
+        self._thisTurnTotalForceX = 0
         self._active = False
 
     def activer(self):
@@ -342,11 +353,8 @@ class CorpsRigide(Attachements):
                 Fr = -PM.muFrottementSol*F
             else:
                 Fr = PM.muFrottementSol*F
-
-
-        m = PM.muFrottementSol*F
-
         self._thisTurnTotalForce += F
+        self._thisTurnTotalForceX += Fr
         return T.Torseur(self.getPosition(),E.Vecteur(Fr,F,self._referentielSol),0)
     
 class Planeur():
@@ -416,6 +424,9 @@ class Planeur():
     
     def setVitesseRot(self, newVitesseRot):
         self.structure.getTorseurCinematique().setMoment(newVitesseRot)
+
+    def generateRapportCollision(self):
+        return self.structure.generateRapportCollision()
 
         
 
