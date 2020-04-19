@@ -83,7 +83,7 @@ class Corps:
         
         #construction vecteur acceleration dans le refAvion
         torseurAcc= T.Torseur(self.torseurCinematique.vecteur,vecteurAcce,wpoint)
-
+        
         #torseurAcc= T.Torseur(self.torseurCinematique.vecteur,E.Vecteur(0,0,refAvion),0)
 
         #update
@@ -101,7 +101,6 @@ class Corps:
         for attachement in self.attachements:
             torseurEffortsAttachements = attachement.getTorseurEffortsAttachement().changePoint(self.torseurCinematique.vecteur)           
             torseurEfforts += torseurEffortsAttachements
-        torseurEfforts += self.attachements[0].getTorseurEffortsAttachement().changePoint(self.torseurCinematique.vecteur)
         return torseurEfforts 
  
     def getTorseurPoids(self):
@@ -175,16 +174,32 @@ class SurfacePortante(Attachements):
     def getResultanteAero(self,alpha): #Permet de ne pas creer puis sommer les torseur
         VrefSol = self.getVitesse()
         VecteurXaeroLocal = VrefSol.unitaire()
-        VecteurZaeroLocal = VecteurXaeroLocal.rotate(-np.pi/2)
-        
+        #print("VecteurXaeroLocal")
+        #print(VecteurXaeroLocal)
+        VecteurZaeroLocal = VecteurXaeroLocal.rotate(-np.pi/2)  
         v = VrefSol.norm()
         Fdyn = 0.5 * CE.rho_air_0 *self.S*(v**2)
         lift = Fdyn*self.polaire.getCl(alpha,v)
         drag = Fdyn*self.polaire.getCd(alpha,v)
-        moment = Fdyn*self.polaire.getCm(alpha,v)*self.corde
-
-        forceAeroRefSol = VecteurXaeroLocal*(-1*drag) + VecteurZaeroLocal*lift
-        return T.Torseur(self.position.changeRef(refAvion),forceAeroRefSol.projectionRef(refAvion),moment)
+        #moment = Fdyn*self.polaire.getCm(alpha,v)*self.corde
+        moment = 0
+        vectAero = VecteurXaeroLocal + VecteurZaeroLocal
+        forceAero = E.Vecteur(vectAero.projectionRef(refAvion).x*(-1*drag), vectAero.projectionRef(refAvion).z*lift, refAvion)
+        
+        if forceAero.x > 0 :
+            print("alpha")
+            print(refAvion.getAngleAxeY() - VecteurXaeroLocal.arg())
+            print("vectAero")
+            print(vectAero.projectionRef(refAvion))
+            print ("drag")
+            print(drag)
+            print("forceAero")
+            print(forceAero)
+        return T.Torseur(self.position.changeRef(refAvion),forceAero,moment)
+        ####forceAeroRefSol = VecteurXaeroLocal*(-1*drag) + VecteurZaeroLocal*lift
+        #print("forceAero")
+        #print(forceAeroRefSol)
+        ####return T.Torseur(self.position.changeRef(refAvion),forceAeroRefSol.projectionRef(refAvion),moment)
 
     #TODO Tom. Attention, alpha c'est bien une différence d'angle entre l'angle du fuselage et l'angle de la vitesse
     def getAlpha(self, VrefSol):
@@ -250,7 +265,7 @@ class Empennage(SurfacePortante):
         torseurFixe = self.getResultanteAero(alphaFixe)*(1 - self.pourcentageEnvergureArticulee)
         torseurGouverne = self.getResultanteAero(normalize(alphaFixe + gainAlpha))*self.pourcentageEnvergureArticulee
         torseurTot = torseurFixe + torseurGouverne
-        print("emp v = ",v,"alpha = ", alphaFixe + gainAlpha," fzavion = ",torseurTot.getResultante().projectionRef(refAvion).getZ()," fxavion = ", torseurTot.getResultante().projectionRef(refAvion).getX(),"vZ = ", self.getVitesse().projectionRef(refAvion).getZ())
+        #print("emp v = ",v,"alpha = ", alphaFixe + gainAlpha," fzavion = ",torseurTot.getResultante().projectionRef(refAvion).getZ()," fxavion = ", torseurTot.getResultante().projectionRef(refAvion).getX(),"vZ = ", self.getVitesse().projectionRef(refAvion).getZ())
         
         return torseurTot
 
@@ -332,8 +347,8 @@ class Planeur():
 
     def diffuseDictRawInput(self,rawInputDict):
         self.propulseur.setThrottlePercent(rawInputDict["throttle"])
-        #self.aileD.setBraquageFlaps(rawInputDict["flapsD"])
-        #self.aileG.setBraquageFlaps(rawInputDict["flapsG"])
+        self.aileD.setBraquageFlaps(rawInputDict["flapsD"])
+        self.aileG.setBraquageFlaps(rawInputDict["flapsG"])
         self.empennageD.setBraquageGouverne(rawInputDict["elevD"])
         self.empennageG.setBraquageGouverne(rawInputDict["elevG"])
 

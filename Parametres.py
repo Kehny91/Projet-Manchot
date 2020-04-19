@@ -58,7 +58,7 @@ class ParametresModele:
     empennageD_Allongement= 1.3          #SI, allongement = envergure**2/SurfacePortante
     empennageD_k =1/(pi*empennageD_Allongement) #SI, 
     elevDMaxAngle        = 20*TORAD     #Radians
-    elevDPourcentageCordeArticulee   = 0.5           #%
+    elevDPourcentageCordeArticulee   = 0.7           #%
     elevDPourcentageEnvergureArticulee   = 1    #L'elevator a une gouverne sur toute son envergure !
     
     
@@ -75,7 +75,7 @@ class ParametresModele:
     empennageG_Allongement= 1.3          #SI, allongement = envergure**2/SurfacePortante
     empennageG_k =1/(pi*empennageG_Allongement) #SI, 
     elevGMaxAngle        = 20*TORAD     #Radians
-    elevGPourcentageCordeArticulee   = 0.5           #%
+    elevGPourcentageCordeArticulee   = 0.7           #%
     elevGPourcentageEnvergureArticulee   = 1 #L'elevator a une gouverne sur toute son envergure !
     
     #parametre propulseur
