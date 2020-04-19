@@ -78,7 +78,7 @@ class Corps:
             cr.reset()
 
     def activateAllCorpsRigides(self, dt):
-        for cr in self.corpsRigides:
+        for cr in self.corpsRigides: 
             cr.activer()
             cr.setDt(dt)
     
