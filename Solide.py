@@ -82,6 +82,7 @@ class Corps:
         vecteurAcce = E.Vecteur(accX,accZ,refAvion)
         #construction vecteur acceleration dans le refAvion
         torseurAcc= T.Torseur(self.torseurCinematique.vecteur,vecteurAcce,wpoint)
+
         #update
         dV = torseurAcc*dt
         self.setTorseurCinematique(self.getTorseurCinematique() + dV)
@@ -129,8 +130,8 @@ class Attachements:
     def getVitesse(self):
         """return la vitesse du point dans le refTerrestre"""
         BA = self.father.getTorseurCinematique().vecteur.pointToVect(self.position).projectionRef(refTerrestre)
-        vitessex =  self.father.getTorseurCinematique().resultante.projectionRef(refTerrestre).x - BA.z * self.father.getTorseurCinematique().moment
-        vitessez =  self.father.getTorseurCinematique().resultante.projectionRef(refTerrestre).z + BA.x * self.father.getTorseurCinematique().moment 
+        vitessex =  self.father.getTorseurCinematique().resultante.projectionRef(refTerrestre).x + BA.z * self.father.getTorseurCinematique().moment
+        vitessez =  self.father.getTorseurCinematique().resultante.projectionRef(refTerrestre).z - BA.x * self.father.getTorseurCinematique().moment 
         return E.Vecteur(vitessex,vitessez,refTerrestre)
 
     def getMasse(self):
@@ -335,11 +336,11 @@ class Planeur():
 
     ##/!\ origine de l'avion dans l'interface prise au bati moteur
     def getPosition(self):
-        return self.propulseur.getPosition().changeRef(refTerrestre)
+        return (self.structure.torseurCinematique.vecteur.ref.getOrigine() + self.propulseur.position.projectionRef(refTerrestre))
 
     def setPosition(self, newPosition):
-        self.structure.torseurCinematique.vecteur.ref.setOrigine(newPosition-self.propulseur.position)
-        refAero.setOrigine(newPosition-self.propulseur.position)
+        self.structure.torseurCinematique.vecteur.ref.setOrigine(newPosition.changeRef(refTerrestre))
+        refAero.setOrigine(newPosition)
     
     def getAssiette(self):
         return normalize(self.structure.getTorseurCinematique().vecteur.ref.getAngleAxeY())
@@ -348,14 +349,11 @@ class Planeur():
         self.structure.getTorseurCinematique().vecteur.ref.setAngleAxeY(newAssiete)
         refAero.setAngleAxeY(self.structure.getTorseurCinematique().resultante.projectionRef(refTerrestre).arg())
     
-    def setVitesse(self, newVitesse):
-        BA = self.structure.getTorseurCinematique().vecteur.pointToVect(self.propulseur.position).projectionRef(refTerrestre)
-        vitessex =  newVitesse.x + self.structure.getTorseurCinematique().moment * BA.z
-        vitessez =  newVitesse.z - self.structure.getTorseurCinematique().moment * BA.x
-        self.structure.getTorseurCinematique().setResultante(E.Vecteur(vitessex,vitessez,refTerrestre))
- 
     def getVitesse(self): 
        return self.propulseur.getVitesse()
+    
+    def setVitesse(self, newVitesse):
+        self.structure.torseurCinematique.setResultante(newVitesse.projectionRef(refTerrestre))
 
     def getVitesseRot(self):
         return self.structure.getTorseurCinematique().moment
@@ -363,33 +361,6 @@ class Planeur():
     def setVitesseRot(self, newVitesseRot):
         self.structure.getTorseurCinematique().setMoment(newVitesseRot)
 
-
-"""     def getVitesse(self):
-        return self.structure.getTorseurCinematique().getResultante()
-
-    
-    def setVitesse(self,newVitesse):
-        self.structure.getTorseurCinematique().setResultante(newVitesse) """
-
-"""    def setVitesse(self, newVitesse):
-        vitessex =  newVitesse.x - self.structure.getTorseurCinematique().moment * self.propulseur.position.projectionRef(refTerrestre).z
-        vitessez =  newVitesse.z - self.structure.getTorseurCinematique().moment * self.propulseur.position.projectionRef(refTerrestre).x
-        return self.structure.getTorseurCinematique().setResultante(E.Vecteur(vitessex,vitessez,refTerrestre))#TODO return ????? """
-    
- 
-""" def getPosition(self):
-        return self.structure.getTorseurCinematique().vecteur.changeRef(refTerrestre)
-    
-    def setPosition(self, newPosition):
-        self.structure.torseurCinematique.vecteur.ref.setOrigine(newPosition) 
-    
-    def getAssiette(self):
-        return self.structure.getTorseurCinematique().vecteur.ref.getAngleAxeY()
-
-    def setAssiette(self, newAssiete):
-        self.structure.getTorseurCinematique().vecteur.ref.setAngleAxeY(newAssiete)
-    
-    """
         
 
 
