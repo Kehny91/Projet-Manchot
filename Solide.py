@@ -82,9 +82,9 @@ class Corps:
         vecteurAcce = E.Vecteur(accX,accZ,refAvion)
         
         #construction vecteur acceleration dans le refAvion
-        #torseurAcc= T.Torseur(self.torseurCinematique.vecteur,vecteurAcce,wpoint)
+        torseurAcc= T.Torseur(self.torseurCinematique.vecteur,vecteurAcce,wpoint)
 
-        torseurAcc= T.Torseur(self.torseurCinematique.vecteur,E.Vecteur(0,0,refAvion),0)
+        #torseurAcc= T.Torseur(self.torseurCinematique.vecteur,E.Vecteur(0,0,refAvion),0)
 
         #update
         dV = torseurAcc*dt
@@ -100,7 +100,7 @@ class Corps:
         torseurEfforts = self.getTorseurPoids().changePoint(self.torseurCinematique.vecteur)
         for attachement in self.attachements:
             torseurEffortsAttachements = attachement.getTorseurEffortsAttachement().changePoint(self.torseurCinematique.vecteur)           
-            #torseurEfforts += torseurEffortsAttachements
+            torseurEfforts += torseurEffortsAttachements
         torseurEfforts += self.attachements[0].getTorseurEffortsAttachement().changePoint(self.torseurCinematique.vecteur)
         return torseurEfforts 
  
@@ -315,12 +315,12 @@ class Planeur():
         self.structure.addAttachement(self.propulseur)
 
         #self.aileD = Aile(E.Vecteur(PM.ailesD_x_BA,PM.ailesD_z_BA,refAvion),PolaireTabulee("./XFLR5/CLwing","./XFLR5/CDwing","./XFLR5/CMwingBA"), PM.aileD_S, PM.ailesD_corde, PM.flapsDPourcentageCordeArticulee,PM.flapsDPourcentageEnvergureArticulee, PM.flapsDMaxAngle, father = self.structure)
-        #self.aileD = Aile(E.Vecteur(PM.ailesD_x_BA,PM.ailesD_z_BA,refAvion),PolaireLineaire(PM.aileD_CzA, PM.aileD_Alpha_0, PM.aileD_Cx0, PM.aileD_k,0), PM.aileD_S, PM.ailesD_corde, PM.flapsDPourcentageCordeArticulee,PM.flapsDPourcentageEnvergureArticulee, PM.flapsDMaxAngle, father = self.structure)
-        #self.structure.addAttachement(self.aileD)
+        self.aileD = Aile(E.Vecteur(PM.ailesD_x_BA,PM.ailesD_z_BA,refAvion),PolaireLineaire(PM.aileD_CzA, PM.aileD_Alpha_0, PM.aileD_Cx0, PM.aileD_k,0), PM.aileD_S, PM.ailesD_corde, PM.flapsDPourcentageCordeArticulee,PM.flapsDPourcentageEnvergureArticulee, PM.flapsDMaxAngle, father = self.structure)
+        self.structure.addAttachement(self.aileD)
 
         #self.aileG = Aile(E.Vecteur(PM.ailesG_x_BA,PM.ailesG_z_BA,refAvion),PolaireTabulee("./XFLR5/CLwing","./XFLR5/CDwing","./XFLR5/CMwingBA"), PM.aileG_S, PM.ailesG_corde, PM.flapsGPourcentageCordeArticulee,PM.flapsGPourcentageEnvergureArticulee, PM.flapsGMaxAngle, father = self.structure)
-        #self.aileG = Aile(E.Vecteur(PM.ailesG_x_BA,PM.ailesG_z_BA,refAvion),PolaireLineaire(PM.aileG_CzA, PM.aileG_Alpha_0, PM.aileG_Cx0, PM.aileG_k,0), PM.aileG_S, PM.ailesG_corde, PM.flapsGPourcentageCordeArticulee,PM.flapsGPourcentageEnvergureArticulee, PM.flapsGMaxAngle, father = self.structure)
-        #self.structure.addAttachement(self.aileG)
+        self.aileG = Aile(E.Vecteur(PM.ailesG_x_BA,PM.ailesG_z_BA,refAvion),PolaireLineaire(PM.aileG_CzA, PM.aileG_Alpha_0, PM.aileG_Cx0, PM.aileG_k,0), PM.aileG_S, PM.ailesG_corde, PM.flapsGPourcentageCordeArticulee,PM.flapsGPourcentageEnvergureArticulee, PM.flapsGMaxAngle, father = self.structure)
+        self.structure.addAttachement(self.aileG)
 
         #self.empennageD = Empennage(E.Vecteur(PM.empennageD_x_Foyer,PM.empennageD_z_Foyer,refAvion), 0, 0, self.structure, PM.empennageD_S,PM.empennageD_CzA, PM.empennageD_Alpha_0, PM.empennageD_Cx0, PM.empennageD_k,0 ,PM.elevDMaxAnglePourcentage)
         self.empennageD = Empennage(E.Vecteur(PM.empennageD_x_BA,PM.empennageD_z_BA,refAvion),PolaireLineaire(PM.empennageD_CzA, PM.empennageD_Alpha_0,PM.empennageD_Cx0, PM.empennageD_k,0),PM.empennageD_S,PM.empennageD_corde,PM.elevDPourcentageCordeArticulee,PM.elevDPourcentageEnvergureArticulee,PM.elevDMaxAngle,father= self.structure)
@@ -334,8 +334,8 @@ class Planeur():
         self.propulseur.setThrottlePercent(rawInputDict["throttle"])
         #self.aileD.setBraquageFlaps(rawInputDict["flapsD"])
         #self.aileG.setBraquageFlaps(rawInputDict["flapsG"])
-        #self.empennageD.setBraquageGouverne(rawInputDict["elevD"])
-        #self.empennageG.setBraquageGouverne(rawInputDict["elevG"])
+        self.empennageD.setBraquageGouverne(rawInputDict["elevD"])
+        self.empennageG.setBraquageGouverne(rawInputDict["elevG"])
 
     ##/!\ origine de l'avion dans l'interface prise au bati moteur
     def getPosition(self):
