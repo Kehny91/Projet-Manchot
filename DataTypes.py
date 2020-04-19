@@ -1,6 +1,8 @@
 import DataManagement as dm
 from DataManagement import MDD
 from math import sqrt
+from Espace import Vecteur
+import random
 
 class AutoPilotInput:
     """ La classe représentant les entrées demandée par l'autopilote
@@ -149,13 +151,13 @@ class RapportDeCollision:
             self.force2 = force
         else:
             if self.force1.norm()<self.force2.norm():
-                if (self.force1.norm()<force):
+                if (self.force1.norm()<force.norm()):
                     self.force1 = force
                     self.pos1 = pos
                 else:
                     pass #On ne prend pas
             else:
-                if (self.force2.norm()<force):
+                if (self.force2.norm()<force.norm()):
                     self.force2 = force
                     self.pos2 = pos
                 else:
@@ -213,3 +215,74 @@ class FlightData:
 
     def getTime(self):
         return self._time
+
+
+class Perturbation:
+    def __init__(self, vecteurMoyen, variationAmplitude, tempsVariation, referentielSol):
+        self._vecteurMoyen = vecteurMoyen
+        self._direction = self._vecteurMoyen.unitaire()
+        self._variationAmplitude = variationAmplitude
+        self._tempsVariation = tempsVariation
+        self._t = 0
+        self._vecteurCourant = vecteurMoyen
+        self._referentielSol = referentielSol
+
+    def update(self, dt):
+        self._t += dt
+        if self._t > self._tempsVariation:
+            self._vecteurCourant = self._vecteurMoyen + self._direction*((random.random()*2 - 1)*self._variationAmplitude)
+            self._t = 0
+
+    def concerne(self, pos):
+        assert False, "classe abstraite"
+
+    def getVent(self,pos):
+        if  self.concerne(pos):
+            return self._vecteurCourant
+        else:
+            return Vecteur(0,0,self._referentielSol)
+
+class VentGlobal(Perturbation):
+    def __init__(self, vecteurMoyen, variationAmplitude, tempsVariation, referentielSol):
+        super().__init__(vecteurMoyen, variationAmplitude, tempsVariation, referentielSol)
+
+    def concerne(self,pos):
+        return pos.changeRef(self._referentielSol).getZ() > 0 #Pas de vent sous terre
+
+class VentLocal(Perturbation):
+    def __init__(self, vecteurMoyen, variationAmplitude, tempsVariation, referentielSol, positionCentrale, largeur):
+        super().__init__(vecteurMoyen, variationAmplitude, tempsVariation, referentielSol)
+        self._largeur = largeur
+        self._positionCentrale = positionCentrale.changeRef(referentielSol)
+
+    def concerne(self,pos):
+        pos = pos.changeRef(self._referentielSol)
+        vecteurLiantLeCentreAlaPos = pos - self._positionCentrale
+        hypo2 = vecteurLiantLeCentreAlaPos.getX()**2 + vecteurLiantLeCentreAlaPos.getZ()**2
+        adja2 = vecteurLiantLeCentreAlaPos.prodScal(self._direction)**2
+        eloignementAxe = sqrt(hypo2-adja2)
+        return pos.getZ()>0 and eloignementAxe<=self._largeur
+
+
+class World:
+    def __init__(self,scale, positionPiste, taillePiste, referentielSol):
+        self.referentielSol = referentielSol
+        self.positionPiste = positionPiste
+        self.taillePiste = taillePiste
+        self.scale = scale
+        self.perturbations = []
+
+    def addPerturbation(self, perturbation):
+        self.perturbations.append(perturbation)
+
+    def getVent(self, pos):
+        out = Vecteur(0,0,self.referentielSol)
+        for p in self.perturbations:
+            out = out + p.getVent(pos)
+        return out
+
+    def update(self,dt):
+         for p in self.perturbations:
+            p.update(dt)
+
+        

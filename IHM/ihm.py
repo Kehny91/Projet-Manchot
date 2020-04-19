@@ -187,8 +187,9 @@ class _TelemetryWidget(QtWidgets.QWidget):
 
 
 class IHM(QtWidgets.QWidget):
-    def __init__(self, mddFlightData, mddMode, mddRawInput, mddPilotInput, mddAutoPilotInput, frequenceAffichage):
+    def __init__(self, world, mddFlightData, mddMode, mddRawInput, mddPilotInput, mddAutoPilotInput, frequenceAffichage):
         super().__init__()
+        self.world = world
         #self._mddFlightData = mddFlightData
         #self._mddRawInput = mddRawInput
         #self._mddMode = mddMode
@@ -208,7 +209,7 @@ class IHM(QtWidgets.QWidget):
         myLayout.setColumnMinimumWidth(4,50)
         myLayout.setColumnStretch(4,1)
 
-        self._affichageAvion = GraphWidget(Vecteur(-0.5,-0.5),0.02,0,10,2,mddFlightData) #On commence en (--0.5,-0.5), a l'echelle 5mm par pix, la piste commence en 0 et fait 10m, l'avion fait 2m de long
+        self._affichageAvion = GraphWidget(Vecteur(-0.5,-0.5),world.scale,world.positionPiste,world.taillePiste,ParametresModele.longueurDrone,mddFlightData) #On commence en (--0.5,-0.5), a l'echelle 5mm par pix, la piste commence en 0 et fait 10m, l'avion fait 2m de long
         myLayout.addWidget(self._affichageAvion,0,0,5,4)
 
         self._affichageRawInput = _GraphicalRawInput(mddRawInput)
