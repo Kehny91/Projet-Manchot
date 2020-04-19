@@ -5,7 +5,7 @@ Created on Sun Apr 05 17:12:00 2020
 @author: tomju
 """
 import Espace as E
-import numpy as np
+import math as np
 
 ## Test la methode modulo
 print("__methode_modulo__") 
@@ -133,11 +133,9 @@ print(vecteur1.prodVect(vecteur3))
 print("le produit vectoriel de vecteur1 et vecteur2 = -27?")
 print(vecteur1.prodVect(vecteur2))
 print("\n")
-print("__norm__ + __afficheNorm__")
+print("__norm__")
 print("la norme du vecteur1 est egal a 5 dans refterrestre: ?")
-vecteur1.afficheNorm(refTerrestre)
-print("la norme du vecteur1 est egal a 5 dans refAero: ?")
-vecteur1.afficheNorm(refAero)
+print(vecteur1.norm())
 print("\n")
 print("unitaire")
 print("vecteur unitaire de (0,0), (1,0) par def ? :" + str(E.Vecteur(0,0,refTerrestre).unitaire()))
