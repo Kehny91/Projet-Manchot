@@ -76,14 +76,14 @@ class Corps:
         
         torseurEfforts = self.computeTorseurEfforts().changePoint(self.torseurCinematique.vecteur) # C'est mieux de faire le PFD au CG...
         #PFD
-        accX = torseurEfforts.resultante.x/self.getMasseTotal() #- self.torseurCinematique.moment*self.torseurCinematique.resultante.z
-        accZ = torseurEfforts.resultante.z/self.getMasseTotal() #+ self.torseurCinematique.moment*self.torseurCinematique.resultante.x
+        accX = torseurEfforts.resultante.x/self.getMasseTotal()# - self.torseurCinematique.moment*self.torseurCinematique.resultante.z
+        accZ = torseurEfforts.resultante.z/self.getMasseTotal()# + self.torseurCinematique.moment*self.torseurCinematique.resultante.x
         wpoint = torseurEfforts.moment/self.getInertieTotal()
         vecteurAcce = E.Vecteur(accX,accZ,refAvion)
         
         #construction vecteur acceleration dans le refAvion
         torseurAcc= T.Torseur(self.torseurCinematique.vecteur,vecteurAcce,wpoint)
-        
+
         #torseurAcc= T.Torseur(self.torseurCinematique.vecteur,E.Vecteur(0,0,refAvion),0)
 
         #update
