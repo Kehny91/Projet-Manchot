@@ -24,7 +24,7 @@ class Asservissement:
         currentV  = sqrt(currentVx**2 + currentVz**2)
 
         throttle = constrain((consigneV-currentV)*self._PThrottle , 0, 1)
-        pitch = constrain((consigneVz - currentVz)*self._Passiette,-1,1)
+        pitch = constrain(-1*(consigneVz - currentVz)*self._Passiette,-1,1)
         flaps = 0
 
         self._mddPilotInput.write(PilotInput(pitch,flaps,throttle))

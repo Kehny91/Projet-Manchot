@@ -156,12 +156,15 @@ class SurfacePortante(Attachements):
     def getResultanteAero(self,alpha): #Permet de ne pas creer puis sommer les torseur
         V = self.getVitesse()
         VecteurXaeroLocal = V.unitaire()
+        print("X",VecteurXaeroLocal)
         VecteurZaeroLocal = VecteurXaeroLocal.rotate(-np.pi/2)
+        print("Z",VecteurZaeroLocal)
         
         v = V.norm()
         Fdyn = 0.5 * CE.rho_air_0 *self.S*(v**2)
         lift = Fdyn*self.polaire.getCl(alpha,v)
         drag = Fdyn*self.polaire.getCd(alpha,v)
+        print("drag ",drag)
         moment = Fdyn*self.polaire.getCm(alpha,v)*self.corde
 
         forceAero = (VecteurXaeroLocal*(-1*drag) + VecteurZaeroLocal*lift).projectionRef(self.father)

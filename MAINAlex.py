@@ -85,7 +85,7 @@ class PhysiqueDunObjetUniquementSoumisASonInertie(LaPhysiqueDeTom):
         return flightData
 
 
-DILATATION = 5
+DILATATION = 2
 class PhysicThread(th.Thread):
     def __init__(self,mddFlightData, mddRawInput, referentielSol, frequence):
         super(PhysicThread,self).__init__()
