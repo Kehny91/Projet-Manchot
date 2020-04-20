@@ -22,10 +22,6 @@ class ParametresModele:
     ailesD_corde        = 0.2           #m
     aileD_S             = 0.145           #m2, surface alaire
     aileD_Alpha_0       = -2.5*TORAD    #Radians
-    aileD_CzA           = 0.1/TORAD         #SI, dCz/dAlpha
-    aileD_Cx0           = 0.00            #SI, trainee a portance nulle
-    aileD_Allongemet    = 12.1            #SI, allongement = envergure**2/SurfacePortante
-    aileD_k             =   1/(pi*aileD_Allongemet) #SI, 
     flapsDMaxAngle      = 45*TORAD      #Radians
     flapsDPourcentageCordeArticulee   = 0.5           #%
     flapsDPourcentageEnvergureArticulee   = 0.5
@@ -38,10 +34,6 @@ class ParametresModele:
     ailesG_corde        = 0.2           #m
     aileG_S             = 0.145           #m2, surface alaire
     aileG_Alpha_0       = -2.5*TORAD      #Radians
-    aileG_CzA           = 0.1/TORAD             #SI, dCz/dAlpha
-    aileG_Cx0           = 0.00             #SI, trainee a portance nulle
-    aileG_Allongemet    = 12.1            #SI, allongement = envergure**2/SurfacePortante
-    aileG_k             =   1/(pi*aileD_Allongemet) #SI, 
     flapsGMaxAngle      = 45*TORAD      #Radians
     flapsGPourcentageCordeArticulee   = 0.5           #%
     flapsGPourcentageEnvergureArticulee   = 0.5
