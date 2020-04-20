@@ -1,4 +1,5 @@
 from math import pi
+import Modes
 import Scripts.scriptTest
 TORAD = pi/180
 TODEG = 180/pi
@@ -117,6 +118,7 @@ class ParametresSimulation:
     scaleAffichage = 0.02                                       #m/pix
 
     logOnly = False                                             #Permet de desactiver l'interface graphique 
+    modeInitial = Modes.MODE_AUTO_PILOT
 
     #DEBUG
     printForces = False

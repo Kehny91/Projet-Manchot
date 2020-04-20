@@ -87,8 +87,8 @@ class _InputWidget(QtWidgets.QWidget):
         groupOfButtonsLayout.addWidget(self._buttonAutoPilot)
         groupOfButtonsLayout.addWidget(self._buttonScript)
 
-        stack = QtWidgets.QStackedLayout()
-        myLayout.addLayout(stack)
+        self.stack = QtWidgets.QStackedLayout()
+        myLayout.addLayout(self.stack)
 
         #Pilot
 
@@ -103,7 +103,7 @@ class _InputWidget(QtWidgets.QWidget):
         slider = widget.addSlider("Throttle[%]",0,100)
         slider.valueChanged[int].connect(lambda x : mddPilotInput.doOnData(PilotInput.setThrottle,x/100))
 
-        stack.addWidget(widget)
+        self.stack.addWidget(widget)
 
         #AutoPilot
 
@@ -114,26 +114,33 @@ class _InputWidget(QtWidgets.QWidget):
         slider = widget.addSlider("Vz[km/h]",-int(ParametresModele.maxAutoPilotZSpeed*3.6),int(ParametresModele.maxAutoPilotZSpeed*3.6))
         slider.valueChanged[int].connect(lambda x : mddAutoPilotInput.doOnData(AutoPilotInput.setVz,x/3.6))
 
-        stack.addWidget(widget)
+        self.stack.addWidget(widget)
 
         #Script
 
         widget = QtWidgets.QWidget(self)
 
-        stack.addWidget(widget)
+        self.stack.addWidget(widget)
 
-        self._buttonPilot.toggled.connect(lambda : self._handleRadioButton(stack,0,mddMode,M.MODE_PILOT))
-        self._buttonAutoPilot.toggled.connect(lambda : self._handleRadioButton(stack,1,mddMode,M.MODE_AUTO_PILOT))
-        self._buttonScript.toggled.connect(lambda : self._handleRadioButton(stack,2,mddMode,ParametresSimulation.scriptToLoad.mode))
+        self._buttonPilot.toggled.connect(lambda : self._handleRadioButton(0, mddMode,M.MODE_PILOT))
+        self._buttonAutoPilot.toggled.connect(lambda : self._handleRadioButton(1, mddMode,M.MODE_AUTO_PILOT))
+        self._buttonScript.toggled.connect(lambda : self._handleRadioButton(2, mddMode,ParametresSimulation.scriptToLoad.mode))
+        
 
-        stack.setCurrentIndex(0)
-        self._buttonPilot.toggle()
-
-    def _handleRadioButton(self,stack,index,mddMode,mode):
-        stack.setCurrentIndex(index)
+    def _handleRadioButton(self,index,mddMode,mode):
         mddMode.write(mode)
+        self.stack.setCurrentIndex(index)
         if (index<2):
-            stack.widget(index).refreshAllSliders()
+            self.stack.widget(index).refreshAllSliders()
+
+    def artificiallyPressButton(self, mode):
+        if (mode == M.MODE_PILOT):
+            self._buttonPilot.toggle()
+        elif mode == M.MODE_AUTO_PILOT:
+            self._buttonAutoPilot.toggle()
+        else:
+            self._buttonScript.toggle()
+
 
 
 class _TelemetryWidget(QtWidgets.QWidget):
@@ -234,3 +241,6 @@ class IHM(QtWidgets.QWidget):
         self._affichageAvion.refresh()
         self._affichageRawInput.refresh()
         self._telemetry.refresh()
+
+    def artificiallyPressButton(self, mode):
+        self._userInput.artificiallyPressButton(mode)

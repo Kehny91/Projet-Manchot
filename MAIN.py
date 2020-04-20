@@ -157,7 +157,7 @@ class ModeManagerThread(th.Thread):
         self._mixerT = mixerT
         self._asserT = asserT
         self._scriptT = scriptT
-        self._lastMode = mddMode.read()
+        self._lastMode = -1
         self._continue = True
 
     def run(self):
@@ -222,11 +222,14 @@ if __name__ == "__main__":
     mT = MixerThread(mddRawInput,mddPilotInput,PS.frequenceMixer)
     mT.start()
 
+    mddMode.write(PS.modeInitial)
+
     if not PS.logOnly:
         app = Qt.QApplication(sys.argv)
         mainW = Qt.QMainWindow()
         graph = IHM(world, mddFlightData, mddMode, mddRawInput, mddPilotInput, mddAutoPilotInput, PS.frequenceAffichage)
         graph.startUpdateThread()
+        graph.artificiallyPressButton(PS.modeInitial)
         mainW.setCentralWidget(graph)
         mainW.show()
 
@@ -250,7 +253,7 @@ if __name__ == "__main__":
         app.exec_()
         graph.stopUpdateThread()
     else:
-        input("Appuiez sur entree pour arreter la simulation")
+        input("Appuiez sur entree pour arreter la simulation\n")
     
     mmT.stop()
     mT.stop()
