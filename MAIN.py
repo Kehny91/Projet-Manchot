@@ -39,7 +39,7 @@ class MixerThread(th.Thread):
     def requestPause(self):
         self._pauser.requestPause()
 
-class LaPhysiqueDeTom:
+class Physique:
     def __init__(self, world, flightData):
         # definition du modele
         self.drone = D.Drone(world)
@@ -72,7 +72,7 @@ class LaPhysiqueDeTom:
         return flightData
 
 
-DILATATION = 5
+DILATATION = 1
 class PhysicThread(th.Thread):
     def __init__(self,world, mddFlightData, mddRawInput, frequence):
         super(PhysicThread,self).__init__()
@@ -80,7 +80,7 @@ class PhysicThread(th.Thread):
         self._mddRawInput = mddRawInput
         self._period = 1/frequence
         self._continue = True
-        self._physique = LaPhysiqueDeTom(world, self._mddFlightData.read())
+        self._physique = Physique(world, self._mddFlightData.read())
         self._world = world
 
     def run(self):
