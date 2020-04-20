@@ -6,7 +6,7 @@ from Polaire import PolaireLineaire,PolaireTabulee
 from DataManagement import normalize
 
 
-class Drone():
+class Drone:
     """Permet de definir un drone
     \n attribute World : world, environement du drone
     \n attribute S.Solide :  corps, corps principal du drone

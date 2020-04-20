@@ -13,6 +13,7 @@ import Parametres
 import Modes as M
 import Espace as E
 import Drone as D
+from Solide import refSol
 
 class MixerThread(th.Thread):
     def __init__(self,mddRawInput,mddPilotInput,frequence):
@@ -216,9 +217,9 @@ if __name__ == "__main__":
 
     Logger.setup(str(int(time.time())))
 
-    referentielSol = Referentiel("referentielSol",0,Vecteur(0,0))
+    referentielSol = refSol
 
-    mddFlightData = MDD(FlightData(Vecteur(0,5,referentielSol),Vecteur(20,0,referentielSol), 0, 0), True)
+    mddFlightData = MDD(FlightData(Vecteur(0,10,referentielSol),Vecteur(15,0,referentielSol), 0, 0), True)
     mddRawInput = MDD(RawInput(0.30,0.30,0.50,0.50,0.100), False)
     mddPilotInput = MDD(PilotInput(0,0,0), False)
     mddAutoPilotInput = MDD(AutoPilotInput(Vecteur(0,0,referentielSol)), True)
@@ -228,8 +229,8 @@ if __name__ == "__main__":
     mT.start()
 
     world = World(0.06, 15,15,referentielSol)
-    world.addPerturbation(VentGlobal(Vecteur(-2,0,referentielSol),1,10,referentielSol))
-    world.addPerturbation(VentLocal(Vecteur(0,5,referentielSol),0,5,referentielSol,Vecteur(15,0,referentielSol),10))
+    #world.addPerturbation(VentGlobal(Vecteur(-2,0,referentielSol),1,10,referentielSol))
+    #world.addPerturbation(VentLocal(Vecteur(0,5,referentielSol),0,5,referentielSol,Vecteur(15,0,referentielSol),10))
 
     app = Qt.QApplication(sys.argv)
     mainW = Qt.QMainWindow()
