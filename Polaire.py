@@ -102,9 +102,10 @@ class PolaireTabulee(Polaire):
         n = len(alphas) 
         while (i<n-1 and alpha > alphas[i]):
             i+=1
-
-        if (i == 0 or i == n-1): #DECROCHAGE
-            #return 1.0 * sin(2*alpha*TORAD)
+        
+        if (abs(alpha)>20):  #DECROCHAGE
+            return 1.0 * sin(2*alpha*TORAD)
+        elif (i == 0 or i == n-1): 
             return values[i]
         else:
             t = (alphas[i] - alpha)/(alphas[i]-alphas[i-1])
@@ -118,9 +119,11 @@ class PolaireTabulee(Polaire):
         n = len(alphas) 
         while (i<n-1 and alpha > alphas[i]):
             i+=1
-        if (i == 0 or i == n-1): #DECROCHAGE
-            #return 2.0 * abs(sin(alpha*TORAD))
-            return values[i]
+
+        if (abs(alpha)>20):  #DECROCHAGE
+            return 2.0 * abs(sin(alpha*TORAD))
+        elif (i == 0 or i == n-1):
+            return values[i]        
         else:
             t = (alphas[i] - alpha)/(alphas[i]-alphas[i-1])
             return values[i]*(1-t) + values[i-1]*t
