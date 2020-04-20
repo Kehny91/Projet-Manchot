@@ -18,18 +18,6 @@ class SystemeMeca:
     def getConsigne(self):
         return self._consigne
 
-    def _update(self, dt):
-        assert False , "Don't use this abstract class"
-
-    def getValue(self):
-        """Renvoie la valeur réelle"""
-        t = time.time()
-        self._update(min(0.5, t - self._lastT))
-        self._lastT = t
-        return self._value
-
-
-
 class Systeme1Ordre(SystemeMeca):
     def __init__(self, value0, valueMin, valueMax, tempsDeReaction):
         super(Systeme1Ordre,self).__init__(value0,valueMin,valueMax)
@@ -37,6 +25,13 @@ class Systeme1Ordre(SystemeMeca):
     
     def _update(self, dt):
         self._value = (self._consigne/self._tau + self._value/dt)/(1.0/self._tau + 1.0/dt)
+    
+    def getValue(self):
+        """Renvoie la valeur réelle"""
+        t = time.time()
+        self._update(max(0.000001, t - self._lastT))
+        self._lastT = t
+        return self._value
 
 if __name__ == "__main__":
     from math import cos
@@ -51,12 +46,12 @@ if __name__ == "__main__":
         time.sleep(0.01)
         t += 0.01
 
-def getThrust(percent, maxWatt, maxStaticThrust, v):
+def getThrustConsigne(percent, maxWatt, maxStaticThrust, v):
     # Un moteur a hélice développe une puissance P=V*T constante, pas une poussée constante.
-    # Cependant si v==0 et notre moteur developpe 600W, on a T = P / V = 600 / 0
+    # Cependant si v==0 et notre moteur developpe 505W, on a T = P / V = 505 / 0
     # Cette regle ne s'applique pas aux basses vitesse car il faudrait prendre en compte la vitesse de l'air mise en mouvement par l'hélice
     # Ainsi, au basses vitesses, on considérera une poussée constante, au hautes vitesse, une puissance constante
-    if (v<0.001):
+    if (v<0.0001):
         return percent*maxStaticThrust
     else:
         return min(percent*maxStaticThrust,percent*maxWatt/v)
