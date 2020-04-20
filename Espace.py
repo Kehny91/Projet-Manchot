@@ -115,7 +115,6 @@ class Vecteur:
         return self.ref
 
     #methodes
-    #TODO :  Alex, je ne l'utilise pas dans mes classes, en as tu besoin ?
     def withZmin(self,zMin):
         return Vecteur(self.x,max(zMin,self.z),self.ref)
     
@@ -244,7 +243,7 @@ class Vecteur:
         """
         return -1*atan2(self.z,self.x)
 
-#__________________Tetst___________________
+#__________________Test___________________
 if __name__ == "__main__":
     ## Test la methode modulo
     print("__methode_modulo__") 

@@ -70,7 +70,7 @@ class TorseurEffort(Torseur):
         return self.resultante
     
     def setForce(self, newForce):
-        self.setResultante(newForce.projection(self.pointAppl.getRef()))
+        self.setResultante(newForce.projectionRef(self.pointAppl.getRef()))
 
     #Methodes
     def changeRef(self,ref):
@@ -168,7 +168,7 @@ class TorseurCinematique(Torseur):
             BA = vecteur.pointToVect(self.pointAppl)
             BA_ProdVect_Result = E.Vecteur(-BA.z*self.resultante,BA.x*self.resultante,self.pointAppl.ref)
             Va = self.moment + BA_ProdVect_Result
-            return TorseurCinematique(copy(vecteur),copy(self.resultante),Va)
+            return TorseurCinematique(copy(vecteur),self.resultante,Va)
         else:
             return self.changeRef(vecteur.ref).changePoint(vecteur)
     

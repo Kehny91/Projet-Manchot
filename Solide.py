@@ -11,7 +11,6 @@ from DataManagement import normalize
 
 
 refSol = E.Referentiel("refSol",0,E.Vecteur(0,0,E.ReferentielAbsolu())) 
-refAvion = E.Referentiel("refAvion",0,E.Vecteur(0,0,refSol)) 
 refAero = E.Referentiel("refAero",0,E.Vecteur(0,0,refSol)) 
 
 
@@ -41,7 +40,7 @@ class Corps(E.Referentiel):
     #Geter/Seter
     def getPositionCG(self):
         """Renvoie la position du centre de gravite dans le refSol"""
-        return self.getOrigine()
+        return self.getOrigine().changeRef(refSol)
 
     def setPositionCG(self, newPosition):
         """Modifie la position du centre de gravite dans le refSol"""
@@ -51,13 +50,13 @@ class Corps(E.Referentiel):
         """Renvoie l angle du corps"""
         return self.getAngleAxeY()
     
-    def setAssiette(self, newAssiete):
+    def setAssiette(self, newAssiette):
         """Modifie l assiette du corps"""
-        self.setAngleAxeY(newAssiete)
+        self.setAngleAxeY(newAssiette)
     
     def getVitesseCG(self):
         """Renvoie la vitesse du CG dans le refCorps"""
-        return self.torseurCinematique.moment
+        return self.torseurCinematique.getVitesse()
     
     def setVitesseCG(self, newVitesse):
         """Modifie la vitesse du CG dans le refCorps"""
@@ -69,15 +68,15 @@ class Corps(E.Referentiel):
 
     def setW(self, newW):
         """Modifie la vitesse de rotation du corps"""
-        return self.torseurCinematique.setW(newW)
+        self.torseurCinematique.setW(newW)
     
     def getTorseurCinematique(self):
         """Renvoie le torseur cinematique applique au CG dans le refCorps"""
         return self.torseurCinematique
 
-    def setTorseurCinematique(self,newTorseurCinematique):
-        """Modifie le torseur cinematique applique au CG dans le refCorps"""
-        self.torseurCinematique = newTorseurCinematique.changeRef(self.refSol)
+    #def setTorseurCinematique(self,newTorseurCinematique):
+    #    """Modifie le torseur cinematique applique au CG dans le refCorps"""
+    #    self.torseurCinematique = newTorseurCinematique.changeRef(self.refSol)
     
     def getMasse(self):
         return self.masse
@@ -136,8 +135,10 @@ class Corps(E.Referentiel):
         """Renvoie un torseur des efforts exerces sur le corps et ses attachements
             \napplique au CG dans le refCorps"""
         torseurEfforts = self.getTorseurPoids()
+        print("Poids = ", torseurEfforts)
         for attachement in self.attachements:
-            torseurEffortsAttachements = attachement.getTorseurEffortsAttachement()           
+            torseurEffortsAttachements = attachement.getTorseurEffortsAttachement()
+            print(type(attachement),torseurEffortsAttachements)           
             torseurEfforts += torseurEffortsAttachements
         return torseurEfforts 
     
@@ -186,7 +187,7 @@ class Attachements:
 
     def getVitesse(self):
         """return la vitesse de l attachament dans le refSol"""
-        return self.father.getTorseurCinematique().changePoint(self.getPosition()).getVitesse().changeRef(self.father.refSol)  
+        return self.father.getTorseurCinematique().changePoint(self.getPosition()).getVitesse().projectionRef(self.father.refSol)  
 
 class Propulseur(Attachements):
     """Permet de definir un propulseur, c est un attachement.
@@ -208,7 +209,7 @@ class Propulseur(Attachements):
     #TODO :  montee en puissance du moteur
     def getTorseurEffortsAttachement(self):
         """Renvoie le torseur effort genere par le propulseur applique a la postion du bati moteur dans le refAvion"""
-        torseurPoussee = T.TorseurEffort(self.position,E.Vecteur(self.throttle,0,refAvion),0)
+        torseurPoussee = T.TorseurEffort(self.position,E.Vecteur(self.throttle,0,self.father),0)
         return torseurPoussee
 
 class SurfacePortante(Attachements):
@@ -234,18 +235,19 @@ class SurfacePortante(Attachements):
         drag = Fdyn*self.polaire.getCd(alpha,v)
         #moment = Fdyn*self.polaire.getCm(alpha,v)*self.corde
         moment = 0
-        vectAero = VecteurXaeroLocal + VecteurZaeroLocal
-        forceAero = E.Vecteur(vectAero.projectionRef(refAvion).x*(-1*drag), vectAero.projectionRef(refAvion).z*lift, refAvion)
-        
-        return T.TorseurEffort(self.position.changeRef(refAvion),forceAero,moment)
+        #vectAero = VecteurXaeroLocal + VecteurZaeroLocal
+        #forceAero = E.Vecteur(vectAero.projectionRef(self.father).x*(-1*drag), vectAero.projectionRef(self.father).z*lift, self.father)
+        forceAero = (VecteurXaeroLocal*(-1*drag) + VecteurZaeroLocal*lift).projectionRef(self.father)
+
+        return T.TorseurEffort(self.position.changeRef(self.father),forceAero,moment)
         ####forceAeroRefSol = VecteurXaeroLocal*(-1*drag) + VecteurZaeroLocal*lift
         #print("forceAero")
         #print(forceAeroRefSol)
-        ####return T.Torseur(self.position.changeRef(refAvion),forceAeroRefSol.projectionRef(refAvion),moment)
+        ####return T.Torseur(self.position.changeRef(self.father),forceAeroRefSol.projectionRef(self.father),moment)
 
     def getAlpha(self, VrefSol):
         """Renvoie l incidence de la surface portante"""
-        return normalize(VrefSol.projectionRef(refAvion).arg())
+        return normalize(VrefSol.projectionRef(self.father).arg())
 
 class Aile(SurfacePortante):
     """Permet de definir une aile, c est une surface portante.

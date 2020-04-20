@@ -54,40 +54,46 @@ class Drone:
         self.empennageD.setBraquageGouverne(rawInputDict["elevD"])
         self.empennageG.setBraquageGouverne(rawInputDict["elevG"])
 
-    ##/!\ origine de l'avion dans l'interface prise au bati moteur dans l'interface
     def getPositionCG(self):
-        """Renvoie la position du CG du drone dans l IHM"""
-        return (self.structure.getPositionCG() + self.propulseur.position.projectionRef(S.refSol))
+        return self.structure.getPositionCG()
 
-    def setPositionCG(self, newPosition):
-        """Modifie la position du CG du drone"""
-        self.structure.setPositionCG(newPosition.changeRef(self.structure.refSol))
-        S.refAero.setOrigine(newPosition.changeRef(self.structure.refSol))
-    
     def getAssiette(self):
-        """Renvoie l assiette du drone"""
-        return normalize(self.structure.getAssiette())
+        return normalize(self.structure.getAngleAxeY())
 
-    def setAssiette(self, newAssiete):
-        """Modifie l assiette du drone"""
-        self.structure.setAssiette(newAssiete)
-        #refAero.setAngleAxeY(self.structure.getTorseurCinematique().resultante.projectionRef(refTerrestre).arg())
-    
-    def getVitesseProp(self):
-        """Renvie la vitesse du propulseur dans le refSol"""
-        return self.propulseur.getVitesse()
-    
-    def setVitesseCG(self, newVitesse):
-        """Modifie la vitesse du CG du drone"""
-        self.structure.setVitesseCG(newVitesse.projectionRef(self.structure.refSol))
+    def getVitesseCG(self): 
+        return self.structure.torseurCinematique.getVitesse()
 
     def getVitesseRot(self):
-        """Renvoie la vitesse de rotation du drone"""
-        return self.structure.getW()
+        return self.structure.torseurCinematique.getW()  
+
+    def setPositionCG(self, newPosition):
+        self.structure.setPositionCG(newPosition)
     
-    def setVitesseRot(self, newVitesseRot):
-        """Modifie la vitesse de rotation du drone"""
-        self.structure.setW(newVitesseRot)
+    def setAssiette(self, newAssiete):
+        self.structure.setAngleAxeY(newAssiete)
+    
+    def setVitesseCG(self, newVitesse):
+        self.structure.torseurCinematique.setVitesse(newVitesse)
+
+    def setWCG(self, w):
+        self.structure.torseurCinematique.setW(w)
+
+
+
+    def getPositionBati(self):
+        return self.propulseur.getPosition().changeRef(S.refSol)
+
+    def getVitesseBati(self): 
+        return self.propulseur.getVitesse().projectionRef(S.refSol)
+
+    def setPositionBati(self, newPosition):
+        self.setPositionCG(newPosition - self.propulseur.position.projectionRef(newPosition.getRef()))
+    
+    def setVitesseBati(self, newVitesse):
+        tc = self.structure.torseurCinematique.changePoint(self.propulseur.position)
+        tc.setVitesse(newVitesse)
+        tc = tc.changePoint(self.getPositionCG())
+        self.setVitesseCG(tc.getVitesse())
 
     def generateRapportCollision(self):
         """Produit un rapport de collision"""

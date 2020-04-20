@@ -43,10 +43,12 @@ class LaPhysiqueDeTom:
     def __init__(self, world, flightData):
         # definition du modele
         self.drone = D.Drone(world)
+        self.drone.setVitesseBati(flightData.getVAvion())
         self.drone.setAssiette(E.normalise(flightData.getAssiette()))
-        self.drone.setPositionCG(flightData.getPosAvion())
-        self.drone.setVitesseRot(flightData.getW())
-        self.drone.setVitesseCG(flightData.getVAvion())
+        self.drone.setPositionBati(flightData.getPosAvion())
+
+        
+        
 
     def mettreAJourModeleAvecRawInput(self, rawInputDict):
         # Propagation du dictionnaire d'input dans le modele.
@@ -61,27 +63,16 @@ class LaPhysiqueDeTom:
       
         self.drone.structure.update(dt)
 
-        flightData.setPosAvion(self.drone.getPositionCG())
+        flightData.setPosAvion(self.drone.getPositionBati())
         flightData.setAssiette(E.normalise(self.drone.getAssiette()))
-        flightData.setVAvion(self.drone.getVitesseProp())
+        flightData.setVAvion(self.drone.getVitesseBati())
         flightData.setW(self.drone.getVitesseRot())
         flightData.setTime(flightData.getTime()+dt)
         # Retourne un nouveau flight data
         return flightData
-        
-
-class PhysiqueDunObjetUniquementSoumisASonInertie(LaPhysiqueDeTom):
-    def __init__(self):
-        super(PhysiqueDunObjetUniquementSoumisASonInertie,self).__init__()
-
-    def compute(self, flightData, dt):
-        pos = flightData.getPosAvion()
-        v = flightData.getVAvion()
-        flightData.setPosAvion(pos+v*dt)
-        return flightData
 
 
-DILATATION = 2
+DILATATION = 5
 class PhysicThread(th.Thread):
     def __init__(self,world, mddFlightData, mddRawInput, frequence):
         super(PhysicThread,self).__init__()
@@ -220,7 +211,7 @@ if __name__ == "__main__":
     referentielSol = refSol
 
     mddFlightData = MDD(FlightData(Vecteur(0,10,referentielSol),Vecteur(15,0,referentielSol), 0, 0), True)
-    mddRawInput = MDD(RawInput(0.30,0.30,0.50,0.50,0.100), False)
+    mddRawInput = MDD(RawInput(0.0,0.0,0.0,0.0,0.0), False)
     mddPilotInput = MDD(PilotInput(0,0,0), False)
     mddAutoPilotInput = MDD(AutoPilotInput(Vecteur(0,0,referentielSol)), True)
     mddMode = MDD(M.MODE_PILOT)

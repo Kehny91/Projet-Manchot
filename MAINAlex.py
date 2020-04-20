@@ -1,4 +1,5 @@
 
+"""
 from math import cos,sin,pi
 import time
 import threading as th
@@ -275,3 +276,4 @@ if __name__ == "__main__":
 
     sT.join()
     #print("Script Off")
+"""
