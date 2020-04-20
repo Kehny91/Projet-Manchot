@@ -11,7 +11,7 @@ class ConstanteEnvironement:
 
 class ParametresModele:
     #parametre structure
-    masseTotal              = 3             #kg
+    masseTotal              = 1.5             #kg
     inertieTotal            = 0.045         #kg.m2, au centre de gravite par rapport a l axe Y
     longueurDrone           = 1.1           #m
     
@@ -98,18 +98,18 @@ class ParametresModele:
 class ParametresSimulation:
     scriptToLoad = Scripts.scriptTest.ScriptExemple             #Classe Script a utiliser
     maxAcceptablePenetrationSpeed = 0.001                       #m/s
-    positionXPiste = 15                                         #m
+    positionXPiste = 30                                         #m
     longueurXPiste = 15                                         #m
 
     positionXIni = 0                                            #m/s
-    positionZIni = 20                                           #m/s
+    positionZIni = 8                                           #m/s
     assietteIni = 0                                             #m/s
     vitesseXIni = 8                                             #m/s
     vitesseZIni = 0                                             #m/s
     wIni = 0                                                    #m/s
 
-    VentMoyenVitesseX = 0                                       #m/s, vitesse moyen horizontale du vent
-    VentMoyenVitesseZ = 20                                       #m/s, vitesse moyen verticale du vent
+    VentMoyenVitesseX = -1                                       #m/s, vitesse moyen horizontale du vent
+    VentMoyenVitesseZ = 0                                       #m/s, vitesse moyen verticale du vent
     VentVariationAmplitude = 0                                  #SI, variation de l'amplitude du vent
     VentRapiditeVarition = 0                                    #SI, vitesse de variation de l'amplitude du vent
 
