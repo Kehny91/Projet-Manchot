@@ -1,5 +1,6 @@
 import Solide as S
 import Espace as E
+import SystemeMeca as Sy1O
 from Parametres import ParametresModele as PM
 from Parametres import ParametresSimulation as PS
 from Polaire import PolaireLineaire,PolaireTabulee
@@ -20,7 +21,7 @@ class Drone:
     def __init__(self, world):
         self.world = world
         self.structure = S.Corps(S.refSol, E.Vecteur(0,0,S.refSol), 0, E.Vecteur(0,0,S.refSol), 0, world, PM.masseTotal, PM.inertieTotal)
-        self.propulseur = S.Propulseur(E.Vecteur(PM.engine_x,PM.engine_z, self.structure), self.structure, 0, PM.engineMaxThrust, PM.engineMaxPow, PM.engine_tau)
+        self.propulseur = S.Propulseur(E.Vecteur(PM.engine_x,PM.engine_z, self.structure), self.structure, 0, PM.engineMaxThrust, PM.engineMaxPow, Sy1O.Systeme1Ordre(0,0,PM.engineMaxThrust, PM.engine_tau))
         self.aileD = S.Aile(E.Vecteur(PM.ailesD_x_BA,PM.ailesD_z_BA,self.structure),PolaireTabulee("./XFLR5/CLwing","./XFLR5/CDwing","./XFLR5/CMwingBA"), PM.aileD_S, PM.ailesD_corde, PM.flapsDPourcentageCordeArticulee,PM.flapsDPourcentageEnvergureArticulee, PM.flapsDMaxAngle, world, father = self.structure)
         self.aileG = S.Aile(E.Vecteur(PM.ailesG_x_BA,PM.ailesG_z_BA,self.structure),PolaireTabulee("./XFLR5/CLwing","./XFLR5/CDwing","./XFLR5/CMwingBA"), PM.aileG_S, PM.ailesG_corde, PM.flapsGPourcentageCordeArticulee,PM.flapsGPourcentageEnvergureArticulee, PM.flapsGMaxAngle, world, father = self.structure)
         #self.empennageD = S.Empennage(E.Vecteur(PM.empennageD_x_BA,PM.empennageD_z_BA, self.structure),PolaireLineaire(PM.empennageD_CzA, PM.empennageD_Alpha_0,PM.empennageD_Cx0, PM.empennageD_k,0),PM.empennageD_S,PM.empennageD_corde,PM.elevDPourcentageCordeArticulee,PM.elevDPourcentageEnvergureArticulee,PM.elevDMaxAngle, world,father= self.structure)

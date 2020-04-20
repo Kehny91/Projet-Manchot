@@ -87,10 +87,10 @@ class ParametresModele:
     p6_z                    = -0.04 + engine_z         #m, coordonne z entre le centre de gravite et le corps rigide
 
     p7_x                    = -1.207 + engine_x        #m, coordonne x entre le centre de gravite et le corps rigide
-    p7_z                    = -0.173 + engine_z         #m, coordonne z entre le centre de gravite et le corps rigide
+    p7_z                    = 0.173 + engine_z         #m, coordonne z entre le centre de gravite et le corps rigide
 
     p8_x                    = -1.120 + engine_x         #m, coordonne x entre le centre de gravite et le corps rigide
-    p8_z                    = -0.177 + engine_z         #m, coordonne z entre le centre de gravite et le corps rigide
+    p8_z                    = 0.177 + engine_z         #m, coordonne z entre le centre de gravite et le corps rigide
 
     muFrottementSol         = 0.8                      #SI, coef de frottement avec le sol
 
@@ -118,7 +118,7 @@ class ParametresSimulation:
                                                                 #(ie si dilatation = 2, il faut 2 seconde pour qu'une seconde s'ecoule dans le simu)
                                                                 #Le csv donne toujours le temps simu.
 
-    scaleAffichage = 0.02                                       #m/pix
+    scaleAffichage = 0.01                                       #m/pix
 
     logOnly = False                                             #Permet de desactiver l'interface graphique 
     modeInitial = Modes.MODE_AUTO_PILOT
