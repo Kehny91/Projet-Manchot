@@ -136,7 +136,10 @@ class PolaireTabulee(Polaire):
         n = len(alphas) 
         while (i<n-1 and alpha > alphas[i]):
             i+=1
-        if (i == 0 or i == n-1):
+
+        if (abs(alpha)>20):  #DECROCHAGE
+            return 0.25*self.getCl(alpha*TORAD,v)
+        elif (i == 0 or i == n-1):
             return -1 * values[i] #SENS HORAIRE
         else:
             t = (alphas[i] - alpha)/(alphas[i]-alphas[i-1])
@@ -188,7 +191,7 @@ if __name__ =="__main__":
     c = PolaireTabulee("./XFLR5/CLwing","./XFLR5/CDwing","./XFLR5/CMwingBA")
     #c=PolaireLineaire(PM.empennageD_CzA, PM.empennageD_Alpha_0,PM.empennageD_Cx0, PM.empennageD_k,0)
 
-    alphas = [-pi/2 + (i/1000)*(pi*3/2) for i in range(1000)]
+    alphas = [-pi*3/2 + (i/1000)*(3*pi) for i in range(1000)]
     Cl = [c.getCl(a,676) for a in alphas]
     Cd = [c.getCd(a,676) for a in alphas]
     Cm = [c.getCm(a,676) for a in alphas]
