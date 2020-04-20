@@ -63,9 +63,8 @@ class Physique:
         flightData.setTime(flightData.getTime()+dt)
         return flightData
 
-DILATATION = 2
 class PhysicThread(th.Thread):
-    def __init__(self,world, mddFlightData, mddRawInput, frequence):
+    def __init__(self,world, mddFlightData, mddRawInput, frequence, dilatation):
         super(PhysicThread,self).__init__()
         self._mddFlightData = mddFlightData
         self._mddRawInput = mddRawInput
@@ -73,14 +72,15 @@ class PhysicThread(th.Thread):
         self._continue = True
         self._physique = Physique(world, self._mddFlightData.read())
         self._world = world
+        self._dilatation = dilatation
 
     def run(self):
         while self._continue:
             current = self._mddFlightData.read()
             rawInput = self._mddRawInput.read()
-            self._world.update(self._period/DILATATION)
+            self._world.update(self._period/self._dilatation)
             self._physique.mettreAJourModeleAvecRawInput(rawInput.getInputDict())
-            newFlightData = self._physique.compute(current, self._period/DILATATION)
+            newFlightData = self._physique.compute(current, self._period/self._dilatation)
             self._mddFlightData.write(newFlightData)
             Logger.pushNewLine(newFlightData, rawInput, self._physique.drone.generateRapportCollision())
             time.sleep(self._period)
@@ -190,6 +190,7 @@ class ModeManagerThread(th.Thread):
 
 
 if __name__ == "__main__":
+    from Parametres import ParametresSimulation as PS
     from IHM.ihm import IHM
     from DataTypes import RawInput,PilotInput,AutoPilotInput,FlightData,RapportDeCollision,World,VentGlobal,VentLocal
     from DataManagement import MDD
@@ -201,32 +202,34 @@ if __name__ == "__main__":
 
     referentielSol = refSol
 
-    mddFlightData = MDD(FlightData(Vecteur(0,10,referentielSol),Vecteur(15,0,referentielSol), 0, 0), True)
+    mddFlightData = MDD(FlightData(Vecteur(PS.positionXIni,PS.positionZIni,referentielSol),Vecteur(PS.vitesseXIni,PS.vitesseZIni,referentielSol), PS.assietteIni, PS.wIni), True)
     mddRawInput = MDD(RawInput(0.0,0.0,0.0,0.0,0.0), False)
     mddPilotInput = MDD(PilotInput(0,0,0), False)
     mddAutoPilotInput = MDD(AutoPilotInput(Vecteur(0,0,referentielSol)), True)
     mddMode = MDD(M.MODE_PILOT)
     
-    mT = MixerThread(mddRawInput,mddPilotInput,100)
-    mT.start()
+    
 
-    world = World(0.03, 15,15,referentielSol)
+    world = World(PS.scaleAffichage, PS.positionXPiste,PS.longueurXPiste,referentielSol)
     #world.addPerturbation(VentGlobal(Vecteur(-2,0,referentielSol),1,10,referentielSol))
     #world.addPerturbation(VentLocal(Vecteur(0,5,referentielSol),0,5,referentielSol,Vecteur(15,0,referentielSol),10))
 
+    mT = MixerThread(mddRawInput,mddPilotInput,PS.frequenceMixer)
+    mT.start()
+
     app = Qt.QApplication(sys.argv)
     mainW = Qt.QMainWindow()
-    graph = IHM(world, mddFlightData, mddMode, mddRawInput, mddPilotInput, mddAutoPilotInput, 60)
+    graph = IHM(world, mddFlightData, mddMode, mddRawInput, mddPilotInput, mddAutoPilotInput, PS.frequenceAffichage)
     graph.startUpdateThread()
     mainW.setCentralWidget(graph)
     mainW.show()
 
     
 
-    pT = PhysicThread(world, mddFlightData,mddRawInput, 100)
+    pT = PhysicThread(world, mddFlightData,mddRawInput, PS.frequencePhysique, PS.dilatation)
     pT.start()
 
-    aT = AsserThread(mddFlightData,mddAutoPilotInput,mddPilotInput,150)
+    aT = AsserThread(mddFlightData,mddAutoPilotInput,mddPilotInput,PS.frequenceAsservissement)
     aT.start()
     aT.requestPause()
 
