@@ -291,6 +291,18 @@ class Obstacle:
         elif m == deltaBas:
             return Vecteur(0, -1, self._refSol)
 
+class Sol: #(Obstacle)
+    def __init__(self, referentielSol):
+        self._referentielSol = referentielSol
+
+    def isIn(self, pos):
+        return pos.changeRef(self._referentielSol).getZ()<=0
+
+    def getNormale(self, pos):
+        return Vecteur(0,1,self._referentielSol)
+    
+
+
 
 class World:
     def __init__(self,scale, positionPiste, taillePiste, referentielSol):
@@ -304,8 +316,8 @@ class World:
     def addPerturbation(self, perturbation):
         self.perturbations.append(perturbation)
 
-    def addObstacle(self, pointBG, pointHD):
-        self.obstacles.append(Obstacle(pointBG,pointHD,self.referentielSol))
+    def addObstacle(self, obstacle):
+        self.obstacles.append(obstacle)
 
     def getVent(self, pos):
         out = Vecteur(0,0,self.referentielSol)
@@ -316,5 +328,17 @@ class World:
     def update(self,dt):
          for p in self.perturbations:
             p.update(dt)
+
+    def getNormaleObstacle(self, pos):
+        for obs in self.obstacles:
+            if (obs.isIn(pos)):
+                return obs.getNormale(pos)
+        return None
+    
+    def isInSomething(self, pos):
+        for obs in self.obstacles:
+            if (obs.isIn(pos)):
+                return True
+        return False
 
         

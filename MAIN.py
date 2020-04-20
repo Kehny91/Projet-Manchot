@@ -197,7 +197,7 @@ class ModeManagerThread(th.Thread):
 if __name__ == "__main__":
     from Parametres import ParametresSimulation as PS
     from IHM.ihm import IHM
-    from DataTypes import RawInput,PilotInput,AutoPilotInput,FlightData,RapportDeCollision,World,VentGlobal,VentLocal
+    from DataTypes import RawInput,PilotInput,AutoPilotInput,FlightData,RapportDeCollision,World,VentGlobal,VentLocal,Obstacle,Sol
     from DataManagement import MDD
     import sys
     import PyQt5.Qt as Qt
@@ -216,6 +216,8 @@ if __name__ == "__main__":
     
 
     world = World(PS.scaleAffichage, PS.positionXPiste,PS.longueurXPiste,referentielSol)
+    world.addObstacle(Sol(referentielSol))
+    world.addObstacle(Obstacle(Vecteur(30,0,referentielSol),Vecteur(100,5,referentielSol), referentielSol))
     #world.addPerturbation(VentGlobal(Vecteur(-2,0,referentielSol),1,10,referentielSol))
     #world.addPerturbation(VentLocal(Vecteur(0,5,referentielSol),0,5,referentielSol,Vecteur(15,0,referentielSol),10))
 

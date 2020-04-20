@@ -124,8 +124,8 @@ class Corps(E.Referentiel):
         """transmet les informations des collision sol au datatype"""
         out = RapportDeCollision()
         for cr in self.corpsRigides:
-            if cr._thisTurnTotalForce > 0:
-                out.addImpact(cr.position.changeRef(self.refSol),E.Vecteur(cr._thisTurnTotalForceX,cr._thisTurnTotalForce,self.refSol))
+            if cr._thisTurnTotalForceN > 0:
+                out.addImpact(cr.position.changeRef(self.refSol), cr.getThisTurnTotalForce())
         return out
 
     def getTorseurPoids(self):
@@ -353,15 +353,16 @@ class CorpsRigide(Attachements):
 
     """
     #Init
-    def __init__(self, position, father, epsilon, name = ""):
+    def __init__(self, position, father, epsilon, world, name = ""):
         super().__init__(position, father)
         self._name = name
-        self._thisTurnTotalForce = 0
-        self._thisTurnTotalForceX = 0
+        self._world = world
+        self._thisTurnTotalForceN = 0
+        self._thisTurnTotalForceT = 0
+        self._T = None
+        self._N = None
         self._epsilon = epsilon
         self._referentielSol = self.father.refSol
-        self._axeXSol = self.father.refSol.getAxeX()
-        self._axeZSol = self.father.refSol.getAxeZ()
         self._dt = 0.001
         self._active = False
 
@@ -369,42 +370,49 @@ class CorpsRigide(Attachements):
         self._dt = dt
 
     def _m0(self):
-        #deltaX est censé etre la distance CG -> self, projetée sur l'axe X du sol !
-        deltaX = self.getPosition().projectionRef(self._referentielSol).x
-        return 1/(1.0/self.father.getMasse() + (deltaX**2)/self.father.getInertie())
+        deltaX2 = self.getPosition().projectionRef(self._referentielSol).x**2
+        deltaZ2 = self.getPosition().projectionRef(self._referentielSol).z**2
+        OPn2    = self.getPosition().projectionRef(self._referentielSol).prodScal(self._world.getNormaleObstacle(self.position.changeRef(self._referentielSol)))**2
+        return 1/(1.0/self.father.getMasse() + (deltaX2 + deltaZ2 - OPn2)/self.father.getInertie())
 
     def reset(self):
-        self._thisTurnTotalForce = 0
-        self._thisTurnTotalForceX = 0
+        self._thisTurnTotalForceN = 0
+        self._thisTurnTotalForceT = 0
         self._active = False
 
     def activer(self):
         self._active = True
 
-    def _underground(self):
-        return self.getPosition().changeRef(self._referentielSol).getZ()<=0
 
     def ok(self):
-        if (not self._underground()) or (not self._active) or self.getVitesse().getZ()>0:
+        if not self._world.isInSomething(self.position.changeRef(self._referentielSol)) or (not self._active) or self.getVitesse().prodScal(self._world.getNormaleObstacle(self.position.changeRef(self._referentielSol)))>0:
             return True #Si on est au dessus du sol, pas de problème
         #Sinon
-        return abs(self.getVitesse().getZ())<self._epsilon
+        return abs(self.getVitesse().prodScal(self._world.getNormaleObstacle(self.position.changeRef(self._referentielSol))))<self._epsilon
 
     def getTorseurEffortsAttachement(self):
         """Le dt doit etre celui qui sera utilisé pour l'intégration de la vitesse"""
-        if (not self._underground()) or (not self._active):
+        if (not self._world.isInSomething(self.position.changeRef(self._referentielSol))) or (not self._active):
             return T.TorseurEffort(self.getPosition())
         #Sinon
-        F = -1*self.getVitesse().getZ()*self._m0()/self._dt
+        self._N = self._world.getNormaleObstacle(self.position.changeRef(self._referentielSol))
+        self._T = self._N.rotate(np.pi/2)
+        vpn = self.getVitesse().prodScal(self._N)
+        vpt = self.getVitesse().prodScal(self._T)
+
+        F = -1*vpn*self._m0()/self._dt
         #La force totale appliquée ne peut pas etre négative, donc au minimum, F peut valoir -thisTurnTotalForce
-        F = max(-1*self._thisTurnTotalForce,F)
-        vx = self.getVitesse().getX()
+        F = max(-1*self._thisTurnTotalForceN,F)
+        
         Fr = 0
-        if (abs(vx)>self._epsilon): #On applique les frottements
-            if vx>0:
+        if (abs(vpt)>self._epsilon): #On applique les frottements
+            if vpt>0:
                 Fr = -PM.muFrottementSol*F
             else:
                 Fr = PM.muFrottementSol*F
-        self._thisTurnTotalForce += F
-        self._thisTurnTotalForceX += Fr
-        return T.TorseurEffort(self.getPosition(),E.Vecteur(Fr,F,self._referentielSol),0)
+        self._thisTurnTotalForceN += F
+        self._thisTurnTotalForceT += Fr
+        return T.TorseurEffort(self.getPosition(),self._N*F + self._T*Fr,0)
+
+    def getThisTurnTotalForce(self):
+        return (self._N*self._thisTurnTotalForceN + self._T*self._thisTurnTotalForceT).projectionRef(self._referentielSol)
