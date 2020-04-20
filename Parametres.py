@@ -118,7 +118,7 @@ class ParametresSimulation:
                                                                 #(ie si dilatation = 2, il faut 2 seconde pour qu'une seconde s'ecoule dans le simu)
                                                                 #Le csv donne toujours le temps simu.
 
-    scaleAffichage = 0.02                                       #m/pix
+    scaleAffichage = 0.001                                       #m/pix
 
     logOnly = False                                             #Permet de desactiver l'interface graphique 
     modeInitial = Modes.MODE_AUTO_PILOT

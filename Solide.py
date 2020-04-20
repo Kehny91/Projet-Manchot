@@ -224,7 +224,6 @@ class Propulseur(Attachements):
     def getTorseurEffortsAttachement(self):
         """Renvoie le torseur effort genere par le propulseur applique a la postion du bati moteur dans le refAvion"""
         self.pousseeReelle.setConsigne(self.getThrustConsigne())
-        print(self.pousseeReelle.getValue())
         torseurPoussee = T.TorseurEffort(self.position,E.Vecteur(self.pousseeReelle.getValue(),0,self.father),0)
         return torseurPoussee
 
