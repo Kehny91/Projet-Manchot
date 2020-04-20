@@ -232,17 +232,11 @@ class SurfacePortante(Attachements):
         Fdyn = 0.5 * CE.rho_air_0 *self.S*(v**2)
         lift = Fdyn*self.polaire.getCl(alpha,v)
         drag = Fdyn*self.polaire.getCd(alpha,v)
-        #moment = Fdyn*self.polaire.getCm(alpha,v)*self.corde
-        moment = 0
-        #vectAero = VecteurXaeroLocal + VecteurZaeroLocal
-        #forceAero = E.Vecteur(vectAero.projectionRef(self.father).x*(-1*drag), vectAero.projectionRef(self.father).z*lift, self.father)
+        moment = Fdyn*self.polaire.getCm(alpha,v)*self.corde
         forceAero = (VecteurXaeroLocal*(-1*drag) + VecteurZaeroLocal*lift).projectionRef(self.father)
 
-        return T.TorseurEffort(self.position.changeRef(self.father),forceAero.projectionRef(self.father),moment)
-        ####forceAeroRefSol = VecteurXaeroLocal*(-1*drag) + VecteurZaeroLocal*lift
-        #print("forceAero")
-        #print(forceAeroRefSol)
-        ####return T.Torseur(self.position.changeRef(self.father),forceAeroRefSol.projectionRef(self.father),moment)
+        return T.TorseurEffort(self.position.changeRef(self.father),forceAero,moment)
+        
 
     def getAlpha(self, VrefSol):
         """Renvoie l incidence de la surface portante"""
