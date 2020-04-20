@@ -222,12 +222,13 @@ if __name__ == "__main__":
     mT = MixerThread(mddRawInput,mddPilotInput,PS.frequenceMixer)
     mT.start()
 
-    app = Qt.QApplication(sys.argv)
-    mainW = Qt.QMainWindow()
-    graph = IHM(world, mddFlightData, mddMode, mddRawInput, mddPilotInput, mddAutoPilotInput, PS.frequenceAffichage)
-    graph.startUpdateThread()
-    mainW.setCentralWidget(graph)
-    mainW.show()
+    if not PS.logOnly:
+        app = Qt.QApplication(sys.argv)
+        mainW = Qt.QMainWindow()
+        graph = IHM(world, mddFlightData, mddMode, mddRawInput, mddPilotInput, mddAutoPilotInput, PS.frequenceAffichage)
+        graph.startUpdateThread()
+        mainW.setCentralWidget(graph)
+        mainW.show()
 
     
 
@@ -245,8 +246,12 @@ if __name__ == "__main__":
     mmT = ModeManagerThread(mddMode,mT,aT,sT)
     mmT.start()
 
-    app.exec_()
-    graph.stopUpdateThread()
+    if not PS.logOnly:
+        app.exec_()
+        graph.stopUpdateThread()
+    else:
+        input("Appuiez sur entree pour arreter la simulation")
+    
     mmT.stop()
     mT.stop()
     pT.stop()

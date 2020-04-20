@@ -14,8 +14,9 @@ def flattenFichier(fichier):
     ligne = fichier.readline()
     while ligne != "\n":
         listed = ligne.split()
-        for i in range(N):
-            out[i].append(float(listed[i]))
+        if(len(listed)==N):
+            for i in range(N):
+                out[i].append(float(listed[i]))
         ligne = fichier.readline() 
 
     return out
@@ -101,9 +102,10 @@ class PolaireTabulee(Polaire):
         n = len(alphas) 
         while (i<n-1 and alpha > alphas[i]):
             i+=1
-
-        if (i == 0 or i == n-1): #DECROCHAGE
-            #return 1.0 * sin(2*alpha*TORAD)
+        
+        if (abs(alpha)>20):  #DECROCHAGE
+            return 1.0 * sin(2*alpha*TORAD)
+        elif (i == 0 or i == n-1): 
             return values[i]
         else:
             t = (alphas[i] - alpha)/(alphas[i]-alphas[i-1])
@@ -117,9 +119,11 @@ class PolaireTabulee(Polaire):
         n = len(alphas) 
         while (i<n-1 and alpha > alphas[i]):
             i+=1
-        if (i == 0 or i == n-1): #DECROCHAGE
-            #return 2.0 * abs(sin(alpha*TORAD))
-            return values[i]
+
+        if (abs(alpha)>20):  #DECROCHAGE
+            return 2.0 * abs(sin(alpha*TORAD))
+        elif (i == 0 or i == n-1):
+            return values[i]        
         else:
             t = (alphas[i] - alpha)/(alphas[i]-alphas[i-1])
             return values[i]*(1-t) + values[i-1]*t
@@ -132,7 +136,10 @@ class PolaireTabulee(Polaire):
         n = len(alphas) 
         while (i<n-1 and alpha > alphas[i]):
             i+=1
-        if (i == 0 or i == n-1):
+
+        if (abs(alpha)>20):  #DECROCHAGE
+            return 0.25*self.getCl(alpha*TORAD,v)
+        elif (i == 0 or i == n-1):
             return -1 * values[i] #SENS HORAIRE
         else:
             t = (alphas[i] - alpha)/(alphas[i]-alphas[i-1])
@@ -184,7 +191,7 @@ if __name__ =="__main__":
     c = PolaireTabulee("./XFLR5/CLwing","./XFLR5/CDwing","./XFLR5/CMwingBA")
     #c=PolaireLineaire(PM.empennageD_CzA, PM.empennageD_Alpha_0,PM.empennageD_Cx0, PM.empennageD_k,0)
 
-    alphas = [-pi/2 + (i/1000)*(pi*3/2) for i in range(1000)]
+    alphas = [-pi*3/2 + (i/1000)*(3*pi) for i in range(1000)]
     Cl = [c.getCl(a,676) for a in alphas]
     Cd = [c.getCd(a,676) for a in alphas]
     Cm = [c.getCm(a,676) for a in alphas]
