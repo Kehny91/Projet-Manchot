@@ -112,6 +112,7 @@ class ParametresSimulation:
 
     dilatation = 5                                              #secondeDeSimulation/secondeVraie  
                                                                 #(ie si dilatation = 2, il faut 2 seconde pour qu'une seconde s'ecoule dans le simu)
+                                                                #Le csv donne toujours le temps simu.
 
     scaleAffichage = 0.02                                       #m/pix
 

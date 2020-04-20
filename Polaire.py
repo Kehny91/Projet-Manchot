@@ -14,8 +14,9 @@ def flattenFichier(fichier):
     ligne = fichier.readline()
     while ligne != "\n":
         listed = ligne.split()
-        for i in range(N):
-            out[i].append(float(listed[i]))
+        if(len(listed)==N):
+            for i in range(N):
+                out[i].append(float(listed[i]))
         ligne = fichier.readline() 
 
     return out
