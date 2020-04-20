@@ -78,8 +78,6 @@ class Drone:
     def setWCG(self, w):
         self.structure.torseurCinematique.setW(w)
 
-
-
     def getPositionBati(self):
         return self.propulseur.getPosition().changeRef(S.refSol)
 

@@ -74,7 +74,7 @@ class ParametresModele:
     #parametre propulseur
     engine_x            = 0.083          #m, coordonne x entre le centre de gravite et le centre de poussee du propulseur
     engine_z            = 0.01           #m, coordonne z entre le centre de gravite et le centre de poussee du propulseur
-    engineMaxThrust     = 200           #Newton
+    engineMaxThrust     = 50           #Newton
 
     #parametre auto-pilote
     maxAutoPilotSpeed   = 200*TOMpS     #m/s

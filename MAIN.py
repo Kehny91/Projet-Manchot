@@ -47,32 +47,23 @@ class Physique:
         self.drone.setAssiette(E.normalise(flightData.getAssiette()))
         self.drone.setPositionBati(flightData.getPosAvion())
 
-        
-        
-
     def mettreAJourModeleAvecRawInput(self, rawInputDict):
         # Propagation du dictionnaire d'input dans le modele.
-        # planeur.structure.setPosAvion
         self.drone.diffuseDictRawInput(rawInputDict)
-        # Mise a jour des Cz, alpha etc...
-        # Ne retourne rien
 
     def compute(self, flightData, dt):
-        # Grace au modele fraichement mis a jour, cette methode renvoie le nouveau flight data
-        # Compute sera appelé en boucle par le PhysicThread
-      
+        # modele mis a jour
+        # Compute sera appele en boucle par le PhysicThread
         self.drone.structure.update(dt)
-
+        # Retourne un nouveau flight data
         flightData.setPosAvion(self.drone.getPositionBati())
         flightData.setAssiette(E.normalise(self.drone.getAssiette()))
         flightData.setVAvion(self.drone.getVitesseBati())
         flightData.setW(self.drone.getVitesseRot())
         flightData.setTime(flightData.getTime()+dt)
-        # Retourne un nouveau flight data
         return flightData
 
-
-DILATATION = 1
+DILATATION = 2
 class PhysicThread(th.Thread):
     def __init__(self,world, mddFlightData, mddRawInput, frequence):
         super(PhysicThread,self).__init__()
