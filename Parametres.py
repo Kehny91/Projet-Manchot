@@ -116,6 +116,8 @@ class ParametresSimulation:
 
     scaleAffichage = 0.02                                       #m/pix
 
+    logOnly = False                                             #Permet de desactiver l'interface graphique 
+
     #DEBUG
     printForces = False
 
