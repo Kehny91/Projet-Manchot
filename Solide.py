@@ -408,12 +408,3 @@ class CorpsRigide(Attachements):
         self._thisTurnTotalForce += F
         self._thisTurnTotalForceX += Fr
         return T.TorseurEffort(self.getPosition(),E.Vecteur(Fr,F,self._referentielSol),0)
-    
-
-
-
-    
-
-
-       
-    

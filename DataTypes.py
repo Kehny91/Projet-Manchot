@@ -263,6 +263,34 @@ class VentLocal(Perturbation):
         eloignementAxe = sqrt(hypo2-adja2)
         return pos.getZ()>0 and eloignementAxe<=self._largeur
 
+class Obstacle:
+    def __init__(self, pointBG, pointHD, refSol):
+        """point Bas Gauche, point Haut Droite"""
+        self._gauche = pointBG.changeRef(refSol).getX()
+        self._droite = pointHD.changeRef(refSol).getX()
+        self._haut = pointHD.changeRef(refSol).getZ()
+        self._bas = pointBG.changeRef(refSol).getZ()
+        self._refSol = refSol
+    
+    def isIn(self, pos):
+        pos = pos.changeRef(self._refSol)
+        return pos.getX()>=self._gauche and pos.getX()<=self._droite and pos.getZ()>=self._bas and pos.getZ()<=self._haut 
+
+    def getNormale(self, pos):
+        deltaGauche = pos.getX() - self._gauche
+        deltaDroite = self._droite - pos.getX() 
+        deltaHaut = self._haut - pos.getZ()
+        deltaBas = pos.getZ() - self._bas
+        m = min( min(deltaBas,deltaHaut) , min(deltaGauche,deltaDroite))
+        if m == deltaGauche:
+            return Vecteur(-1, 0, self._refSol)
+        elif m == deltaDroite:
+            return Vecteur(1, 0, self._refSol)
+        elif m == deltaHaut:
+            return Vecteur(0, 1, self._refSol)
+        elif m == deltaBas:
+            return Vecteur(0, -1, self._refSol)
+
 
 class World:
     def __init__(self,scale, positionPiste, taillePiste, referentielSol):
@@ -271,9 +299,13 @@ class World:
         self.taillePiste = taillePiste
         self.scale = scale
         self.perturbations = []
+        self.obstacles = []
 
     def addPerturbation(self, perturbation):
         self.perturbations.append(perturbation)
+
+    def addObstacle(self, pointBG, pointHD):
+        self.obstacles.append(Obstacle(pointBG,pointHD,self.referentielSol))
 
     def getVent(self, pos):
         out = Vecteur(0,0,self.referentielSol)
