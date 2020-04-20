@@ -1,4 +1,5 @@
 from math import pi
+import Modes
 import Scripts.scriptTest
 TORAD = pi/180
 TODEG = 180/pi
@@ -40,10 +41,6 @@ class ParametresModele:
     empennageD_corde        = 0.115          #m
     empennageD_S            = 0.0485         #m2, surface ailaire
     empennageD_Alpha_0      = -2.5*TORAD     #Radians
-    empennageD_CzA          = 0.1/TORAD      #SI, dCz/dAlpha
-    empennageD_Cx0          = 0.05           #SI, trainee a portance nulle
-    empennageD_Allongement  = 1.3            #SI, allongement = envergure**2/SurfacePortante
-    empennageD_k =1/(pi*empennageD_Allongement) #SI, 
     elevDMaxAngle           = 20*TORAD       #Radians
     elevDPourcentageCordeArticulee = 0.7     #%
     elevDPourcentageEnvergureArticulee = 1   #L'elevator a une gouverne sur toute son envergure !
@@ -55,10 +52,6 @@ class ParametresModele:
     empennageG_corde        = 0.115          #m
     empennageG_S            =  0.0485        #m2, surface ailaire
     empennageG_Alpha_0      = -2.5*TORAD     #Radians
-    empennageG_CzA          = 0.1/TORAD      #SI, dCz/dAlpha
-    empennageG_Cx0          = 0.05           #SI, trainee a portance nulle
-    empennageG_Allongement  = 1.3            #SI, allongement = envergure**2/SurfacePortante
-    empennageG_k =1/(pi*empennageG_Allongement) #SI, 
     elevGMaxAngle           = 20*TORAD      #Radians
     elevGPourcentageCordeArticulee = 0.7    #%
     elevGPourcentageEnvergureArticulee = 1  #L'elevator a une gouverne sur toute son envergure !
@@ -119,6 +112,7 @@ class ParametresSimulation:
     scaleAffichage = 0.02                                       #m/pix
 
     logOnly = False                                             #Permet de desactiver l'interface graphique 
+    modeInitial = Modes.MODE_AUTO_PILOT
 
     #DEBUG
     printForces = False
