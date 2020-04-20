@@ -46,6 +46,12 @@ class Drone:
         self.structure.addCorpsRigide(self.p4)
         self.p5 = S.CorpsRigide(E.Vecteur(PM.p5_x,PM.p5_z,self.structure),self.structure,PS.maxAcceptablePenetrationSpeed,"p5")
         self.structure.addCorpsRigide(self.p5)
+        self.p6 = S.CorpsRigide(E.Vecteur(PM.p6_x,PM.p6_z,self.structure),self.structure,PS.maxAcceptablePenetrationSpeed,"p6")
+        self.structure.addCorpsRigide(self.p6)
+        self.p7 = S.CorpsRigide(E.Vecteur(PM.p7_x,PM.p7_z,self.structure),self.structure,PS.maxAcceptablePenetrationSpeed,"p7")
+        self.structure.addCorpsRigide(self.p7)
+        self.p8 = S.CorpsRigide(E.Vecteur(PM.p8_x,PM.p8_z,self.structure),self.structure,PS.maxAcceptablePenetrationSpeed,"p8")
+        self.structure.addCorpsRigide(self.p8)
 
     #Methodes
     def diffuseDictRawInput(self,rawInputDict):

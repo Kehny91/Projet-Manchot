@@ -69,19 +69,28 @@ class ParametresModele:
 
     #parametres collision
     p1_x                    = 0.028 + engine_x         #m, coordonne x entre le centre de gravite et le corps rigide
-    p1_z                    = 0.01 + engine_z          #m, coordonne z entre le centre de gravite et le corps rigide
+    p1_z                    = 0 + engine_z             #m, coordonne z entre le centre de gravite et le corps rigide
 
-    p2_x                    = -0.073 + engine_x        #m, coordonne x entre le centre de gravite et le corps rigide
-    p2_z                    = -0.040 + engine_z        #m, coordonne z entre le centre de gravite et le corps rigide
+    p2_x                    = 0.0086 + engine_x        #m, coordonne x entre le centre de gravite et le corps rigide               
+    p2_z                    = 0.018 + engine_z         #m, coordonne z entre le centre de gravite et le corps rigide
 
-    p3_x                    = -0.335 + engine_x        #m, coordonne x entre le centre de gravite et le corps rigide
-    p3_z                    = -0.050 + engine_z        #m, coordonne z entre le centre de gravite et le corps rigide
+    p3_x                    = -0.073 + engine_x        #m, coordonne x entre le centre de gravite et le corps rigide
+    p3_z                    = -0.040 + engine_z        #m, coordonne z entre le centre de gravite et le corps rigide
 
-    p4_x                    = -1.180 + engine_x        #m, coordonne x entre le centre de gravite et le corps rigide
-    p4_z                    = -0.04 + engine_z         #m, coordonne z entre le centre de gravite et le corps rigide
+    p4_x                    = -0.335 + engine_x        #m, coordonne x entre le centre de gravite et le corps rigide
+    p4_z                    = -0.050 + engine_z        #m, coordonne z entre le centre de gravite et le corps rigide
 
-    p5_x                    = -1120 + engine_x         #m, coordonne x entre le centre de gravite et le corps rigide
-    p5_z                    = 0.177 + engine_z         #m, coordonne z entre le centre de gravite et le corps rigide
+    p5_x                    = -1.176+ engine_x        #m, coordonne x entre le centre de gravite et le corps rigide
+    p5_z                    = -0.03 + engine_z        #m, coordonne z entre le centre de gravite et le corps rigide
+
+    p6_x                    = -1.180 + engine_x        #m, coordonne x entre le centre de gravite et le corps rigide
+    p6_z                    = -0.04 + engine_z         #m, coordonne z entre le centre de gravite et le corps rigide
+
+    p7_x                    = -1.207 + engine_x        #m, coordonne x entre le centre de gravite et le corps rigide
+    p7_z                    = -0.173 + engine_z         #m, coordonne z entre le centre de gravite et le corps rigide
+
+    p8_x                    = -1.120 + engine_x         #m, coordonne x entre le centre de gravite et le corps rigide
+    p8_z                    = -0.177 + engine_z         #m, coordonne z entre le centre de gravite et le corps rigide
 
     muFrottementSol         = 0.8                      #SI, coef de frottement avec le sol
 
