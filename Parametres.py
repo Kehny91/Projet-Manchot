@@ -104,9 +104,14 @@ class ParametresSimulation:
     positionXIni = 0                                            #m/s
     positionZIni = 20                                           #m/s
     assietteIni = 0                                             #m/s
-    vitesseXIni = 10                                            #m/s
+    vitesseXIni = 8                                             #m/s
     vitesseZIni = 0                                             #m/s
     wIni = 0                                                    #m/s
+
+    VentMoyenVitesseX = 0                                       #m/s, vitesse moyen horizontale du vent
+    VentMoyenVitesseZ = 20                                       #m/s, vitesse moyen verticale du vent
+    VentVariationAmplitude = 0                                  #SI, variation de l'amplitude du vent
+    VentRapiditeVarition = 0                                    #SI, vitesse de variation de l'amplitude du vent
 
 
     frequenceMixer = 50                                         #Hz

@@ -218,7 +218,7 @@ if __name__ == "__main__":
     world = World(PS.scaleAffichage, PS.positionXPiste,PS.longueurXPiste,referentielSol)
     world.addObstacle(Sol(referentielSol))
     world.addObstacle(Obstacle(Vecteur(30,0,referentielSol),Vecteur(100,5,referentielSol), referentielSol))
-    #world.addPerturbation(VentGlobal(Vecteur(-2,0,referentielSol),1,10,referentielSol))
+    world.addPerturbation(VentGlobal(Vecteur(PS.VentMoyenVitesseX,PS.VentMoyenVitesseZ,referentielSol),PS.VentVariationAmplitude,PS.VentRapiditeVarition,referentielSol,))
     #world.addPerturbation(VentLocal(Vecteur(0,5,referentielSol),0,5,referentielSol,Vecteur(15,0,referentielSol),10))
 
     mT = MixerThread(mddRawInput,mddPilotInput,PS.frequenceMixer)

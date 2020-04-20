@@ -9,11 +9,7 @@ import Parametres as P
 from DataTypes import RapportDeCollision
 from DataManagement import normalize
 
-
-
-
 refSol = E.Referentiel("refSol",0,E.Vecteur(0,0,E.ReferentielAbsolu())) 
-
 
 class Corps(E.Referentiel):
     """Permet de definir le corps du drone, il s'agit d'un objet referentiel.
