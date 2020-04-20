@@ -216,7 +216,7 @@ class IHM(QtWidgets.QWidget):
         myLayout.setColumnMinimumWidth(4,50)
         myLayout.setColumnStretch(4,1)
 
-        self._affichageAvion = GraphWidget(Vecteur(-0.5,-0.5),world.scale,world.positionPiste,world.taillePiste,ParametresModele.longueurDrone,mddFlightData) #On commence en (--0.5,-0.5), a l'echelle 5mm par pix, la piste commence en 0 et fait 10m, l'avion fait 2m de long
+        self._affichageAvion = GraphWidget(Vecteur(-0.5,-0.5),world.scale,world.positionPiste,world.taillePiste,ParametresModele.longueurDrone,mddFlightData, world) #On commence en (--0.5,-0.5), a l'echelle 5mm par pix, la piste commence en 0 et fait 10m, l'avion fait 2m de long
         myLayout.addWidget(self._affichageAvion,0,0,5,4)
 
         self._affichageRawInput = _GraphicalRawInput(mddRawInput)

@@ -7,6 +7,8 @@ import time
 import os
 from Espace import Vecteur,ReferentielAbsolu,moduloF
 from math import sqrt,cos,sin
+from DataTypes import Obstacle,Sol
+from Solide import refSol
 
 """
 La realPositionFenetre, correspond aux coordonnées vraies (pysiques) du coin inferieur gauche de la fenetre.
@@ -15,8 +17,9 @@ Une flightData exprime la position du batiMoteur
 """
 class GraphWidget(QtWidgets.QWidget):
     #PUBLIC
-    def __init__(self, realPositionFenetre, scale, runwayXStart, runwayLength, planeLength, flightDataMDD):
+    def __init__(self, realPositionFenetre, scale, runwayXStart, runwayLength, planeLength, flightDataMDD, world):
         super().__init__()
+        self._world = world
         self._zMin = -0.5
         self._realPositionFenetre = realPositionFenetre
         self.setRealPositionFenetre(realPositionFenetre)
@@ -83,6 +86,16 @@ class GraphWidget(QtWidgets.QWidget):
         painter.setPen(Qt.QColor(21, 255, 21))
         painter.setBrush(Qt.QColor(21, 255, 21))
         painter.drawRect(limite,max(pixPos[1],0),tailleBande/self._scale, self.height())
+
+        #Obstacles
+        for obs in self._world.obstacles:
+            if type(obs)!=type(Sol(refSol)):
+                bg = self._realToPix(obs.pointBG)
+                hd = self._realToPix(obs.pointHD)
+                painter.setPen(Qt.QColor(21, 23, 56))
+                painter.setBrush(Qt.QColor(21, 23, 56))
+                painter.drawRect(bg[0],bg[1], hd[0] - bg[0], hd[1] - bg[1])
+
 
     #PRIVATE
     def _drawRunway(self, painter, xStart,longueur):
