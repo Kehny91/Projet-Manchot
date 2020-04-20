@@ -198,15 +198,15 @@ class Propulseur(Attachements):
     \n attribute float : throttle, poussee consigne (en N)
     \n attribute float: throttleMax, poussee a puissance maximale (en N)
     \n attribute float: puissanceMax, puissance maximale du propulseur
-    \n attribute float: tau, temps de reaction du propulseur  
+    \n attribute Systeme1Ordre: tau, temps de reaction du propulseur  
     """
     #Init
-    def __init__(self, position , father , throttle, throttleMax, puissanceMax,tau):
+    def __init__(self, position , father , throttle, throttleMax, puissanceMax, pousseeReelle):
         super().__init__(position, father)
         self.throttle = throttle
         self.throttleMax = throttleMax
         self.puissanceMax = puissanceMax
-        self.tau = tau
+        self.pousseeReelle = pousseeReelle
     
     #methode
     def setThrottlePercent(self, throttlePercent):
@@ -216,13 +216,16 @@ class Propulseur(Attachements):
     def getThrustConsigne(self):
         """Renvoie la poussee consigne"""
         V = self.getVitesse().norm()
-        return Sy1O.getThrustConsigne(self.throttle,self.puissanceMax,self.throttleMax,V)
+        if (V<0.0001):
+            return self.throttle
+        else:
+            return min(self.throttle,self.throttle*self.puissanceMax/(V*self.throttleMax))
 
     def getTorseurEffortsAttachement(self):
         """Renvoie le torseur effort genere par le propulseur applique a la postion du bati moteur dans le refAvion"""
-        PousseeReelle = Sy1O.Systeme1Ordre(self.throttle,0,self.throttleMax,self.tau)
-        PousseeReelle.setConsigne(self.getThrustConsigne()/self.throttleMax)
-        torseurPoussee = T.TorseurEffort(self.position,E.Vecteur(self.throttle*self.throttleMax,0,self.father),0)
+        self.pousseeReelle.setConsigne(self.getThrustConsigne())
+        print(self.pousseeReelle.getValue())
+        torseurPoussee = T.TorseurEffort(self.position,E.Vecteur(self.pousseeReelle.getValue(),0,self.father),0)
         return torseurPoussee
 
 class SurfacePortante(Attachements):
