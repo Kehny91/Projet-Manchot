@@ -225,7 +225,8 @@ class SurfacePortante(Attachements):
         self.polaire = polaire
         self.corde = corde
     
-    def getResultanteAero(self, alpha, VrefSol): #Permet de ne pas creer puis sommer les torseur
+    def getResultanteAero(self, alpha, VrefSol):
+        """Renvoie le torseur des forces appliquees au bord d attaque dans le refCorps"""
         VecteurXaeroLocal = VrefSol.unitaire()
         VecteurZaeroLocal = VecteurXaeroLocal.rotate(-np.pi/2)  
         v = VrefSol.norm()
@@ -234,7 +235,6 @@ class SurfacePortante(Attachements):
         drag = Fdyn*self.polaire.getCd(alpha,v)
         moment = Fdyn*self.polaire.getCm(alpha,v)*self.corde
         forceAero = (VecteurXaeroLocal*(-1*drag) + VecteurZaeroLocal*lift).projectionRef(self.father)
-
         return T.TorseurEffort(self.position.changeRef(self.father),forceAero,moment)
         
 
