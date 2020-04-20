@@ -1,12 +1,14 @@
 import Espace as E
 import Torseur as T
 import numpy as np
+import SystemeMeca as Sy1O
 from Parametres import ConstanteEnvironement as CE
 from Parametres import ParametresModele as PM
 from Parametres import ParametresSimulation as PS
 import Parametres as P
 from DataTypes import RapportDeCollision
 from DataManagement import normalize
+
 
 
 
@@ -194,23 +196,33 @@ class Propulseur(Attachements):
     """Permet de definir un propulseur, c est un attachement.
     \n Cet attachement simule une force developee par un moteur et une helice
     \n attribute float : throttle, poussee consigne (en N)
-    \n attribute float: throttleMax, poussee a puissance maximale (en N) 
+    \n attribute float: throttleMax, poussee a puissance maximale (en N)
+    \n attribute float: puissanceMax, puissance maximale du propulseur
+    \n attribute float: tau, temps de reaction du propulseur  
     """
     #Init
-    def __init__(self, position , father , throttle, throttleMax):
+    def __init__(self, position , father , throttle, throttleMax, puissanceMax,tau):
         super().__init__(position, father)
         self.throttle = throttle
         self.throttleMax = throttleMax
+        self.puissanceMax = puissanceMax
+        self.tau = tau
     
     #methode
     def setThrottlePercent(self, throttlePercent):
         """Modifie la poussee consigne"""
         self.throttle = self.throttleMax*throttlePercent
     
-    #TODO :  montee en puissance du moteur
+    def getThrustConsigne(self):
+        """Renvoie la poussee consigne"""
+        V = self.getVitesse().norm()
+        return Sy1O.getThrustConsigne(self.throttle,self.puissanceMax,self.throttleMax,V)
+
     def getTorseurEffortsAttachement(self):
         """Renvoie le torseur effort genere par le propulseur applique a la postion du bati moteur dans le refAvion"""
-        torseurPoussee = T.TorseurEffort(self.position,E.Vecteur(self.throttle,0,self.father),0)
+        PousseeReelle = Sy1O.Systeme1Ordre(self.throttle,0,self.throttleMax,self.tau)
+        PousseeReelle.setConsigne(self.getThrustConsigne()/self.throttleMax)
+        torseurPoussee = T.TorseurEffort(self.position,E.Vecteur(self.throttle*self.throttleMax,0,self.father),0)
         return torseurPoussee
 
 class SurfacePortante(Attachements):

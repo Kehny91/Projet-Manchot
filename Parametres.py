@@ -66,29 +66,31 @@ class ParametresModele:
     #parametre propulseur
     engine_x                = 0.083          #m, coordonne x entre le centre de gravite et le centre de poussee du propulseur
     engine_z                = 0.01           #m, coordonne z entre le centre de gravite et le centre de poussee du propulseur
-    engineMaxThrust         = 50             #Newton
+    engineMaxThrust         = 45             #Newton
+    engineMaxPow            = 505            #Watt
+    engine_tau              = 0.001            #s, temps de reaction du moteur
 
     #parametre auto-pilote
     maxAutoPilotSpeed       = 200*TOMpS      #m/s
     maxAutoPilotZSpeed      = 20*TOMpS       #m/s
 
     #parametres collision
-    p1_x                    = -1.5           #m, coordonne x entre le centre de gravite et le corps rigide
-    p1_z                    = 0
+    p1_x                    = 0.028 + engine_x         #m, coordonne x entre le centre de gravite et le corps rigide
+    p1_z                    = 0.01 + engine_z          #m, coordonne z entre le centre de gravite et le corps rigide
 
-    p2_x                    = -1.4          #m, coordonne x entre le centre de gravite et le corps rigide
-    p2_z                    = -0.1          #m, coordonne z entre le centre de gravite et le corps rigide
+    p2_x                    = -0.073 + engine_x        #m, coordonne x entre le centre de gravite et le corps rigide
+    p2_z                    = -0.040 + engine_z        #m, coordonne z entre le centre de gravite et le corps rigide
 
-    p3_x                    = -0.2          #m, coordonne x entre le centre de gravite et le corps rigide
-    p3_z                    = -0.2          #m, coordonne z entre le centre de gravite et le corps rigide
+    p3_x                    = -0.335 + engine_x        #m, coordonne x entre le centre de gravite et le corps rigide
+    p3_z                    = -0.050 + engine_z        #m, coordonne z entre le centre de gravite et le corps rigide
 
-    p4_x                    = 0.1           #m, coordonne x entre le centre de gravite et le corps rigide
-    p4_z                    = -0.2          #m, coordonne z entre le centre de gravite et le corps rigide
+    p4_x                    = -1.180 + engine_x        #m, coordonne x entre le centre de gravite et le corps rigide
+    p4_z                    = -0.04 + engine_z         #m, coordonne z entre le centre de gravite et le corps rigide
 
-    p5_x                    = 0.2           #m, coordonne x entre le centre de gravite et le corps rigide
-    p5_z                    = 0             #m, coordonne z entre le centre de gravite et le corps rigide
+    p5_x                    = -1120 + engine_x         #m, coordonne x entre le centre de gravite et le corps rigide
+    p5_z                    = 0.177 + engine_z         #m, coordonne z entre le centre de gravite et le corps rigide
 
-    muFrottementSol         = 0.4           #SI, coef de frottement avec le sol
+    muFrottementSol         = 0.8                      #SI, coef de frottement avec le sol
 
 
 class ParametresSimulation:
