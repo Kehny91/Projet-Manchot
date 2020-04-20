@@ -11,8 +11,8 @@ from Asservissement import Asservissement
 from DataManagement import MDD,Pauser
 import Parametres
 import Modes as M
-import Solide as S
 import Espace as E
+import Drone as D
 
 class MixerThread(th.Thread):
     def __init__(self,mddRawInput,mddPilotInput,frequence):
@@ -41,16 +41,16 @@ class MixerThread(th.Thread):
 class LaPhysiqueDeTom:
     def __init__(self, world, flightData):
         # definition du modele
-        self.planeur = S.Planeur(world)
-        self.planeur.setAssiette(E.normalise(flightData.getAssiette()))
-        self.planeur.setPosition(flightData.getPosAvion())
-        self.planeur.setVitesseRot(flightData.getW())
-        self.planeur.setVitesse(flightData.getVAvion())
+        self.drone = D.Drone(world)
+        self.drone.setAssiette(E.normalise(flightData.getAssiette()))
+        self.drone.setPositionCG(flightData.getPosAvion())
+        self.drone.setVitesseRot(flightData.getW())
+        self.drone.setVitesseCG(flightData.getVAvion())
 
     def mettreAJourModeleAvecRawInput(self, rawInputDict):
         # Propagation du dictionnaire d'input dans le modele.
         # planeur.structure.setPosAvion
-        self.planeur.diffuseDictRawInput(rawInputDict)
+        self.drone.diffuseDictRawInput(rawInputDict)
         # Mise a jour des Cz, alpha etc...
         # Ne retourne rien
 
@@ -58,12 +58,12 @@ class LaPhysiqueDeTom:
         # Grace au modele fraichement mis a jour, cette methode renvoie le nouveau flight data
         # Compute sera appelé en boucle par le PhysicThread
       
-        self.planeur.structure.update(dt)
+        self.drone.structure.update(dt)
 
-        flightData.setPosAvion(self.planeur.getPosition())
-        flightData.setAssiette(E.normalise(self.planeur.getAssiette()))
-        flightData.setVAvion(self.planeur.getVitesse())
-        flightData.setW(self.planeur.getVitesseRot())
+        flightData.setPosAvion(self.drone.getPositionCG())
+        flightData.setAssiette(E.normalise(self.drone.getAssiette()))
+        flightData.setVAvion(self.drone.getVitesseProp())
+        flightData.setW(self.drone.getVitesseRot())
         flightData.setTime(flightData.getTime()+dt)
         # Retourne un nouveau flight data
         return flightData
@@ -99,7 +99,7 @@ class PhysicThread(th.Thread):
             self._physique.mettreAJourModeleAvecRawInput(rawInput.getInputDict())
             newFlightData = self._physique.compute(current, self._period/DILATATION)
             self._mddFlightData.write(newFlightData)
-            Logger.pushNewLine(newFlightData, rawInput, self._physique.planeur.generateRapportCollision())
+            Logger.pushNewLine(newFlightData, rawInput, self._physique.drone.generateRapportCollision())
             time.sleep(self._period)
     
     def stop(self):

@@ -16,11 +16,11 @@ class Torseur:
         self.moment = moment
     
     #Geter/Seter
-    def getVecteur(self):
+    def getPointAppl(self):
         """ Renvoie une copy du vecteur position du torseur"""
         return copy(self.pointAppl)
 
-    def setVecteur(self, nexPointAppl):
+    def setPointAppl(self, nexPointAppl):
         self.pointAppl = nexPointAppl
     
     def getResultante(self):
@@ -31,7 +31,7 @@ class Torseur:
         self.resultante = newResultante
     
     def getMoment(self):
-        return self.moment
+        return copy(self.moment)
 
     def setMoment(self, newMoment):
         self.moment = newMoment
@@ -50,14 +50,7 @@ class Torseur:
         """Test si deux torseurs sont identiques
             \nreturn bool
         """ 
-        return(self.pointAppl == torseur.pointAppl and self.resultante == torseur.resultante and self.moment == torseur.moment)
-
-    def __mul__(self,scal):
-        """mutiplication du torseur par un scalaire
-        \n@param float : scal, le mutiplicateur
-        \nreturn Torseur
-        """
-        return Torseur(copy(self.pointAppl),self.resultante*scal, self.moment*scal)        
+        return(self.pointAppl == torseur.pointAppl and self.resultante == torseur.resultante and self.moment == torseur.moment)      
 
 class TorseurEffort(Torseur):
     """Permet de definir un torseur statique
@@ -66,7 +59,7 @@ class TorseurEffort(Torseur):
     \nattribute float : moment, moment du torseur
     """
     #Init, on s'assure que le vecteur force s'exprime bien dans le ref du vecteur position
-    def __init__(self,pointAppl,force,moment):
+    def __init__(self,pointAppl,force = E.Vecteur(0,0),moment=0):
         if pointAppl.ref == force.ref:
             super().__init__(pointAppl,force,moment)
         else:
@@ -77,7 +70,7 @@ class TorseurEffort(Torseur):
         return self.resultante
     
     def setForce(self, newForce):
-        self.setResultante(newForce)
+        self.setResultante(newForce.projection(self.pointAppl.getRef()))
 
     #Methodes
     def changeRef(self,ref):
@@ -122,6 +115,13 @@ class TorseurEffort(Torseur):
         else :
             return self - torseur.changePoint(self.pointAppl)
     
+    def __mul__(self,scal):
+        """mutiplication du torseur par un scalaire
+        \n@param float : scal, le mutiplicateur
+        \nreturn Torseur
+        """
+        return TorseurEffort(copy(self.pointAppl),self.resultante*scal, self.moment*scal) 
+
 class TorseurCinematique(Torseur):
     """Permet de definir un torseur cinematique
     \nattribite E.Vecteur : pointAppl, (point + ref) definit le point et le referentiel ou on exprime notre torseur  
@@ -129,7 +129,7 @@ class TorseurCinematique(Torseur):
     \nattribute E.Vecteur : vitesse, moment du torseur
     """
     #Init
-    def __init__(self,pointAppl, VitesseRotation,vitesse):
+    def __init__(self,pointAppl, VitesseRotation = 0, vitesse = E.Vecteur(0,0)):
         if pointAppl.ref == vitesse.ref:
             super().__init__(pointAppl,VitesseRotation,vitesse)
         else:
@@ -147,7 +147,7 @@ class TorseurCinematique(Torseur):
         return self.getMoment()
 
     def setVitesse(self, v):
-        self.setMoment(v)
+        self.setMoment(v.projectionRef(self.pointAppl.getRef()))
 
     def changeRef(self,ref):
         """permet de renvoyer un nouveau torseur ou le referentiel dans lequel le torseur est exprime a ete change
@@ -192,6 +192,13 @@ class TorseurCinematique(Torseur):
         else :
             return self - torseur.changePoint(self.pointAppl)
 
+    def __mul__(self,scal):
+        """mutiplication du torseur par un scalaire
+        \n@param float : scal, le mutiplicateur
+        \nreturn Torseur
+        """
+        return TorseurCinematique(copy(self.pointAppl),self.resultante*scal, self.moment*scal) 
+         
 if __name__ == "__main__":
     from math import pi
 
