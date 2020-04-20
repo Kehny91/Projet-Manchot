@@ -266,6 +266,8 @@ class VentLocal(Perturbation):
 class Obstacle:
     def __init__(self, pointBG, pointHD, refSol):
         """point Bas Gauche, point Haut Droite"""
+        self.pointBG = pointBG
+        self.pointHD = pointHD
         self._gauche = pointBG.changeRef(refSol).getX()
         self._droite = pointHD.changeRef(refSol).getX()
         self._haut = pointHD.changeRef(refSol).getZ()
