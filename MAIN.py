@@ -219,7 +219,7 @@ if __name__ == "__main__":
     mT = MixerThread(mddRawInput,mddPilotInput,100)
     mT.start()
 
-    world = World(0.06, 15,15,referentielSol)
+    world = World(0.03, 15,15,referentielSol)
     #world.addPerturbation(VentGlobal(Vecteur(-2,0,referentielSol),1,10,referentielSol))
     #world.addPerturbation(VentLocal(Vecteur(0,5,referentielSol),0,5,referentielSol,Vecteur(15,0,referentielSol),10))
 

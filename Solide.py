@@ -11,7 +11,6 @@ from DataManagement import normalize
 
 
 refSol = E.Referentiel("refSol",0,E.Vecteur(0,0,E.ReferentielAbsolu())) 
-refAero = E.Referentiel("refAero",0,E.Vecteur(0,0,refSol)) 
 
 
 class Corps(E.Referentiel):
@@ -239,7 +238,7 @@ class SurfacePortante(Attachements):
         #forceAero = E.Vecteur(vectAero.projectionRef(self.father).x*(-1*drag), vectAero.projectionRef(self.father).z*lift, self.father)
         forceAero = (VecteurXaeroLocal*(-1*drag) + VecteurZaeroLocal*lift).projectionRef(self.father)
 
-        return T.TorseurEffort(self.position.changeRef(self.father),forceAero,moment)
+        return T.TorseurEffort(self.position.changeRef(self.father),forceAero.projectionRef(self.father),moment)
         ####forceAeroRefSol = VecteurXaeroLocal*(-1*drag) + VecteurZaeroLocal*lift
         #print("forceAero")
         #print(forceAeroRefSol)
