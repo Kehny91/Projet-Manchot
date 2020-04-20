@@ -76,6 +76,7 @@ class PhysicThread(th.Thread):
 
     def run(self):
         while self._continue:
+            tStartTour = time.time()
             current = self._mddFlightData.read()
             rawInput = self._mddRawInput.read()
             self._world.update(self._period/self._dilatation)
@@ -83,7 +84,11 @@ class PhysicThread(th.Thread):
             newFlightData = self._physique.compute(current, self._period/self._dilatation)
             self._mddFlightData.write(newFlightData)
             Logger.pushNewLine(newFlightData, rawInput, self._physique.drone.generateRapportCollision())
-            time.sleep(self._period)
+            waiting = self._period - (time.time() - tStartTour)
+            if (waiting<0):
+                print("Surcharge CPU, retard de ", -1*waiting)
+            else:
+                time.sleep(waiting)
     
     def stop(self):
         self._continue = False

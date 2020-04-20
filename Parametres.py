@@ -98,19 +98,19 @@ class ParametresSimulation:
     longueurXPiste = 15                                         #m
 
     positionXIni = 0                                            #m/s
-    positionZIni = 10                                           #m/s
+    positionZIni = 20                                           #m/s
     assietteIni = 0                                             #m/s
-    vitesseXIni = 20                                            #m/s
+    vitesseXIni = 10                                            #m/s
     vitesseZIni = 0                                             #m/s
     wIni = 0                                                    #m/s
 
 
     frequenceMixer = 50                                         #Hz
     frequenceAsservissement = 50                                #Hz
-    frequenceAffichage = 60                                     #Hz
-    frequencePhysique = 200                                     #Hz
+    frequenceAffichage = 40                                     #Hz
+    frequencePhysique = 150                                     #Hz
 
-    dilatation = 3                                              #secondeDeSimulation/secondeVraie  
+    dilatation = 5                                              #secondeDeSimulation/secondeVraie  
                                                                 #(ie si dilatation = 2, il faut 2 seconde pour qu'une seconde s'ecoule dans le simu)
 
     scaleAffichage = 0.02                                       #m/pix
