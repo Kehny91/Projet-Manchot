@@ -15,8 +15,6 @@ class ParametresModele:
     longueurDrone = 2
     
     #parametre aile droite
-    #ailesD_x_Foyer      = 0.01          #m, coordonnee x entre le centre de gravite et le foyer de l'aile
-    #ailesD_z_Foyer      = 0.01          #m, coordonnee z entre le centre de gravite et le foyer de l'aile
     ailesD_x_BA         = -0.15             #m, coordonnee x entre le centre de gravite et le bord d'attaque de l'aile
     ailesD_z_BA         = 0.062             #m, coordonnee z entre le centre de gravite et le bord d'attaque de l'aile
     ailesD_corde        = 0.2           #m
@@ -27,8 +25,6 @@ class ParametresModele:
     flapsDPourcentageEnvergureArticulee   = 0.5
     
     #parametre aile gauche
-    #ailesG_x_Foyer      = 0.01          #m, coordonnee x entre le centre de gravite et le foyer de l'aile
-    #ailesG_z_Foyer      = 0.01          #m, coordonnee z entre le centre de gravite et le foyer de l'aile
     ailesG_x_BA         = -0.15             #m, coordonnee x entre le centre de gravite et le bord d'attaque de l'aile
     ailesG_z_BA         = 0.062             #m, coordonnee z entre le centre de gravite et le bord d'attaque de l'aile
     ailesG_corde        = 0.2           #m
@@ -39,8 +35,6 @@ class ParametresModele:
     flapsGPourcentageEnvergureArticulee   = 0.5
     
     #parametre empennage droit
-    #empennageD_x_Foyer  = 0.01          #m, coordonnee x entre le centre de gravite et le foyer de la gouverne
-    #empennageD_z_Foyer  = -0.1          #m, coordonnee z entre le centre de gravite et le foyer de la gouverne
     empennageD_x_BA     = -1.02             #m, coordonnee x entre le centre de gravite et le BA du stab
     empennageD_z_BA     = 0.1             #m, coordonnee z entre le centre de gravite et le BA du stab
     empennageD_corde    = 0.115              #m
@@ -56,8 +50,6 @@ class ParametresModele:
     
     
     #parametre empennage gauche
-    #empennageG_x_Foyer  = 0.01          #m, coordonnee x entre le centre de gravite et le foyer de la gouverne
-    #empennageG_z_Foyer  = -0.1          #m, coordonnee z entre le centre de gravite et le foyer de la gouverne
     empennageG_x_BA      = -1.02             #m, coordonnee x entre le centre de gravite et le BA du stab
     empennageG_z_BA      = 0.1             #m, coordonnee z entre le centre de gravite et le BA du stab
     empennageG_corde     = 0.115              #m
@@ -100,6 +92,29 @@ class ParametresModele:
 
 
 class ParametresSimulation:
-    scriptToLoad = Scripts.scriptTest.ScriptExemple
-    maxAcceptablePenetrationSpeed = 0.001
+    scriptToLoad = Scripts.scriptTest.ScriptExemple             #Classe Script a utiliser
+    maxAcceptablePenetrationSpeed = 0.001                       #m/s
+    positionXPiste = 15                                         #m
+    longueurXPiste = 15                                         #m
+
+    positionXIni = 0                                            #m/s
+    positionZIni = 10                                           #m/s
+    assietteIni = 0                                             #m/s
+    vitesseXIni = 20                                            #m/s
+    vitesseZIni = 0                                             #m/s
+    wIni = 0                                                    #m/s
+
+
+    frequenceMixer = 50                                         #Hz
+    frequenceAsservissement = 50                                #Hz
+    frequenceAffichage = 60                                     #Hz
+    frequencePhysique = 200                                     #Hz
+
+    dilatation = 3                                              #secondeDeSimulation/secondeVraie  
+                                                                #(ie si dilatation = 2, il faut 2 seconde pour qu'une seconde s'ecoule dans le simu)
+
+    scaleAffichage = 0.02                                       #m/pix
+
+    #DEBUG
+    printForces = False
 

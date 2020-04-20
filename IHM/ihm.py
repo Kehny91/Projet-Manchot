@@ -198,13 +198,13 @@ class IHM(QtWidgets.QWidget):
 
 
         myLayout = QtWidgets.QGridLayout(self)
-        myLayout.setColumnMinimumWidth(0,50)
+        myLayout.setColumnMinimumWidth(0,150)
         myLayout.setColumnStretch(0,2)
-        myLayout.setColumnMinimumWidth(1,50)
+        myLayout.setColumnMinimumWidth(1,150)
         myLayout.setColumnStretch(1,2)
-        myLayout.setColumnMinimumWidth(2,50)
+        myLayout.setColumnMinimumWidth(2,150)
         myLayout.setColumnStretch(2,2)
-        myLayout.setColumnMinimumWidth(3,50)
+        myLayout.setColumnMinimumWidth(3,150)
         myLayout.setColumnStretch(3,2)
         myLayout.setColumnMinimumWidth(4,50)
         myLayout.setColumnStretch(4,1)

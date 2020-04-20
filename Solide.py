@@ -134,10 +134,12 @@ class Corps(E.Referentiel):
         """Renvoie un torseur des efforts exerces sur le corps et ses attachements
             \napplique au CG dans le refCorps"""
         torseurEfforts = self.getTorseurPoids()
-        print("Poids = ", torseurEfforts)
+        if (PS.printForces):
+            print("Poids = ", torseurEfforts)
         for attachement in self.attachements:
             torseurEffortsAttachements = attachement.getTorseurEffortsAttachement()
-            print(type(attachement),torseurEffortsAttachements)           
+            if (PS.printForces):
+                print(type(attachement),torseurEffortsAttachements)           
             torseurEfforts += torseurEffortsAttachements
         return torseurEfforts 
     
