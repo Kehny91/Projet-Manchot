@@ -12,8 +12,7 @@ class ConstanteEnvironement:
 class ParametresModele:
     #parametre structure
     masseTotal              = 1.5             #kg
-    #inertieTotal            = 0.045         #kg.m2, au centre de gravite par rapport a l axe Y
-    inertieTotal            = 0.06
+    inertieTotal            = 0.06          #kg.m2, au centre de gravite par rapport a l axe Y
     longueurDrone           = 1.1           #m
     
     #parametre aile droite
