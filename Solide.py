@@ -168,14 +168,13 @@ class Corps(E.Referentiel):
         self.activateAllCorpsRigides(dt)
         i=0
         while (not self.corpsRigideOk()):
-            torseurEffortsCollisions = T.TorseurEffort(self.torseurCinematique.getPointAppl())
             for cr in self.corpsRigides:
                 torseur = cr.getTorseurEffortsAttachement()
-                torseurEffortsCollisions += torseur.changePoint(self.torseurCinematique.getPointAppl())
-            self.applyAction(torseurEffortsCollisions, self.getMasse(), self.getInertie(), dt)
+                self.applyAction(torseur.changePoint(self.torseurCinematique.getPointAppl()), self.getMasse(), self.getInertie(), dt)
             i+=1
-            if (i==100):
-                assert False
+            if (i==1000):
+                assert False, "ERROR ERROR ERROR Les collisions n'ont pas pu etre resolues"
+
         self.updatePosAndAssiette(dt)
  
 class Attachements:
@@ -372,58 +371,108 @@ class CorpsRigide(Attachements):
         self._thisTurnTotalForceT = 0
         self._T = None
         self._N = None
+        self._m0opti = None
+        self._vpnOpti = None
         self._epsilon = epsilon
         self._referentielSol = self.father.refSol
         self._dt = 0.001
         self._active = False
+        self._statique = True
 
     def setDt(self,dt):
         self._dt = dt
 
-    def _m0(self):
+    def _m0(self, normale):
         deltaX2 = self.getPosition().projectionRef(self._referentielSol).x**2
         deltaZ2 = self.getPosition().projectionRef(self._referentielSol).z**2
-        OPn2    = self.getPosition().projectionRef(self._referentielSol).prodScal(self._world.getNormaleObstacle(self.position.changeRef(self._referentielSol)))**2
+        OPn2    = self.getPosition().projectionRef(self._referentielSol).prodScal(normale)**2
         return 1/(1.0/self.father.getMasse() + (deltaX2 + deltaZ2 - OPn2)/self.father.getInertie())
 
     def reset(self):
         self._thisTurnTotalForceN = 0
         self._thisTurnTotalForceT = 0
+        self._statique = True
         self._active = False
+        self._T = None
+        self._N = None
+        self._m0optiN = None
+        self._targetVN = None
 
     def activer(self):
         self._active = True
 
 
     def ok(self):
-        if not self._world.isInSomething(self.position.changeRef(self._referentielSol)) or (not self._active) or self.getVitesse().prodScal(self._world.getNormaleObstacle(self.position.changeRef(self._referentielSol)))>0:
-            return True #Si on est au dessus du sol, pas de problème
-        #Sinon
-        return abs(self.getVitesse().prodScal(self._world.getNormaleObstacle(self.position.changeRef(self._referentielSol))))<self._epsilon
+        
+        if not self._world.isInSomething(self.position.changeRef(self._referentielSol)) or (not self._active):
+            #Si on est pas dans un obstacle  ou desactivé
+            return True #Ok
+
+        if (self._N == None):
+            self._N = self._world.getNormaleObstacle(self.position.changeRef(self._referentielSol))
+
+        vpn = self.getVitesse().prodScal(self._N)
+
+        #print(self._name, " targetVn ", self._targetVN, " vn ", vpn)
+
+        if (self._thisTurnTotalForceN==0 and vpn>0):
+            #Si de toute facon, on s'en allait:
+            return True
+
+        if (self._m0optiN == None):
+                self._m0optiN = self._m0(self._N)
+
+        if (self._targetVN == None):
+            #Si je n'ai pas de target
+            if (vpn*self._m0optiN<-1):
+                #Si le choc est violent (1kg a 1ms)
+                self._targetVN = -1*PM.resitution*vpn
+            else:
+                self._targetVN = 0
+        
+        if(self._T == None):
+            self._T = self._N.rotate(np.pi/2)
+
+        if (self._statique):
+            return abs(self.getVitesse().prodScal(self._T))<self._epsilon and abs(vpn - self._targetVN)<self._epsilon
+        else:
+            return abs(vpn - self._targetVN)<self._epsilon
 
     def getTorseurEffortsAttachement(self):
         """Le dt doit etre celui qui sera utilisé pour l'intégration de la vitesse"""
-        if (not self._world.isInSomething(self.position.changeRef(self._referentielSol))) or (not self._active):
+        if (self.ok()):
             return T.TorseurEffort(self.getPosition())
         #Sinon
-        self._N = self._world.getNormaleObstacle(self.position.changeRef(self._referentielSol))
-        self._T = self._N.rotate(np.pi/2)
+        if (self._N == None):
+            self._N = self._world.getNormaleObstacle(self.position.changeRef(self._referentielSol))
+        if (self._T == None):
+            self._T = self._N.rotate(np.pi/2)
+        if (self._m0optiN == None):
+            self._m0optiN = self._m0(self._N)
         vpn = self.getVitesse().prodScal(self._N)
         vpt = self.getVitesse().prodScal(self._T)
 
-        F = -1*vpn*self._m0()/self._dt
-        #La force totale appliquée ne peut pas etre négative, donc au minimum, F peut valoir -thisTurnTotalForce
-        F = max(-1*self._thisTurnTotalForceN,F)
+        Fn = (self._targetVN - vpn)*self._m0optiN/self._dt
+        #La forceNormale totale appliquée ne peut pas etre négative, donc au minimum, F peut valoir -thisTurnTotalForce
+        Fn = max(-1*self._thisTurnTotalForceN,Fn)
+        self._thisTurnTotalForceN += Fn
+
+        Ft = -1*vpt*self._m0(self._T)/self._dt
+        #La force tangentielle ne peut pas etre plus grande que muFn
+        current = self._thisTurnTotalForceT
+        self._thisTurnTotalForceT = self._thisTurnTotalForceT + Ft
+        if self._thisTurnTotalForceT <= -self._thisTurnTotalForceN*PM.muFrottement:
+            self._thisTurnTotalForceT = -self._thisTurnTotalForceN*PM.muFrottement
+            self._statique = False
+        elif self._thisTurnTotalForceT >= self._thisTurnTotalForceN*PM.muFrottement:
+            self._thisTurnTotalForceT = self._thisTurnTotalForceN*PM.muFrottement
+            self._statique = False
+        else:
+            self._statique = True
+
+        Ft = self._thisTurnTotalForceT - current
         
-        Fr = 0
-        if (abs(vpt)>self._epsilon): #On applique les frottements
-            if vpt>0:
-                Fr = -PM.muFrottementSol*F
-            else:
-                Fr = PM.muFrottementSol*F
-        self._thisTurnTotalForceN += F
-        self._thisTurnTotalForceT += Fr
-        return T.TorseurEffort(self.getPosition(),self._N*F + self._T*Fr,0)
+        return T.TorseurEffort(self.getPosition(),self._N*Fn + self._T*Ft,0)
 
     def getThisTurnTotalForce(self):
         return (self._N*self._thisTurnTotalForceN + self._T*self._thisTurnTotalForceT).projectionRef(self._referentielSol)
