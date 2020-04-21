@@ -12,7 +12,8 @@ class ConstanteEnvironement:
 class ParametresModele:
     #parametre structure
     masseTotal              = 1.5             #kg
-    inertieTotal            = 0.045         #kg.m2, au centre de gravite par rapport a l axe Y
+    #inertieTotal            = 0.045         #kg.m2, au centre de gravite par rapport a l axe Y
+    inertieTotal            = 0.15
     longueurDrone           = 1.1           #m
     
     #parametre aile droite
@@ -44,7 +45,7 @@ class ParametresModele:
     elevDMaxAngle           = 30*TORAD       #Radians
     elevDPourcentageCordeArticulee = 0.35     #%
     elevDPourcentageEnvergureArticulee = 1   #% L'elevator a une gouverne sur toute son envergure !
-    angleDemiDiedreEmpennageD = 45*TORAD     #Radians L'angle entre l'horizontale et la voilure (0deg = voilure a plat)
+    angleDemiDiedreEmpennageD = 30*TORAD     #Radians L'angle entre l'horizontale et la voilure (0deg = voilure a plat)
     
     
     #parametre empennage gauche
@@ -56,7 +57,7 @@ class ParametresModele:
     elevGMaxAngle           = 30*TORAD       #Radians
     elevGPourcentageCordeArticulee = 0.35     #%
     elevGPourcentageEnvergureArticulee = 1   #% L'elevator a une gouverne sur toute son envergure !
-    angleDemiDiedreEmpennageG = 45*TORAD     #Radians L'angle entre l'horizontale et la voilure (0deg = voilure a plat)
+    angleDemiDiedreEmpennageG = 30*TORAD     #Radians L'angle entre l'horizontale et la voilure (0deg = voilure a plat)
     
     #parametre propulseur
     engine_x                = 0.083          #m, coordonne x entre le centre de gravite et le centre de poussee du propulseur
@@ -103,8 +104,8 @@ class ParametresSimulation:
     positionXPiste = 30                                         #m
     longueurXPiste = 15                                         #m
 
-    positionXIni = 0                                            #m/s
-    positionZIni = 8                                           #m/s
+    positionXIni = 10                                            #m
+    positionZIni = 6                                           #m
     assietteIni = 0                                             #m/s
     vitesseXIni = 8                                             #m/s
     vitesseZIni = 0                                             #m/s
@@ -132,4 +133,5 @@ class ParametresSimulation:
 
     #DEBUG
     printForces = False
+    printDebugCinetique = False
 

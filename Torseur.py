@@ -122,6 +122,10 @@ class TorseurEffort(Torseur):
         """
         return TorseurEffort(copy(self.pointAppl),self.resultante*scal, self.moment*scal) 
 
+    def debug(self):
+        """ Renvoie un string d'une ligne """
+        return "Au point " + self.pointAppl.debug() + " la force est " + self.resultante.debug() + " et le moment " + str(self.moment)
+
 class TorseurCinematique(Torseur):
     """Permet de definir un torseur cinematique
     \nattribite E.Vecteur : pointAppl, (point + ref) definit le point et le referentiel ou on exprime notre torseur  
