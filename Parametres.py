@@ -20,7 +20,7 @@ class ParametresModele:
     ailesD_z_BA             = 0.062         #m, coordonnee z entre le centre de gravite et le bord d'attaque de l'aile
     ailesD_corde            = 0.2           #m
     aileD_S                 = 0.145         #m2, surface alaire
-    aileD_Alpha_0           = -2.5*TORAD    #Radians
+    aileD_Calage            = 0             #Radians (positif = portance supp)
     flapsDMaxAngle          = 45*TORAD      #Radians
     flapsDPourcentageCordeArticulee = 0.5   #%
     flapsDPourcentageEnvergureArticulee = 0.5 #%
@@ -30,9 +30,9 @@ class ParametresModele:
     ailesG_z_BA             = 0.062         #m, coordonnee z entre le centre de gravite et le bord d'attaque de l'aile
     ailesG_corde            = 0.2           #m
     aileG_S                 = 0.145         #m2, surface alaire
-    aileG_Alpha_0           = -2.5*TORAD    #Radians
+    aileG_Calage            = 0             #Radians (positif = portance supp)
     flapsGMaxAngle          = 45*TORAD      #Radians
-    flapsGPourcentageCordeArticulee = 0.5 #%
+    flapsGPourcentageCordeArticulee = 0.5   #%
     flapsGPourcentageEnvergureArticulee = 0.5 #%
     
     #parametre empennage droit
@@ -40,10 +40,11 @@ class ParametresModele:
     empennageD_z_BA         = 0.1            #m, coordonnee z entre le centre de gravite et le BA du stab
     empennageD_corde        = 0.115          #m
     empennageD_S            = 0.0485         #m2, surface ailaire
-    empennageD_Alpha_0      = -2.5*TORAD     #Radians
-    elevDMaxAngle           = 20*TORAD       #Radians
-    elevDPourcentageCordeArticulee = 0.7     #%
-    elevDPourcentageEnvergureArticulee = 1   #L'elevator a une gouverne sur toute son envergure !
+    empennageD_Calage       = -2.5*TORAD     #Radians (positif = portance supp)
+    elevDMaxAngle           = 30*TORAD       #Radians
+    elevDPourcentageCordeArticulee = 0.35     #%
+    elevDPourcentageEnvergureArticulee = 1   #% L'elevator a une gouverne sur toute son envergure !
+    angleDemiDiedreEmpennageD = 45*TORAD     #Radians L'angle entre l'horizontale et la voilure (0deg = voilure a plat)
     
     
     #parametre empennage gauche
@@ -51,10 +52,11 @@ class ParametresModele:
     empennageG_z_BA         = 0.1            #m, coordonnee z entre le centre de gravite et le BA du stab
     empennageG_corde        = 0.115          #m
     empennageG_S            =  0.0485        #m2, surface ailaire
-    empennageG_Alpha_0      = -2.5*TORAD     #Radians
-    elevGMaxAngle           = 20*TORAD      #Radians
-    elevGPourcentageCordeArticulee = 0.7    #%
-    elevGPourcentageEnvergureArticulee = 1  #L'elevator a une gouverne sur toute son envergure !
+    empennageG_Calage       = -2.5*TORAD     #Radians (positif = portance supp)
+    elevGMaxAngle           = 30*TORAD       #Radians
+    elevGPourcentageCordeArticulee = 0.35     #%
+    elevGPourcentageEnvergureArticulee = 1   #% L'elevator a une gouverne sur toute son envergure !
+    angleDemiDiedreEmpennageG = 45*TORAD     #Radians L'angle entre l'horizontale et la voilure (0deg = voilure a plat)
     
     #parametre propulseur
     engine_x                = 0.083          #m, coordonne x entre le centre de gravite et le centre de poussee du propulseur
