@@ -95,6 +95,7 @@ class ParametresModele:
     p8_z                    = 0.177 + engine_z         #m, coordonne z entre le centre de gravite et le corps rigide
 
     muFrottement         = 0.8                      #sans unite, coef de frottement 
+    resitution           = 0.1
 
 
 
@@ -105,7 +106,7 @@ class ParametresSimulation:
     longueurXPiste = 15                                         #m
 
     positionXIni = 0                                            #m
-    positionZIni = 6.9                                           #m
+    positionZIni = 6.7                                           #m
     assietteIni = 0                                             #m/s
     vitesseXIni = 8                                             #m/s
     vitesseZIni = 0                                             #m/s

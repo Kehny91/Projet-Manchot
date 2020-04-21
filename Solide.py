@@ -371,6 +371,8 @@ class CorpsRigide(Attachements):
         self._thisTurnTotalForceT = 0
         self._T = None
         self._N = None
+        self._m0opti = None
+        self._vpnOpti = None
         self._epsilon = epsilon
         self._referentielSol = self.father.refSol
         self._dt = 0.001
@@ -391,34 +393,64 @@ class CorpsRigide(Attachements):
         self._thisTurnTotalForceT = 0
         self._statique = True
         self._active = False
+        self._T = None
+        self._N = None
+        self._m0optiN = None
+        self._targetVN = None
 
     def activer(self):
         self._active = True
 
 
     def ok(self):
-        #Si on est pas dans un obstacle                                           ou    le noeud est desactivé   ou on a une vitesse sortante 
-        if not self._world.isInSomething(self.position.changeRef(self._referentielSol)) or (not self._active) or self.getVitesse().prodScal(self._world.getNormaleObstacle(self.position.changeRef(self._referentielSol)))>0:
+        
+        if not self._world.isInSomething(self.position.changeRef(self._referentielSol)) or (not self._active):
+            #Si on est pas dans un obstacle  ou desactivé
             return True #Ok
-        #Sinon, on est en train de frotter
+
+        if (self._N == None):
+            self._N = self._world.getNormaleObstacle(self.position.changeRef(self._referentielSol))
+
+        vpn = self.getVitesse().prodScal(self._N)
+
+        if (vpn>0):
+            #Si de toute facon, on s'en allait:
+            return True
+
+        if (self._m0optiN == None):
+                self._m0optiN = self._m0(self._N)
+
+        if (self._targetVN == None):
+            #Si je n'ai pas de target
+            if (vpn*self._m0optiN<-1):
+                #Si le choc est violent (1kg a 1ms)
+                self._targetVN = -1*PM.resitution*vpn
+            else:
+                self._targetVN = 0
+        
+        if(self._T == None):
+            self._T = self._N.rotate(np.pi/2)
+
         if (self._statique):
-            #Il faut verifier qu'on en bouge plus sur les deux axes
-            return self.getVitesse().norm()<2*self._epsilon
+            return abs(self.getVitesse().prodScal(self._T))<self._epsilon and abs(vpn - self._targetVN)<self._epsilon
         else:
-            #Un seul axe concerné
-            return abs(self.getVitesse().prodScal(self._world.getNormaleObstacle(self.position.changeRef(self._referentielSol))))<self._epsilon
+            return abs(vpn - self._targetVN)<self._epsilon
 
     def getTorseurEffortsAttachement(self):
         """Le dt doit etre celui qui sera utilisé pour l'intégration de la vitesse"""
-        if (not self._world.isInSomething(self.position.changeRef(self._referentielSol))) or (not self._active):
+        if (self.ok()):
             return T.TorseurEffort(self.getPosition())
         #Sinon
-        self._N = self._world.getNormaleObstacle(self.position.changeRef(self._referentielSol))
-        self._T = self._N.rotate(np.pi/2)
+        if (self._N == None):
+            self._N = self._world.getNormaleObstacle(self.position.changeRef(self._referentielSol))
+        if (self._T == None):
+            self._T = self._N.rotate(np.pi/2)
+        if (self._m0optiN == None):
+            self._m0optiN = self._m0(self._N)
         vpn = self.getVitesse().prodScal(self._N)
         vpt = self.getVitesse().prodScal(self._T)
 
-        Fn = -1*vpn*self._m0(self._N)/self._dt
+        Fn = (self._targetVN - vpn)*self._m0optiN/self._dt
         #La forceNormale totale appliquée ne peut pas etre négative, donc au minimum, F peut valoir -thisTurnTotalForce
         Fn = max(-1*self._thisTurnTotalForceN,Fn)
         self._thisTurnTotalForceN += Fn
