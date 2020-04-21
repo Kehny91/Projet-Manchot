@@ -49,7 +49,10 @@ class Corps(E.Referentiel):
     
     def setAssiette(self, newAssiette):
         """Modifie l assiette du corps"""
+        #Attention, la vitesse etant defini par rapport a ce referentiel, il ne faut pas qu'elle tourne avec
+        backupV = self.torseurCinematique.getVitesse().projectionRef(self.refSol)
         self.setAngleAxeY(newAssiette)
+        self.torseurCinematique.setVitesse(backupV)
     
     def getVitesseCG(self):
         """Renvoie la vitesse du CG dans le refCorps"""
@@ -70,10 +73,6 @@ class Corps(E.Referentiel):
     def getTorseurCinematique(self):
         """Renvoie le torseur cinematique applique au CG dans le refCorps"""
         return self.torseurCinematique
-
-    #def setTorseurCinematique(self,newTorseurCinematique):
-    #    """Modifie le torseur cinematique applique au CG dans le refCorps"""
-    #    self.torseurCinematique = newTorseurCinematique.changeRef(self.refSol)
     
     def getMasse(self):
         return self.masse
@@ -133,18 +132,27 @@ class Corps(E.Referentiel):
             \napplique au CG dans le refCorps"""
         torseurEfforts = self.getTorseurPoids()
         if (PS.printForces):
-            print("Poids = ", torseurEfforts)
+            print("Poids = ", torseurEfforts.debug())
         for attachement in self.attachements:
             torseurEffortsAttachements = attachement.getTorseurEffortsAttachement()
             if (PS.printForces):
-                print(type(attachement),torseurEffortsAttachements)           
+                print(type(attachement),torseurEffortsAttachements.debug())    
+                print(type(attachement),torseurEffortsAttachements.changePoint(torseurEfforts.pointAppl).debug()) 
             torseurEfforts += torseurEffortsAttachements
+        if (PS.printForces):
+            print("total ", torseurEfforts.debug())
         return torseurEfforts 
     
     def applyAction(self, torseurEfforts, totMass, totInertie, dt):
         """ Modifie le torseur cinematique sous l effet des efforts"""
+        if (PS.printDebugCinetique):
+            print("vitesse CG avant ", self.getVitesseCG().projectionRef(self).debug())
+            print("w avant ", self.getW())
         self.setVitesseCG(self.getVitesseCG() + torseurEfforts.getForce()*(dt/totMass))
         self.setW(self.getW() + torseurEfforts.getMoment()*(dt/totInertie))
+        if (PS.printDebugCinetique):
+            print("vitesse CG apres ", self.getVitesseCG().projectionRef(self).debug())
+            print("apres avant ", self.getW())
 
     def updatePosAndAssiette(self,dt):
         """Modifie la position et l angle du corps en fonction de son torseur cinematique"""
@@ -250,9 +258,9 @@ class SurfacePortante(Attachements):
         return T.TorseurEffort(self.position.changeRef(self.father),forceAero,moment)
         
 
-    def getAlpha(self, VrefSol):
+    def getAlpha(self, V):
         """Renvoie l incidence de la surface portante"""
-        return normalize(VrefSol.projectionRef(self.father).arg())
+        return normalize(V.projectionRef(self.father).arg())
 
 class Aile(SurfacePortante):
     """Permet de definir une aile, c est une surface portante.
@@ -277,9 +285,9 @@ class Aile(SurfacePortante):
         """Modifie l angle flap consigne"""
         self.angleFlaps = pourcentageBraquageFlaps*self.angleMaxFlaps
 
-    def getAlpha(self, VrefSol):
+    def getAlpha(self, V):
         """Renvoie une incidence theorique qui prend en compte l angle du flap"""
-        alphaFixe = super().getAlpha(VrefSol) #Appelle SurfacePortante.getAlpha()
+        alphaFixe = super().getAlpha(V) #Appelle SurfacePortante.getAlpha()
         theta = self.angleFlaps
         if self.pourcentageCordeArticulee == 0:
             gainAlpha = 0
@@ -306,31 +314,34 @@ class Empennage(SurfacePortante):
     \n attribute float : pourcentageEnvergureArticulee, pourcentage de l envergure de l aile qui s articule (envergure_gouverne/envergure_flap)
     \n attribute World : world, environnement de l aile  
     """
-    def __init__(self, position, polaire, S, corde, pourcentageCordeArticulee, pourcentageEnvergureArticulee, angleMaxGouverne, world, father = None):
+    def __init__(self, position, polaire, S, corde, pourcentageCordeArticulee, pourcentageEnvergureArticulee, angleMaxGouverne, angleDemiDiedre, world, father = None):
         super().__init__(position, polaire , S, corde, father)
         self.angleGouverne = 0
         self.pourcentageCordeArticulee = pourcentageCordeArticulee
         self.pourcentageEnvergureArticulee = pourcentageEnvergureArticulee
         self.angleMaxGouverne = angleMaxGouverne
+        self.angleDemiDiedre = angleDemiDiedre
         self.world = world
     
     def setBraquageGouverne(self, pourcentageBraquageGouverne):
         """Modifie l angle gouverne consigne"""
         self.angleGouverne = pourcentageBraquageGouverne*self.angleMaxGouverne
 
-    def getAlpha(self, VrefSol):
+    def getAlpha(self, V):
         """Renvoie une incidence theorique qui prend en compte l angle de la gouverne"""
-        alphaFixe = super().getAlpha(VrefSol) #Appelle SurfacePortante.getAlpha()
+        alphaFixe = super().getAlpha(V) #Appelle SurfacePortante.getAlpha()
         theta = self.angleGouverne
         if self.pourcentageCordeArticulee == 0:
             gainAlpha = 0
         else:
-            gainAlpha = np.arctan2(np.sin(theta),(1-self.pourcentageCordeArticulee)/self.pourcentageCordeArticulee + np.cos(theta))
+            gainAlpha = (np.arctan2(np.sin(theta),(1-self.pourcentageCordeArticulee)/self.pourcentageCordeArticulee + np.cos(theta)))*np.cos(self.angleDemiDiedre)
         return  (normalize(alphaFixe) , normalize(gainAlpha))
         
     def getTorseurEffortsAttachement(self):
         """Renvoie le torseur effort genere par l empennage applique a la postion du bord d attaque dans le refAvion"""
-        vLoc = self.getVitesse() - self.world.getVent(self.getPosition().changeRef(self.father.refSol))
+        vLoc = (self.getVitesse() - self.world.getVent(self.getPosition().changeRef(self.father.refSol))).projectionRef(self.father)
+        vLoc.z = vLoc.z*np.cos(self.angleDemiDiedre) #Correction du z efficace!
+
         (alphaFixe,gainAlpha) = self.getAlpha(vLoc)
         torseurFixe = self.getResultanteAero(alphaFixe,vLoc)*(1 - self.pourcentageEnvergureArticulee)
         torseurGouverne = self.getResultanteAero(normalize(alphaFixe + gainAlpha),vLoc)*self.pourcentageEnvergureArticulee

@@ -124,6 +124,10 @@ class Vecteur:
         """
         return "Dans le ref : " + str(self.ref.nom) + " les coordonnees sont (" + str(self.x) +"," + str(self.z) + ")"
 
+    def debug(self):
+        """ renvoie un string d'une ligne"""
+        return "("+str(self.x) +"," + str(self.z) + ")"+"\\"+str(self.ref.nom)
+
     def __eq__(self,vecteur):
         """Test si deux vecteurs sont identiques
             \nreturn bool
