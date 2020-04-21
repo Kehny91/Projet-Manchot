@@ -239,11 +239,12 @@ class SurfacePortante(Attachements):
     \n attribute float :  corde, corde moyenne de la surface 
     """
     #Init
-    def __init__(self, position, polaire, S, corde, father = None):
+    def __init__(self, position, polaire, S, corde, angleCalage, father = None):
         super().__init__(position, father)
         self.S = S
         self.polaire = polaire
         self.corde = corde
+        self.angleCalage = angleCalage
     
     def getResultanteAero(self, alpha, VrefSol):
         """Renvoie le torseur des forces appliquees au bord d attaque dans le refCorps"""
@@ -260,7 +261,7 @@ class SurfacePortante(Attachements):
 
     def getAlpha(self, V):
         """Renvoie l incidence de la surface portante"""
-        return normalize(V.projectionRef(self.father).arg())
+        return normalize(V.projectionRef(self.father).arg()) + self.angleCalage
 
 class Aile(SurfacePortante):
     """Permet de definir une aile, c est une surface portante.
@@ -272,8 +273,8 @@ class Aile(SurfacePortante):
     \n attribute World : world, environnement de l aile  
     """
     #Init
-    def __init__(self, position, polaire, S, corde, pourcentageCordeArticulee, pourcentageEnvergureArticulee, angleMaxFlaps, world, father = None):
-        super().__init__(position, polaire , S, corde, father)
+    def __init__(self, position, polaire, S, corde, pourcentageCordeArticulee, pourcentageEnvergureArticulee, angleMaxFlaps, angleCalage, world, father = None):
+        super().__init__(position, polaire , S, corde, angleCalage, father)
         self.angleFlaps = 0
         self.angleMaxFlaps = angleMaxFlaps
         self.pourcentageCordeArticulee = pourcentageCordeArticulee
@@ -314,8 +315,8 @@ class Empennage(SurfacePortante):
     \n attribute float : pourcentageEnvergureArticulee, pourcentage de l envergure de l aile qui s articule (envergure_gouverne/envergure_flap)
     \n attribute World : world, environnement de l aile  
     """
-    def __init__(self, position, polaire, S, corde, pourcentageCordeArticulee, pourcentageEnvergureArticulee, angleMaxGouverne, angleDemiDiedre, world, father = None):
-        super().__init__(position, polaire , S, corde, father)
+    def __init__(self, position, polaire, S, corde, pourcentageCordeArticulee, pourcentageEnvergureArticulee, angleMaxGouverne, angleDemiDiedre, angleCalage, world, father = None):
+        super().__init__(position, polaire , S, corde, angleCalage, father)
         self.angleGouverne = 0
         self.pourcentageCordeArticulee = pourcentageCordeArticulee
         self.pourcentageEnvergureArticulee = pourcentageEnvergureArticulee

@@ -21,7 +21,7 @@ class ParametresModele:
     ailesD_z_BA             = 0.062         #m, coordonnee z entre le centre de gravite et le bord d'attaque de l'aile
     ailesD_corde            = 0.2           #m
     aileD_S                 = 0.145         #m2, surface alaire
-    aileD_Calage            = 0             #Radians (positif = portance supp)
+    aileD_Calage            = 2*TORAD             #Radians (positif = portance supp)
     flapsDMaxAngle          = 45*TORAD      #Radians
     flapsDPourcentageCordeArticulee = 0.5   #%
     flapsDPourcentageEnvergureArticulee = 0.5 #%
@@ -31,7 +31,7 @@ class ParametresModele:
     ailesG_z_BA             = 0.062         #m, coordonnee z entre le centre de gravite et le bord d'attaque de l'aile
     ailesG_corde            = 0.2           #m
     aileG_S                 = 0.145         #m2, surface alaire
-    aileG_Calage            = 0             #Radians (positif = portance supp)
+    aileG_Calage            = 2*TORAD             #Radians (positif = portance supp)
     flapsGMaxAngle          = 45*TORAD      #Radians
     flapsGPourcentageCordeArticulee = 0.5   #%
     flapsGPourcentageEnvergureArticulee = 0.5 #%
@@ -41,7 +41,7 @@ class ParametresModele:
     empennageD_z_BA         = 0.1            #m, coordonnee z entre le centre de gravite et le BA du stab
     empennageD_corde        = 0.115          #m
     empennageD_S            = 0.0485         #m2, surface ailaire
-    empennageD_Calage       = -2.5*TORAD     #Radians (positif = portance supp)
+    empennageD_Calage       = -3*TORAD     #Radians (positif = portance supp)
     elevDMaxAngle           = 30*TORAD       #Radians
     elevDPourcentageCordeArticulee = 0.35     #%
     elevDPourcentageEnvergureArticulee = 1   #% L'elevator a une gouverne sur toute son envergure !
@@ -53,7 +53,7 @@ class ParametresModele:
     empennageG_z_BA         = 0.1            #m, coordonnee z entre le centre de gravite et le BA du stab
     empennageG_corde        = 0.115          #m
     empennageG_S            =  0.0485        #m2, surface ailaire
-    empennageG_Calage       = -2.5*TORAD     #Radians (positif = portance supp)
+    empennageG_Calage       = -3*TORAD     #Radians (positif = portance supp)
     elevGMaxAngle           = 30*TORAD       #Radians
     elevGPourcentageCordeArticulee = 0.35     #%
     elevGPourcentageEnvergureArticulee = 1   #% L'elevator a une gouverne sur toute son envergure !
