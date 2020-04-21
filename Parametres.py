@@ -103,8 +103,8 @@ class ParametresSimulation:
     positionXPiste = 30                                         #m
     longueurXPiste = 15                                         #m
 
-    positionXIni = 10                                            #m
-    positionZIni = 6                                           #m
+    positionXIni = 0                                            #m
+    positionZIni = 6.9                                           #m
     assietteIni = 0                                             #m/s
     vitesseXIni = 8                                             #m/s
     vitesseZIni = 0                                             #m/s
@@ -121,7 +121,7 @@ class ParametresSimulation:
     frequenceAffichage = 40                                     #Hz
     frequencePhysique = 150                                     #Hz
 
-    dilatation = 4                                              #secondeDeSimulation/secondeVraie  
+    dilatation = 3                                              #secondeDeSimulation/secondeVraie  
                                                                 #(ie si dilatation = 2, il faut 2 seconde pour qu'une seconde s'ecoule dans le simu)
                                                                 #Le csv donne toujours le temps simu.
 
