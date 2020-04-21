@@ -97,7 +97,7 @@ class ParametresModele:
 
     #Parametre de collision
     muFrottement         = 0.8                          #sans unite, coef de frottement 
-    resitution           = 0.1                          #sans unite, coef de rebond
+    resitution           = 0.3                          #sans unite, coef de rebond
 
 
 

@@ -167,14 +167,13 @@ class Corps(E.Referentiel):
         self.activateAllCorpsRigides(dt)
         i=0
         while (not self.corpsRigideOk()):
-            torseurEffortsCollisions = T.TorseurEffort(self.torseurCinematique.getPointAppl())
             for cr in self.corpsRigides:
                 torseur = cr.getTorseurEffortsAttachement()
-                torseurEffortsCollisions += torseur.changePoint(self.torseurCinematique.getPointAppl())
-            self.applyAction(torseurEffortsCollisions, self.getMasse(), self.getInertie(), dt)
+                self.applyAction(torseur.changePoint(self.torseurCinematique.getPointAppl()), self.getMasse(), self.getInertie(), dt)
             i+=1
-            if (i==100):
-                assert False
+            if (i==1000):
+                assert False, "ERROR ERROR ERROR Les collisions n'ont pas pu etre resolues"
+
         self.updatePosAndAssiette(dt)
  
 class Attachements:
@@ -413,7 +412,9 @@ class CorpsRigide(Attachements):
 
         vpn = self.getVitesse().prodScal(self._N)
 
-        if (vpn>0):
+        #print(self._name, " targetVn ", self._targetVN, " vn ", vpn)
+
+        if (self._thisTurnTotalForceN==0 and vpn>0):
             #Si de toute facon, on s'en allait:
             return True
 
