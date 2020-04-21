@@ -86,7 +86,7 @@ class Corps(E.Referentiel):
     def setInertie(self,newInertie):
         self.masse=newInertie
 
-    #Methodes
+    #Methodes liees aux attachements et corps rigides
     def addAttachement(self,solide):
         """Rajoute un element au corps"""
         self.attachements.append(solide)
@@ -123,6 +123,7 @@ class Corps(E.Referentiel):
                 out.addImpact(cr.position.changeRef(self.refSol), cr.getThisTurnTotalForce())
         return out
 
+    #methodes liees a la mise en equation du solide
     def getTorseurPoids(self):
         """Renvoie le torseur poids applique en CG dans le refCorps"""
         return T.TorseurEffort(self.torseurCinematique.getPointAppl(),E.Vecteur(0,-self.masse * CE.g_0,self.refSol),0)

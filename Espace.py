@@ -158,13 +158,6 @@ class Vecteur:
         """
         return Vecteur(self.ref.origine.x-ref.origine.x,self.ref.origine.z-ref.origine.z).projectionRef(ref)                       
     
-
-    def changeRef(self,ref):
-        """Renvoie un vecteur entre l origine de ref et self
-            \nreturn Vecteur
-        """
-        return self.translationRef(ref)+self.projectionRef(ref)
-        
     def __add__(self, vecteur):
         """Somme de deux vecteurs
             \nreturn Vecteur
@@ -173,15 +166,6 @@ class Vecteur:
             return Vecteur(self.x+vecteur.x, self.z+vecteur.z, self.ref)
         else : 
             return self.__add__(vecteur.projectionRef(self.ref))
-    
-    def addPoint(self,vecteur):
-        """Somme de deux vecteurs defeni par des point dans self ref
-            \nreturn Vecteur
-        """
-        if self.ref == vecteur.ref:
-            return Vecteur(self.x+vecteur.x, self.z+vecteur.z, self.ref)
-        else : 
-            return self.addPoint(vecteur.changeRef(self.ref))
             
     def __sub__(self,vecteur):
         """Soustraction de deux vecteurs
@@ -191,15 +175,6 @@ class Vecteur:
             return Vecteur(self.x-vecteur.x, self.z-vecteur.z, self.ref)
         else : 
             return self.__sub__(vecteur.projectionRef(self.ref))
-    
-    def pointToVect(self,vecteur):
-        """Revoie un vecteur defini pas deux points
-            \nreturn Vecteur
-        """
-        if self.ref == vecteur.ref:
-            return Vecteur(vecteur.x-self.x,vecteur.z-self.z, self.ref)
-        else : 
-            return self.pointToVect(vecteur.changeRef(self.ref))
     
     def __mul__(self,scal):
         """Multiplication par un scalaire
@@ -247,6 +222,30 @@ class Vecteur:
         """
         return -1*atan2(self.z,self.x)
 
+    #Methodes specifiques a la notion de point
+    def changeRef(self,ref):
+        """Renvoie un vecteur entre l origine de ref et self
+            \nreturn Vecteur
+        """
+        return self.translationRef(ref)+self.projectionRef(ref)
+    
+    def addPoint(self,vecteur):
+        """Somme de deux vecteurs defeni par des point dans self ref
+            \nreturn Vecteur
+        """
+        if self.ref == vecteur.ref:
+            return Vecteur(self.x+vecteur.x, self.z+vecteur.z, self.ref)
+        else : 
+            return self.addPoint(vecteur.changeRef(self.ref))
+    
+    def pointToVect(self,vecteur):
+        """Revoie un vecteur defini pas deux points
+            \nreturn Vecteur
+        """
+        if self.ref == vecteur.ref:
+            return Vecteur(vecteur.x-self.x,vecteur.z-self.z, self.ref)
+        else : 
+            return self.pointToVect(vecteur.changeRef(self.ref))
 #__________________Test___________________
 if __name__ == "__main__":
     ## Test la methode modulo
