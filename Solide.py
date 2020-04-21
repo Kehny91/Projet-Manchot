@@ -375,19 +375,21 @@ class CorpsRigide(Attachements):
         self._referentielSol = self.father.refSol
         self._dt = 0.001
         self._active = False
+        self._statique = True
 
     def setDt(self,dt):
         self._dt = dt
 
-    def _m0(self):
+    def _m0(self, normale):
         deltaX2 = self.getPosition().projectionRef(self._referentielSol).x**2
         deltaZ2 = self.getPosition().projectionRef(self._referentielSol).z**2
-        OPn2    = self.getPosition().projectionRef(self._referentielSol).prodScal(self._world.getNormaleObstacle(self.position.changeRef(self._referentielSol)))**2
+        OPn2    = self.getPosition().projectionRef(self._referentielSol).prodScal(normale)**2
         return 1/(1.0/self.father.getMasse() + (deltaX2 + deltaZ2 - OPn2)/self.father.getInertie())
 
     def reset(self):
         self._thisTurnTotalForceN = 0
         self._thisTurnTotalForceT = 0
+        self._statique = True
         self._active = False
 
     def activer(self):
@@ -395,10 +397,16 @@ class CorpsRigide(Attachements):
 
 
     def ok(self):
+        #Si on est pas dans un obstacle                                           ou    le noeud est desactivé   ou on a une vitesse sortante 
         if not self._world.isInSomething(self.position.changeRef(self._referentielSol)) or (not self._active) or self.getVitesse().prodScal(self._world.getNormaleObstacle(self.position.changeRef(self._referentielSol)))>0:
-            return True #Si on est au dessus du sol, pas de problème
-        #Sinon
-        return abs(self.getVitesse().prodScal(self._world.getNormaleObstacle(self.position.changeRef(self._referentielSol))))<self._epsilon
+            return True #Ok
+        #Sinon, on est en train de frotter
+        if (self._statique):
+            #Il faut verifier qu'on en bouge plus sur les deux axes
+            return self.getVitesse().norm()<2*self._epsilon
+        else:
+            #Un seul axe concerné
+            return abs(self.getVitesse().prodScal(self._world.getNormaleObstacle(self.position.changeRef(self._referentielSol))))<self._epsilon
 
     def getTorseurEffortsAttachement(self):
         """Le dt doit etre celui qui sera utilisé pour l'intégration de la vitesse"""
@@ -410,19 +418,27 @@ class CorpsRigide(Attachements):
         vpn = self.getVitesse().prodScal(self._N)
         vpt = self.getVitesse().prodScal(self._T)
 
-        F = -1*vpn*self._m0()/self._dt
-        #La force totale appliquée ne peut pas etre négative, donc au minimum, F peut valoir -thisTurnTotalForce
-        F = max(-1*self._thisTurnTotalForceN,F)
+        Fn = -1*vpn*self._m0(self._N)/self._dt
+        #La forceNormale totale appliquée ne peut pas etre négative, donc au minimum, F peut valoir -thisTurnTotalForce
+        Fn = max(-1*self._thisTurnTotalForceN,Fn)
+        self._thisTurnTotalForceN += Fn
+
+        Ft = -1*vpt*self._m0(self._T)/self._dt
+        #La force tangentielle ne peut pas etre plus grande que muFn
+        current = self._thisTurnTotalForceT
+        self._thisTurnTotalForceT = self._thisTurnTotalForceT + Ft
+        if self._thisTurnTotalForceT <= -self._thisTurnTotalForceN*PM.muFrottement:
+            self._thisTurnTotalForceT = -self._thisTurnTotalForceN*PM.muFrottement
+            self._statique = False
+        elif self._thisTurnTotalForceT >= self._thisTurnTotalForceN*PM.muFrottement:
+            self._thisTurnTotalForceT = self._thisTurnTotalForceN*PM.muFrottement
+            self._statique = False
+        else:
+            self._statique = True
+
+        Ft = self._thisTurnTotalForceT - current
         
-        Fr = 0
-        if (abs(vpt)>self._epsilon): #On applique les frottements
-            if vpt>0:
-                Fr = -PM.muFrottementSol*F
-            else:
-                Fr = PM.muFrottementSol*F
-        self._thisTurnTotalForceN += F
-        self._thisTurnTotalForceT += Fr
-        return T.TorseurEffort(self.getPosition(),self._N*F + self._T*Fr,0)
+        return T.TorseurEffort(self.getPosition(),self._N*Fn + self._T*Ft,0)
 
     def getThisTurnTotalForce(self):
         return (self._N*self._thisTurnTotalForceN + self._T*self._thisTurnTotalForceT).projectionRef(self._referentielSol)

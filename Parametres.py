@@ -94,7 +94,8 @@ class ParametresModele:
     p8_x                    = -1.120 + engine_x         #m, coordonne x entre le centre de gravite et le corps rigide
     p8_z                    = 0.177 + engine_z         #m, coordonne z entre le centre de gravite et le corps rigide
 
-    muFrottementSol         = 0.8                      #SI, coef de frottement avec le sol
+    muFrottement         = 0.8                      #sans unite, coef de frottement 
+
 
 
 class ParametresSimulation:
