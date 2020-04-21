@@ -102,37 +102,39 @@ class ParametresModele:
 
 
 class ParametresSimulation:
+    #Divers
     scriptToLoad = Scripts.scriptTest.ScriptExemple     #Classe Script a utiliser
     maxAcceptablePenetrationSpeed = 0.001               #m/s
+
+    #Definition de l'environnement
     positionXPiste = 30                                 #m
     longueurXPiste = 15                                 #m
 
+    ventMoyenVitesseX = -1                              #m/s, vitesse moyen horizontale du vent
+    ventMoyenVitesseZ = 0                               #m/s, vitesse moyen verticale du vent
+    ventVariationAmplitude = 0                          #m/s, variation de l'amplitude du vent
+    ventRapiditeVarition = 0                            #s, temps de variation de l'amplitude du vent
+
+    #Instant initial
     positionXIni = 0                                    #m
     positionZIni = 6.7                                  #m
-    assietteIni = 0                                     #m/s
+    assietteIni = 0                                     #rad
     vitesseXIni = 8                                     #m/s
     vitesseZIni = 0                                     #m/s
-    wIni = 0                                            #m/s
+    wIni = 0                                            #rad/s
+    modeInitial = Modes.MODE_AUTO_PILOT                 #Mode initial
 
-    VentMoyenVitesseX = -1                              #m/s, vitesse moyen horizontale du vent
-    VentMoyenVitesseZ = 0                               #m/s, vitesse moyen verticale du vent
-    VentVariationAmplitude = 0                          #m/s, variation de l'amplitude du vent
-    VentRapiditeVarition = 0                            #s, temps de variation de l'amplitude du vent
-
-
+    #Simulation
     frequenceMixer = 50                                 #Hz
     frequenceAsservissement = 50                        #Hz
     frequenceAffichage = 40                             #Hz
     frequencePhysique = 150                             #Hz
-
     dilatation = 3                                      #secondeDeSimulation/secondeVraie  
                                                         #(ie si dilatation = 2, il faut 2 seconde pour qu'une seconde s'ecoule dans le simu)
                                                         #Le csv donne toujours le temps simu.
-
     scaleAffichage = 0.01                               #m/pix
-
     logOnly = False                                     #Permet de desactiver l'interface graphique 
-    modeInitial = Modes.MODE_AUTO_PILOT                 #Mode initial
+    
 
     #DEBUG
     printForces = False                                 #Permet d'afficher les forces en jeu
