@@ -1,5 +1,5 @@
 import PyQt5.QtWidgets as QtWidgets
-from Logger import formatFloat
+from Logger.Logger import formatFloat
 
 class ValueWidget(QtWidgets.QFrame):
     def __init__(self, parent, name, unit, value0):

@@ -1,5 +1,5 @@
 from Scripts.Script import ScriptRaw
-from DataTypes import RawInput,PilotInput,AutoPilotInput,FlightData
+from Data.DataTypes import RawInput,PilotInput,AutoPilotInput,FlightData
 from math import pi,cos
 import time
 

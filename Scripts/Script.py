@@ -1,5 +1,3 @@
-import Modes as M
-
 class _Script:
     mode = None
     def __init__(self, mddFlightData, mddRawInput, mddPilotInput, mddAutoPilotInput):
@@ -31,21 +29,21 @@ class _Script:
         assert False, "Ce script est vide"
 
 class ScriptRaw(_Script):
-    mode = M.MODE_SCRIPT_RAW
+    mode = 3 #MODE_SCRIPT_RAW
     """ C'est un script qui écrit directement sur les raw input """
     def __init__(self, mddFlightData, mddRawInput, mddPilotInput, mddAutoPilotInput):
         super(ScriptRaw,self).__init__(mddFlightData, mddRawInput, mddPilotInput, mddAutoPilotInput)
         self._mddOut = mddRawInput
 
 class ScriptPilot(_Script):
-    mode = M.MODE_SCRIPT_PILOT
+    mode = 4 #MODE_SCRIPT_PILOT
     """ C'est un script qui donne des commandes pilote """
     def __init__(self, mddFlightData, mddRawInput, mddPilotInput, mddAutoPilotInput):
         super(ScriptPilot,self).__init__(mddFlightData, mddRawInput, mddPilotInput, mddAutoPilotInput)
         self._mddOut = mddPilotInput
 
 class ScriptAutoPilot(_Script):
-    mode = M.MODE_SCRIPT_AUTOPILOT
+    mode = 5 #MODE_SCRIPT_AUTOPILOT
     """ C'est un script qui donne des commandes a l'auto pilote """
     def __init__(self, mddFlightData, mddRawInput, mddPilotInput, mddAutoPilotInput):
         super(ScriptAutoPilot,self).__init__(mddFlightData, mddRawInput, mddPilotInput, mddAutoPilotInput)

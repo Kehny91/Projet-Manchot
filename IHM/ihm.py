@@ -3,16 +3,15 @@ from IHM.Widgets.EngineWidget import EngineWidget
 from IHM.Widgets.GraphWidget import GraphWidget
 from IHM.Widgets.SliderControlWidget import SliderControlWidget
 from IHM.Widgets.ValueWidget import ValueWidget
-from DataTypes import PilotInput,AutoPilotInput,RawInput
+from Data.DataTypes import PilotInput,AutoPilotInput,RawInput
 import PyQt5.QtWidgets as QtWidgets
 import PyQt5
-from Espace import Vecteur
-from Parametres import ParametresModele,ParametresSimulation
+from Physique.Espace import Vecteur
+from Parametres import ParametresModele,ParametresSimulation, ParametreMode
 from PyQt5.QtCore import pyqtSignal,QObject
 from PyQt5 import Qt
 from math import pi
 import time
-import Modes as M
 TORAD = pi/180.0
 TODEG = 180.0/pi
 
@@ -122,8 +121,8 @@ class _InputWidget(QtWidgets.QWidget):
 
         self.stack.addWidget(widget)
 
-        self._buttonPilot.toggled.connect(lambda : self._handleRadioButton(0, mddMode,M.MODE_PILOT))
-        self._buttonAutoPilot.toggled.connect(lambda : self._handleRadioButton(1, mddMode,M.MODE_AUTO_PILOT))
+        self._buttonPilot.toggled.connect(lambda : self._handleRadioButton(0, mddMode,ParametreMode.MODE_PILOT))
+        self._buttonAutoPilot.toggled.connect(lambda : self._handleRadioButton(1, mddMode,ParametreMode.MODE_AUTO_PILOT))
         self._buttonScript.toggled.connect(lambda : self._handleRadioButton(2, mddMode,ParametresSimulation.scriptToLoad.mode))
         
 
@@ -134,9 +133,9 @@ class _InputWidget(QtWidgets.QWidget):
             self.stack.widget(index).refreshAllSliders()
 
     def artificiallyPressButton(self, mode):
-        if (mode == M.MODE_PILOT):
+        if (mode == ParametreMode.MODE_PILOT):
             self._buttonPilot.toggle()
-        elif mode == M.MODE_AUTO_PILOT:
+        elif mode == ParametreMode.MODE_AUTO_PILOT:
             self._buttonAutoPilot.toggle()
         else:
             self._buttonScript.toggle()

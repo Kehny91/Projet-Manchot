@@ -1,5 +1,5 @@
-import DataManagement as dm
-from DataTypes import PilotInput,RawInput
+import Data.DataManagement as dm
+from Data.DataTypes import PilotInput,RawInput
 
 class Mixer:
     @staticmethod

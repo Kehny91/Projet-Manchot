@@ -1,5 +1,4 @@
 from math import pi
-import Modes
 import Scripts.scriptTest
 TORAD = pi/180
 TODEG = 180/pi
@@ -100,7 +99,13 @@ class ParametresModele:
     resitution           = 0.3                          #sans unite, coef de rebond
 
 
-
+class ParametreMode:
+    MODE_PILOT = 1                  #L'entree est dictée par la consigne pilot
+    MODE_AUTO_PILOT = 2             #L'entree est dictée par la consigne autopilote
+    MODE_SCRIPT_RAW = 3             #L'entree est dictée par la consigne raw, dictée par le script
+    MODE_SCRIPT_PILOT = 4           #L'entree est dictée par la consigne pilot, dictée par le script
+    MODE_SCRIPT_AUTOPILOT = 5       #L'entree est dictée par la consigne autopilote, dictée par le script
+    
 class ParametresSimulation:
     #Divers
     scriptToLoad = Scripts.scriptTest.ScriptExemple     #Classe Script a utiliser
@@ -122,7 +127,7 @@ class ParametresSimulation:
     vitesseXIni = 8                                     #m/s
     vitesseZIni = 0                                     #m/s
     wIni = 0                                            #rad/s
-    modeInitial = Modes.MODE_AUTO_PILOT                 #Mode initial
+    modeInitial = ParametreMode.MODE_SCRIPT_AUTOPILOT   #Mode initial
 
     #Simulation
     frequenceMixer = 50                                 #Hz

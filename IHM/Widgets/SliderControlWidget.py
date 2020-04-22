@@ -1,6 +1,6 @@
 from PyQt5 import QtWidgets
 from PyQt5 import Qt
-from DataManagement import MDD
+from Data.DataManagement import MDD
 import PyQt5
 
 class SliderControlWidget(QtWidgets.QWidget):

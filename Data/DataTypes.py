@@ -1,7 +1,7 @@
-import DataManagement as dm
-from DataManagement import MDD
+import Data.DataManagement as dm
+from Data.DataManagement import MDD
 from math import sqrt
-from Espace import Vecteur
+from Physique.Espace import Vecteur
 import random
 
 class AutoPilotInput:

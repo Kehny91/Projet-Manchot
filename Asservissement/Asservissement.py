@@ -1,6 +1,6 @@
 from math import sqrt
-from DataManagement import constrain
-from DataTypes import PilotInput,AutoPilotInput
+from Data.DataManagement import constrain
+from Data.DataTypes import PilotInput,AutoPilotInput
 
 class Asservissement:
     def __init__(self, mddPilotInput, mddFlightData, mddAutoPilotInput):

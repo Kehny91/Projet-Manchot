@@ -1,6 +1,6 @@
 import os.path as path
 import os
-import DataTypes
+import Data.DataTypes
 import time
 
 def formatFloat(x):

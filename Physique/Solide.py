@@ -1,13 +1,13 @@
-import Espace as E
-import Torseur as T
-import numpy as np
-import SystemeMeca as Sy1O
+import Physique.Espace as E
+import Physique.Torseur as T
+import Physique.SystemeMeca as Sy1O
+from math import pi,atan2,cos,sin
 from Parametres import ConstanteEnvironement as CE
 from Parametres import ParametresModele as PM
 from Parametres import ParametresSimulation as PS
-import Parametres as P
-from DataTypes import RapportDeCollision
-from DataManagement import normalize
+from Data.DataTypes import RapportDeCollision
+from Data.DataManagement import normalize 
+
 
 refSol = E.Referentiel("refSol",0,E.Vecteur(0,0,E.ReferentielAbsolu())) 
 
@@ -253,7 +253,7 @@ class SurfacePortante(Attachements):
     def getResultanteAero(self, alpha, VrefSol):
         """Renvoie le torseur des forces appliquees au bord d attaque dans le refCorps"""
         VecteurXaeroLocal = VrefSol.unitaire()
-        VecteurZaeroLocal = VecteurXaeroLocal.rotate(-np.pi/2)  
+        VecteurZaeroLocal = VecteurXaeroLocal.rotate(-pi/2)  
         v = VrefSol.norm()
         Fdyn = 0.5 * CE.rho_air_0 *self.S*(v**2)
         lift = Fdyn*self.polaire.getCl(alpha,v)
@@ -297,7 +297,7 @@ class Aile(SurfacePortante):
         if self.pourcentageCordeArticulee == 0:
             gainAlpha = 0
         else:
-            gainAlpha = np.arctan2(np.sin(theta),(1-self.pourcentageCordeArticulee)/self.pourcentageCordeArticulee + np.cos(theta))
+            gainAlpha = atan2(sin(theta),(1-self.pourcentageCordeArticulee)/self.pourcentageCordeArticulee + cos(theta))
         return  (normalize(alphaFixe) , normalize(gainAlpha))
         
     def getTorseurEffortsAttachement(self):
@@ -339,13 +339,13 @@ class Empennage(SurfacePortante):
         if self.pourcentageCordeArticulee == 0:
             gainAlpha = 0
         else:
-            gainAlpha = (np.arctan2(np.sin(theta),(1-self.pourcentageCordeArticulee)/self.pourcentageCordeArticulee + np.cos(theta)))*np.cos(self.angleDemiDiedre)
+            gainAlpha = (atan2(sin(theta),(1-self.pourcentageCordeArticulee)/self.pourcentageCordeArticulee + cos(theta)))*cos(self.angleDemiDiedre)
         return  (normalize(alphaFixe) , normalize(gainAlpha))
         
     def getTorseurEffortsAttachement(self):
         """Renvoie le torseur effort genere par l empennage applique a la postion du bord d attaque dans le refAvion"""
         vLoc = (self.getVitesse() - self.world.getVent(self.getPosition().changeRef(self.father.refSol))).projectionRef(self.father)
-        vLoc.z = vLoc.z*np.cos(self.angleDemiDiedre) #Correction du z efficace!
+        vLoc.z = vLoc.z*cos(self.angleDemiDiedre) #Correction du z efficace!
 
         (alphaFixe,gainAlpha) = self.getAlpha(vLoc)
         torseurFixe = self.getResultanteAero(alphaFixe,vLoc)*(1 - self.pourcentageEnvergureArticulee)
@@ -434,7 +434,7 @@ class CorpsRigide(Attachements):
                 self._targetVN = 0
         
         if(self._T == None):
-            self._T = self._N.rotate(np.pi/2)
+            self._T = self._N.rotate(pi/2)
 
         if (self._statique):
             return abs(self.getVitesse().prodScal(self._T))<self._epsilon and abs(vpn - self._targetVN)<self._epsilon
@@ -449,7 +449,7 @@ class CorpsRigide(Attachements):
         if (self._N == None):
             self._N = self._world.getNormaleObstacle(self.position.changeRef(self._referentielSol))
         if (self._T == None):
-            self._T = self._N.rotate(np.pi/2)
+            self._T = self._N.rotate(pi/2)
         if (self._m0optiN == None):
             self._m0optiN = self._m0(self._N)
         vpn = self.getVitesse().prodScal(self._N)

@@ -1,3 +1,30 @@
+#Lancement rapide du simulateur
+
+##Pré-requis:
+
+-Python 3.6 ou version superieure
+
+-Librairies:
+        *PyQt5 
+        *mathplotlib (Optionnel, uniquemet utilisé dans les tests)
+
+Une fois l'instalation de python 3.6 ou une version superieure, il faut aussi installer les librairies numpy et PyQt5.
+
+##Notice d'utilisation:
+
+Le fichier "Parametres" rassemble l'ensemble des paramètres modifiables du simulateur. C'est dans ce fichier que les
+les conditions initiales et l'environement du drone sont définis.
+
+##Lancer le programme avec l'interface:
+
+Ouvrir le fichier "MAIN", appuyer sur Run
+Le programme se lance
+
+Pour plus de détail, voir dans le dossier Docs le fichier word "Documentation_Simulateur_2D_New_Drone"
+
+
+
+
 ### Conventions
 
 Axe xSol = parllèle au sol, dans la direction de l'avion

@@ -5,10 +5,11 @@ import PyQt5.QtWidgets as QtWidgets
 import sys
 import time
 import os
-from Espace import Vecteur,ReferentielAbsolu,moduloF
 from math import sqrt,cos,sin
-from DataTypes import Obstacle,Sol
-from Solide import refSol
+from Physique.Espace import Vecteur,ReferentielAbsolu,moduloF
+from Physique.Solide import refSol
+from Data.DataTypes import Obstacle,Sol
+
 
 """
 La realPositionFenetre, correspond aux coordonnées vraies (pysiques) du coin inferieur gauche de la fenetre.

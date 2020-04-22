@@ -2,18 +2,16 @@
 from math import cos,sin,pi
 import time
 import threading as th
-import Mixer
+from Mixer.Mixer import Mixer as M
 import PyQt5
-from Espace import Vecteur,Referentiel,ReferentielAbsolu
 from PyQt5 import Qt
 from PyQt5.QtCore import pyqtSignal,QObject
-from Asservissement import Asservissement
-from DataManagement import MDD,Pauser
+from Asservissement.Asservissement import Asservissement
+from Data.DataManagement import MDD,Pauser
 import Parametres
-import Modes as M
-import Espace as E
-import Drone as D
-from Solide import refSol
+import Physique.Espace as E
+import Physique.Drone as D
+from Physique.Solide import refSol
 
 class MixerThread(th.Thread):
     def __init__(self,mddRawInput,mddPilotInput,frequence):
@@ -27,7 +25,7 @@ class MixerThread(th.Thread):
     def run(self):
         while self._continue:
             self._pauser.check()
-            Mixer.Mixer.mix(self._mddPilotInput,self._mddRawInput)
+            M.mix(self._mddPilotInput,self._mddRawInput)
             time.sleep(self._period)
 
     def stop(self):
@@ -165,23 +163,23 @@ class ModeManagerThread(th.Thread):
             mode = self._mddMode.read()
             if (mode != self._lastMode):
                 self._lastMode = mode
-                if mode == M.MODE_PILOT:
+                if mode == Parametres.ParametreMode.MODE_PILOT:
                     self._mixerT.unpause()
                     self._asserT.requestPause()
                     self._scriptT.requestPause()
-                elif mode == M.MODE_AUTO_PILOT:
+                elif mode == Parametres.ParametreMode.MODE_AUTO_PILOT:
                     self._mixerT.unpause()
                     self._asserT.unpause()
                     self._scriptT.requestPause()
-                elif mode == M.MODE_SCRIPT_RAW:
+                elif mode == Parametres.ParametreMode.MODE_SCRIPT_RAW:
                     self._mixerT.requestPause()
                     self._asserT.requestPause()
                     self._scriptT.unpause()
-                elif mode == M.MODE_SCRIPT_PILOT:
+                elif mode == Parametres.ParametreMode.MODE_SCRIPT_PILOT:
                     self._mixerT.unpause()
                     self._asserT.requestPause()
                     self._scriptT.unpause()
-                elif mode == M.MODE_SCRIPT_AUTOPILOT:
+                elif mode == Parametres.ParametreMode.MODE_SCRIPT_AUTOPILOT:
                     self._mixerT.unpause()
                     self._asserT.unpause()
                     self._scriptT.unpause()
@@ -197,28 +195,28 @@ class ModeManagerThread(th.Thread):
 if __name__ == "__main__":
     from Parametres import ParametresSimulation as PS
     from IHM.ihm import IHM
-    from DataTypes import RawInput,PilotInput,AutoPilotInput,FlightData,RapportDeCollision,World,VentGlobal,VentLocal,Obstacle,Sol
-    from DataManagement import MDD
+    from Data.DataTypes import RawInput,PilotInput,AutoPilotInput,FlightData,RapportDeCollision,World,VentGlobal,VentLocal,Obstacle,Sol
+    from Data.DataManagement import MDD
     import sys
     import PyQt5.Qt as Qt
-    from Logger import Logger
+    from Logger.Logger import Logger
 
     Logger.setup(str(int(time.time())))
 
     referentielSol = refSol
 
-    mddFlightData = MDD(FlightData(Vecteur(PS.positionXIni,PS.positionZIni,referentielSol),Vecteur(PS.vitesseXIni,PS.vitesseZIni,referentielSol), PS.assietteIni, PS.wIni), True)
+    mddFlightData = MDD(FlightData(E.Vecteur(PS.positionXIni,PS.positionZIni,referentielSol),E.Vecteur(PS.vitesseXIni,PS.vitesseZIni,referentielSol), PS.assietteIni, PS.wIni), True)
     mddRawInput = MDD(RawInput(0.0,0.0,0.0,0.0,0.0), False)
     mddPilotInput = MDD(PilotInput(0,0,0), False)
-    mddAutoPilotInput = MDD(AutoPilotInput(Vecteur(0,0,referentielSol)), True)
-    mddMode = MDD(M.MODE_PILOT)
+    mddAutoPilotInput = MDD(AutoPilotInput(E.Vecteur(0,0,referentielSol)), True)
+    mddMode = MDD(Parametres.ParametreMode.MODE_PILOT)
     
     
 
     world = World(PS.scaleAffichage, PS.positionXPiste,PS.longueurXPiste,referentielSol)
     world.addObstacle(Sol(referentielSol))
-    world.addObstacle(Obstacle(Vecteur(25,0,referentielSol),Vecteur(26,1,referentielSol), referentielSol))
-    world.addPerturbation(VentGlobal(Vecteur(PS.ventMoyenVitesseX,PS.ventMoyenVitesseZ,referentielSol),PS.ventVariationAmplitude,PS.ventRapiditeVarition,referentielSol))
+    world.addObstacle(Obstacle(E.Vecteur(25,0,referentielSol),E.Vecteur(26,1,referentielSol), referentielSol))
+    world.addPerturbation(VentGlobal(E.Vecteur(PS.ventMoyenVitesseX,PS.ventMoyenVitesseZ,referentielSol),PS.ventVariationAmplitude,PS.ventRapiditeVarition,referentielSol))
     #world.addPerturbation(VentLocal(Vecteur(0,5,referentielSol),0,5,referentielSol,Vecteur(15,0,referentielSol),10))
 
     mT = MixerThread(mddRawInput,mddPilotInput,PS.frequenceMixer)

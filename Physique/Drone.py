@@ -1,10 +1,10 @@
-import Solide as S
-import Espace as E
-import SystemeMeca as Sy1O
+import Physique.Solide as S
+import Physique.Espace as E
+import Physique.SystemeMeca as Sy1O
+from Physique.Polaire import PolaireLineaire,PolaireTabulee
 from Parametres import ParametresModele as PM
 from Parametres import ParametresSimulation as PS
-from Polaire import PolaireLineaire,PolaireTabulee
-from DataManagement import normalize
+from Data.DataManagement import normalize
 
 
 class Drone:

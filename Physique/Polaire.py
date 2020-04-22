@@ -187,7 +187,7 @@ class PolaireLineaire(Polaire):
 
 
 if __name__ =="__main__":
-    from Parametres import ParametresModele as PM
+    #from Parametres import ParametresModele as PM
     c = PolaireTabulee("./XFLR5/CLwing","./XFLR5/CDwing","./XFLR5/CMwingBA")
     #c=PolaireLineaire(PM.empennageD_CzA, PM.empennageD_Alpha_0,PM.empennageD_Cx0, PM.empennageD_k,0)
 

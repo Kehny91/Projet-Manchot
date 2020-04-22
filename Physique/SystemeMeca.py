@@ -1,4 +1,4 @@
-from DataManagement import checkBoundaries
+from Data.DataManagement import checkBoundaries
 import time
 
 class SystemeMeca:
