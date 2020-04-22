@@ -132,7 +132,8 @@ class RawInput:
                 "elevD" : self._elevD,
                 "flapsG" : self._flapsG,
                 "flapsD" : self._flapsD,
-                "throttle" : self._throttle}
+                "throttle" : self._throttle
+                }
 
 
 class RapportDeCollision:
