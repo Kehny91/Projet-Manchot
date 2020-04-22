@@ -262,7 +262,7 @@ class VentLocal(Perturbation):
         hypo2 = vecteurLiantLeCentreAlaPos.getX()**2 + vecteurLiantLeCentreAlaPos.getZ()**2
         adja2 = vecteurLiantLeCentreAlaPos.prodScal(self._direction)**2
         eloignementAxe = sqrt(hypo2-adja2)
-        return pos.getZ()>0 and eloignementAxe<=self._largeur
+        return pos.getZ()>0 and eloignementAxe<=self._largeur/2
 
 class Obstacle:
     def __init__(self, pointBG, pointHD, refSol):

@@ -201,26 +201,33 @@ if __name__ == "__main__":
     import PyQt5.Qt as Qt
     from Logger.Logger import Logger
 
+    # Parametrage du Logger
     Logger.setup(str(int(time.time())))
 
+    #Creation d'un referentiel sol
     referentielSol = refSol
 
+    #Initialisation des MDD
     mddFlightData = MDD(FlightData(E.Vecteur(PS.positionXIni,PS.positionZIni,referentielSol),E.Vecteur(PS.vitesseXIni,PS.vitesseZIni,referentielSol), PS.assietteIni, PS.wIni), True)
     mddRawInput = MDD(RawInput(0.0,0.0,0.0,0.0,0.0), False)
     mddPilotInput = MDD(PilotInput(0,0,0), False)
     mddAutoPilotInput = MDD(AutoPilotInput(E.Vecteur(0,0,referentielSol)), True)
     mddMode = MDD(Parametres.ParametreMode.MODE_PILOT)
-    
-    
 
+    #Creation du monde
     world = World(PS.scaleAffichage, PS.positionXPiste,PS.longueurXPiste,referentielSol)
+    #Ajouts d'obstacles
     world.addObstacle(Sol(referentielSol))
     world.addObstacle(Obstacle(E.Vecteur(25,0,referentielSol),E.Vecteur(26,1,referentielSol), referentielSol))
+
+    #Ajouts de vents
     world.addPerturbation(VentGlobal(E.Vecteur(PS.ventMoyenVitesseX,PS.ventMoyenVitesseZ,referentielSol),PS.ventVariationAmplitude,PS.ventRapiditeVarition,referentielSol))
-    #world.addPerturbation(VentLocal(Vecteur(0,5,referentielSol),0,5,referentielSol,Vecteur(15,0,referentielSol),10))
+    #Decommentez la ligne suivante pour rajouter une rabatante de 1m de large et de -5m/s au seuil de piste
+    #world.addPerturbation(VentLocal(E.Vecteur(0,-5,referentielSol),0,5,referentielSol,E.Vecteur(PS.positionXPiste,0,referentielSol),1))
 
     mT = MixerThread(mddRawInput,mddPilotInput,PS.frequenceMixer)
     mT.start()
+    
 
     mddMode.write(PS.modeInitial)
 
