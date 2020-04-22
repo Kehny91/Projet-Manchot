@@ -9,7 +9,7 @@ class Asservissement:
         self._mddAutoPilotInput = mddAutoPilotInput
 
         self._PThrottle = 0.1
-        self._Passiette = 0.5
+        self._Passiette = 1.0
 
     def compute(self):
         consigne = self._mddAutoPilotInput.read()
@@ -25,7 +25,7 @@ class Asservissement:
 
         throttle = constrain((consigneV-currentV)*self._PThrottle , 0, 1)
         pitch = constrain(-1*(consigneVz - currentVz)*self._Passiette,-1,1)
-        flaps = 0
+        flaps = constrain((consigneV-currentV)*(-0.2) , 0, 1)
 
         self._mddPilotInput.write(PilotInput(pitch,flaps,throttle))
 

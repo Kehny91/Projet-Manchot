@@ -108,7 +108,7 @@ class ParametreMode:
     
 class ParametresSimulation:
     #Divers
-    scriptToLoad = Scripts.scriptTest.ScriptExemple     #Classe Script a utiliser
+    scriptToLoad = Scripts.scriptTest.ScriptLanding     #Classe Script a utiliser
     maxAcceptablePenetrationSpeed = 0.001               #m/s
 
     #Definition de l'environnement
@@ -122,7 +122,7 @@ class ParametresSimulation:
 
     #Instant initial
     positionXIni = 0                                    #m
-    positionZIni = 6.7                                  #m
+    positionZIni = 6.5                                  #m
     assietteIni = 0                                     #rad
     vitesseXIni = 8                                     #m/s
     vitesseZIni = 0                                     #m/s

@@ -7,7 +7,7 @@ import random
 class AutoPilotInput:
     """ La classe représentant les entrées demandée par l'autopilote
         v : Le vecteur vitesse demandé"""
-    def __init__(self, v):
+    def __init__(self, v = Vecteur(0,0)):
         dm.checkBoundaries(v.getX(),0,None)
         self._v = v
 
