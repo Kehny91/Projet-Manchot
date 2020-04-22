@@ -46,12 +46,3 @@ if __name__ == "__main__":
         time.sleep(0.01)
         t += 0.01
 
-def getThrustConsigne(percent, maxWatt, maxStaticThrust, v):
-    # Un moteur a hélice développe une puissance P=V*T constante, pas une poussée constante.
-    # Cependant si v==0 et notre moteur developpe 505W, on a T = P / V = 505 / 0
-    # Cette regle ne s'applique pas aux basses vitesse car il faudrait prendre en compte la vitesse de l'air mise en mouvement par l'hélice
-    # Ainsi, au basses vitesses, on considérera une poussée constante, au hautes vitesse, une puissance constante
-    if (v<0.0001):
-        return percent*maxStaticThrust
-    else:
-        return min(percent*maxStaticThrust,percent*maxWatt/v)

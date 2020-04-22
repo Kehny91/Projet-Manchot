@@ -144,7 +144,7 @@ class Corps(E.Referentiel):
             print("total ", torseurEfforts.debug())
         return torseurEfforts 
     
-    def applyAction(self, torseurEfforts, totMass, totInertie, dt):
+    def updateCinematique(self, torseurEfforts, totMass, totInertie, dt):
         """ Modifie le torseur cinematique sous l effet des efforts"""
         if (PS.printDebugCinetique):
             print("vitesse CG avant ", self.getVitesseCG().projectionRef(self).debug())
@@ -164,13 +164,13 @@ class Corps(E.Referentiel):
         """Actualise la cinematique du corps"""
         self.deactivateAllCorpsRigide()
         torseurEfforts = self.computeTorseurEfforts()
-        self.applyAction(torseurEfforts, self.getMasse(), self.getInertie(), dt)
+        self.updateCinematique(torseurEfforts, self.getMasse(), self.getInertie(), dt)
         self.activateAllCorpsRigides(dt)
         i=0
         while (not self.corpsRigideOk()):
             for cr in self.corpsRigides:
                 torseur = cr.getTorseurEffortsAttachement()
-                self.applyAction(torseur.changePoint(self.torseurCinematique.getPointAppl()), self.getMasse(), self.getInertie(), dt)
+                self.updateCinematique(torseur.changePoint(self.torseurCinematique.getPointAppl()), self.getMasse(), self.getInertie(), dt)
             i+=1
             if (i==1000):
                 assert False, "ERROR ERROR ERROR Les collisions n'ont pas pu etre resolues"
@@ -219,8 +219,12 @@ class Propulseur(Attachements):
     
     def getThrustConsigne(self):
         """Renvoie la poussee consigne"""
+        # Un moteur a hélice développe une puissance P=V*T constante, pas une poussée constante.
+        # Cependant si v==0 et notre moteur developpe 505W, on a T = P / V = 505 / 0
+        # Cette regle ne s'applique pas aux basses vitesse car il faudrait prendre en compte la vitesse de l'air mise en mouvement par l'hélice
+        # Ainsi, au basses vitesses, on considérera une poussée constante, au hautes vitesse, une puissance constante
         V = self.getVitesse().norm()
-        if (V<0.0001):
+        if (V<1):
             return self.throttle
         else:
             return min(self.throttle,self.throttle*self.puissanceMax/(V*self.throttleMax))
@@ -356,7 +360,6 @@ class Empennage(SurfacePortante):
 # 3) Tant que tous les corps rigides ne sont pas "ok", recalculer et mettre a jour la vitesse et w
 # 4) Reset les corps rigides
 class CorpsRigide(Attachements):
-    #TODO alex, developer la doc
     """Permet de definir un corps rigide, il s agit d attachements qui ne peuvent pas penetrer dans le sol
     \n attribute String : name, nom du corps rigide
     \n attribute 
