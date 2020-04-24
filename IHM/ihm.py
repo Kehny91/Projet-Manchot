@@ -96,7 +96,7 @@ class _InputWidget(QtWidgets.QWidget):
         slider = widget.addSlider("Pitch[%]",-100,100)
         slider.valueChanged[int].connect(lambda x : mddPilotInput.doOnData(PilotInput.setPitch,x/100))
 
-        slider = widget.addSlider("Flaps[%]",0,100)
+        slider = widget.addSlider("Flaps[%]",-100,100)
         slider.valueChanged[int].connect(lambda x : mddPilotInput.doOnData(PilotInput.setFlaps,x/100))
 
         slider = widget.addSlider("Throttle[%]",0,100)

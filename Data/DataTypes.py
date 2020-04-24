@@ -57,7 +57,7 @@ class PilotInput:
         return self._flaps
     
     def setFlaps(self, flaps):
-        dm.checkBoundaries(flaps, 0, 1)
+        dm.checkBoundaries(flaps, -1, 1)
         self._flaps = flaps
 
     def getThrottle(self):
@@ -109,14 +109,14 @@ class RawInput:
         return self._flapsG
 
     def setFlapsG(self, flapsG):
-        dm.checkBoundaries(flapsG, 0, 1)
+        dm.checkBoundaries(flapsG, -1, 1)
         self._flapsG = flapsG
 
     def getFlapsD(self):
         return self._flapsD
 
     def setFlapsD(self, flapsD):
-        dm.checkBoundaries(flapsD, 0, 1)
+        dm.checkBoundaries(flapsD, -1, 1)
         self._flapsD = flapsD
 
     def getThrottle(self):
