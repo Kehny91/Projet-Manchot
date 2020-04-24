@@ -93,24 +93,31 @@ class _InputWidget(QtWidgets.QWidget):
 
         widget = SliderControlWidget(self)
 
+        iniPilotInput = mddPilotInput.read()
         slider = widget.addSlider("Pitch[%]",-100,100)
+        slider._slider.setValue(int(iniPilotInput.getPitch()*100))
         slider.valueChanged[int].connect(lambda x : mddPilotInput.doOnData(PilotInput.setPitch,x/100))
 
         slider = widget.addSlider("Flaps[%]",0,100)
+        slider._slider.setValue(int(iniPilotInput.getFlaps()*100))
         slider.valueChanged[int].connect(lambda x : mddPilotInput.doOnData(PilotInput.setFlaps,x/100))
 
         slider = widget.addSlider("Throttle[%]",0,100)
+        slider._slider.setValue(int(iniPilotInput.getThrottle()*100))
         slider.valueChanged[int].connect(lambda x : mddPilotInput.doOnData(PilotInput.setThrottle,x/100))
 
         self.stack.addWidget(widget)
 
         #AutoPilot
 
+        iniAutoPilotInput = mddAutoPilotInput.read()
         widget = SliderControlWidget(self)
         slider = widget.addSlider("Vx[km/h]",0,int(ParametresModele.maxAutoPilotSpeed*3.6))
+        slider._slider.setValue(int(iniAutoPilotInput.getVx()*3.6))
         slider.valueChanged[int].connect(lambda x : mddAutoPilotInput.doOnData(AutoPilotInput.setVx,x/3.6))
 
         slider = widget.addSlider("Vz[km/h]",-int(ParametresModele.maxAutoPilotZSpeed*3.6),int(ParametresModele.maxAutoPilotZSpeed*3.6))
+        slider._slider.setValue(int(iniAutoPilotInput.getVz()*3.6))
         slider.valueChanged[int].connect(lambda x : mddAutoPilotInput.doOnData(AutoPilotInput.setVz,x/3.6))
 
         self.stack.addWidget(widget)
@@ -128,6 +135,7 @@ class _InputWidget(QtWidgets.QWidget):
 
     def _handleRadioButton(self,index,mddMode,mode):
         mddMode.write(mode)
+        time.sleep(0.3)
         self.stack.setCurrentIndex(index)
         if (index<2):
             self.stack.widget(index).refreshAllSliders()

@@ -127,7 +127,7 @@ class ParametresSimulation:
     vitesseXIni = 8                                     #m/s
     vitesseZIni = 0                                     #m/s
     wIni = 0                                            #rad/s
-    modeInitial = ParametreMode.MODE_SCRIPT_AUTOPILOT   #Mode initial
+    modeInitial = ParametreMode.MODE_AUTO_PILOT   #Mode initial
 
     #Simulation
     frequenceMixer = 50                                 #Hz
