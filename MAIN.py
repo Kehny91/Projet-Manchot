@@ -102,8 +102,8 @@ class ScriptThread(th.Thread):
     def run(self):
         if (self._script != None):
             while self._continue:
-                self._script.runScript()
                 self._pauser.check()
+                self._script.runScript()
 
     def stop(self):
         self.unpause()
@@ -210,7 +210,7 @@ if __name__ == "__main__":
     #Initialisation des MDD
     mddFlightData = MDD(FlightData(E.Vecteur(PS.positionXIni,PS.positionZIni,referentielSol),E.Vecteur(PS.vitesseXIni,PS.vitesseZIni,referentielSol), PS.assietteIni, PS.wIni), True)
     mddRawInput = MDD(RawInput(0.0,0.0,0.0,0.0,0.0), False)
-    mddPilotInput = MDD(PilotInput(0,0,0), False)
+    mddPilotInput = MDD(PilotInput(-1,0.5,0.7), False)
     mddAutoPilotInput = MDD(AutoPilotInput(E.Vecteur(0,0,referentielSol)), True)
     mddMode = MDD(Parametres.ParametreMode.MODE_PILOT)
 
@@ -226,6 +226,7 @@ if __name__ == "__main__":
     #world.addPerturbation(VentLocal(E.Vecteur(0,-5,referentielSol),0,5,referentielSol,E.Vecteur(PS.positionXPiste,0,referentielSol),1))
 
     mT = MixerThread(mddRawInput,mddPilotInput,PS.frequenceMixer)
+    mT.requestPause()
     mT.start()
     
 
@@ -246,12 +247,12 @@ if __name__ == "__main__":
     pT.start()
 
     aT = AsserThread(mddFlightData,mddAutoPilotInput,mddPilotInput,PS.frequenceAsservissement)
-    aT.start()
     aT.requestPause()
+    aT.start()
 
     sT = ScriptThread(mddFlightData, mddRawInput, mddPilotInput, mddAutoPilotInput)
-    sT.start()
     sT.requestPause()
+    sT.start()
 
     mmT = ModeManagerThread(mddMode,mT,aT,sT)
     mmT.start()
