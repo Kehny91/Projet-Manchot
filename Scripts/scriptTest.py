@@ -43,24 +43,20 @@ class ScriptExemple(ScriptRaw):
 class ScriptLanding(ScriptAutoPilot):
     
     def runScript(self):
-        tStart = time.time() #On garde en tete l'heure du lancement du script
-        dephasageElevatorGauche = pi/2
-        flapsSorti = False
         frequence = 40 #Hz
 
         while self.continuer:
 
-            t = time.time() # On regarde l'heure actuelle
             self.updateInputData() #On met a jour self.flightData (on ne l'utilise pas ici)
 
             out = AutoPilotInput() #On cree notre objet de sortie. (un autopilot ici)
 
             if (self.flightData.getPosAvion().getZ()>1):
-                print("descente")
+                print("ScriptLanding : descente")
                 out.setVx(10)
                 out.setVz(-2)
             else:
-                print("arrondi")
+                print("ScriptLanding : arrondi")
                 out.setVx(0)
                 out.setVz(-0.1)
 

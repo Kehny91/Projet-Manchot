@@ -2,7 +2,7 @@
 
 ##Pré-requis:
 
--Python 3.6 ou version superieure
+-Python 3 (nous utilisions Python 3.6)
 
 -Librairies:
         *PyQt5 
@@ -15,10 +15,13 @@ Une fois l'instalation de python 3.6 ou une version superieure, il faut aussi in
 Le fichier "Parametres" rassemble l'ensemble des paramètres modifiables du simulateur. C'est dans ce fichier que les
 les conditions initiales et l'environement du drone sont définis.
 
-##Lancer le programme avec l'interface:
+##Lancer le programme:
 
-Ouvrir le fichier "MAIN", appuyer sur Run
-Le programme se lance
+Il faut executer le fichier MAIN.py avec votre version de Python repectant les pré-requis.
+Pour cela:
+Linux : faire "python3 ./MAIN.py"
+Windows : ouvrire un invite de commande dans le dossier du projet, et faire la commande "py MAIN.py"
+Sinon, utilisez simplement le bouton RUN de votre IDE.
 
 Pour plus de détail, voir dans le dossier Docs le fichier word "Documentation_Simulateur_2D_New_Drone"
 
