@@ -102,8 +102,9 @@ class ScriptThread(th.Thread):
     def run(self):
         if (self._script != None):
             while self._continue:
-                self._pauser.check()
                 self._script.runScript()
+                self._pauser.check()
+                
 
     def stop(self):
         self.unpause()
@@ -200,6 +201,7 @@ if __name__ == "__main__":
     import sys
     import PyQt5.Qt as Qt
     from Logger.Logger import Logger
+    import Obstacle as Ob
 
     # Parametrage du Logger
     Logger.setup(str(int(time.time())))
@@ -210,7 +212,7 @@ if __name__ == "__main__":
     #Initialisation des MDD
     mddFlightData = MDD(FlightData(E.Vecteur(PS.positionXIni,PS.positionZIni,referentielSol),E.Vecteur(PS.vitesseXIni,PS.vitesseZIni,referentielSol), PS.assietteIni, PS.wIni), True)
     mddRawInput = MDD(RawInput(0.0,0.0,0.0,0.0,0.0), False)
-    mddPilotInput = MDD(PilotInput(-1,0.5,0.7), False)
+    mddPilotInput = MDD(PilotInput(0,0,0.7), False)
     mddAutoPilotInput = MDD(AutoPilotInput(E.Vecteur(0,0,referentielSol)), True)
     mddMode = MDD(Parametres.ParametreMode.MODE_PILOT)
 
@@ -218,7 +220,68 @@ if __name__ == "__main__":
     world = World(PS.scaleAffichage, PS.positionXPiste,PS.longueurXPiste,referentielSol)
     #Ajouts d'obstacles
     world.addObstacle(Sol(referentielSol))
-    world.addObstacle(Obstacle(E.Vecteur(25,0,referentielSol),E.Vecteur(26,1,referentielSol), referentielSol))
+    #world.addObstacle(Obstacle(E.Vecteur(-1,0,referentielSol),E.Vecteur(0,2.5,referentielSol), referentielSol))
+
+    #A
+    world.addObstacle(Ob.A.AC1)
+    world.addObstacle(Ob.A.AC2)
+    world.addObstacle(Ob.A.AC3)
+    world.addObstacle(Ob.A.AC4)
+
+    #L
+    world.addObstacle(Ob.L.LC1)
+    world.addObstacle(Ob.L.LC2)
+
+    #E
+    world.addObstacle(Ob.Eprime.EC1)
+    world.addObstacle(Ob.Eprime.EC2)
+    world.addObstacle(Ob.Eprime.EC3)
+    world.addObstacle(Ob.Eprime.EC4)
+
+    #X
+    world.addObstacle(Ob.X.XC1)
+    world.addObstacle(Ob.X.XC2)
+    world.addObstacle(Ob.X.XC3)
+    world.addObstacle(Ob.X.XC4)
+    world.addObstacle(Ob.X.XC5)
+
+    #Esp
+    world.addObstacle(Ob.Esp.EspC1)
+    world.addObstacle(Ob.Esp.EspC2)
+    world.addObstacle(Ob.Esp.EspC3)
+
+    #T
+    world.addObstacle(Ob.T.TC1)
+    world.addObstacle(Ob.T.TC2)
+
+    #O
+    world.addObstacle(Ob.O.OC1)
+    world.addObstacle(Ob.O.OC2)
+    world.addObstacle(Ob.O.OC3)
+    world.addObstacle(Ob.O.OC4)
+
+    #M
+    world.addObstacle(Ob.M.MC1)
+    world.addObstacle(Ob.M.MC2)
+    world.addObstacle(Ob.M.MC3)
+    world.addObstacle(Ob.M.MC4)
+    world.addObstacle(Ob.M.MC5)
+
+    #Ob1
+    world.addObstacle(Ob.Ob1.ob1)
+
+    #Ob2
+    world.addObstacle(Ob.Ob2.ob2)
+
+    #Ob3
+    world.addObstacle(Ob.Ob3.ob3)
+
+    #Ob4
+    world.addObstacle(Ob.Ob4.ob4)
+
+    #Ob5
+    world.addObstacle(Ob.Ob5.ob5)
+
 
     #Ajouts de vents
     world.addPerturbation(VentGlobal(E.Vecteur(PS.ventMoyenVitesseX,PS.ventMoyenVitesseZ,referentielSol),PS.ventVariationAmplitude,PS.ventRapiditeVarition,referentielSol))

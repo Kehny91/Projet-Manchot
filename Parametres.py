@@ -59,7 +59,7 @@ class ParametresModele:
     
     #parametre propulseur
     engine_x                = 0.083                     #m, coordonne x entre le centre de gravite et le centre de poussee du propulseur
-    engine_z                = 0.01                      #m, coordonne z entre le centre de gravite et le centre de poussee du propulseur
+    engine_z                = -0.01                      #m, coordonne z entre le centre de gravite et le centre de poussee du propulseur
     engineMaxThrust         = 45                        #Newton
     engineMaxPow            = 505                       #Watt
     engine_tau              = 0.001                     #s, temps de reaction du moteur
@@ -112,22 +112,22 @@ class ParametresSimulation:
     maxAcceptablePenetrationSpeed = 0.001               #m/s
 
     #Definition de l'environnement
-    positionXPiste = 30                                 #m
+    positionXPiste = 0                                 #m
     longueurXPiste = 15                                 #m
 
-    ventMoyenVitesseX = -1                              #m/s, vitesse moyen horizontale du vent
+    ventMoyenVitesseX = 0                              #m/s, vitesse moyen horizontale du vent
     ventMoyenVitesseZ = 0                               #m/s, vitesse moyen verticale du vent
     ventVariationAmplitude = 0                          #m/s, variation de l'amplitude du vent
     ventRapiditeVarition = 0                            #s, temps de variation de l'amplitude du vent
 
     #Instant initial
-    positionXIni = 0                                    #m
-    positionZIni = 6.5                                  #m
-    assietteIni = 0                                     #rad
-    vitesseXIni = 8                                     #m/s
+    positionXIni = -32                                    #m
+    positionZIni = 2                                  #m
+    assietteIni = -0.2                                     #rad
+    vitesseXIni = 5                                     #m/s
     vitesseZIni = 0                                     #m/s
     wIni = 0                                            #rad/s
-    modeInitial = ParametreMode.MODE_AUTO_PILOT   #Mode initial
+    modeInitial = ParametreMode.MODE_PILOT   #Mode initial
 
     #Simulation
     frequenceMixer = 50                                 #Hz

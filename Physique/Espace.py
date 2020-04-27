@@ -49,7 +49,7 @@ class Referentiel:
         return self.angleAxeY
     
     def setAngleAxeY(self, newAngleAxeY):
-        self.angleAxeY = newAngleAxeY
+        self.angleAxeY = normalise(newAngleAxeY)
         
     def getOrigine(self):
         return self.origine
